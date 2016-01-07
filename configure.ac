@@ -56,9 +56,9 @@ esac
 #
 # Option Switches
 #
-AC_ARG_ENABLE(libmad,[  --disable-libmad       disable MPEG-1 support],
+AC_ARG_ENABLE(libmad,[  --disable-libmad        disable MPEG-1 support],
 		      [LIBMAD_DISABLED=yes],[])
-AC_ARG_ENABLE(fdkaac,[  --disable-fdkaac        disable MPEG-4 HE-AAC+ support],
+AC_ARG_ENABLE(fdkaac,[  --disable-fdkaac        disable MPEG-2/4 support],
 	      [FDKAAC_DISABLED=yes],[]) 
 AC_ARG_ENABLE(vorbis,[  --disable-vorbis        disable Ogg Vorbis support],
 	      [VORBIS_DISABLED=yes],[]) 
@@ -273,7 +273,7 @@ AC_MSG_NOTICE("|-----------------------------------------------------|")
 AC_MSG_NOTICE("|       *** GLASSPLAYER CONFIGURATION SUMMARY ***      |")
 AC_MSG_NOTICE("|-----------------------------------------------------|")
 AC_MSG_NOTICE("| Decoding Formats:                                   |")
-if test -z $USING_TWOLAME ; then
+if test -z $USING_LIBMAD ; then
 AC_MSG_NOTICE("|                       MPEG-1 (via LibMad) ... No    |")
 else
 AC_MSG_NOTICE("|                       MPEG-1 (via LibMad) ... Yes   |")
