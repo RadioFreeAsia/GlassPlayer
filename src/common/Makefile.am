@@ -21,6 +21,7 @@
 ## Use automake to process this into a Makefile.in
 
 EXTRA_DIST = cmdswitch.cpp cmdswitch.h\
+             connector.cpp connector.h\
              glasslimits.h\
              logging.cpp logging.h\
              ringbuffer.cpp ringbuffer.h

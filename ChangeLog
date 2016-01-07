@@ -2,3 +2,8 @@
 	* Initial package creation.
 2016-01-07 Fred Gleason <fredg@paravelsystems.com>
 	* Stubbed out 'glassplayer(7).
+2016-01-07 Fred Gleason <fredg@paravelsystems.com>
+	* Added a 'Connector' class in 'src/common/connector.cpp' and
+	'src/common/connector.h'.
+	* Added an 'XCast' class in 'src/glassplayer/conn_xcast.cpp' and
+	'src/glassplayer/conn_xcast.h'.

@@ -244,6 +244,11 @@ ln -s ../../src/common/cmdswitch.cpp src/glassplayer/cmdswitch.cpp
 rm -f src/glassplayer/cmdswitch.h
 ln -s ../../src/common/cmdswitch.h src/glassplayer/cmdswitch.h
 
+rm -f src/glassplayer/connector.cpp
+ln -s ../../src/common/connector.cpp src/glassplayer/connector.cpp
+rm -f src/glassplayer/connector.h
+ln -s ../../src/common/connector.h src/glassplayer/connector.h
+
 rm -f src/glassplayer/logging.cpp
 ln -s ../../src/common/logging.cpp src/glassplayer/logging.cpp
 rm -f src/glassplayer/logging.h

@@ -1,6 +1,6 @@
-// glassplayer.h
+// conn_xcast.h
 //
-// glassplayer(1) Audio Player
+// Server connector for Icecast/Shoutcast streams.
 //
 //   (C) Copyright 2014-2016 Fred Gleason <fredg@paravelsystems.com>
 //
@@ -18,34 +18,41 @@
 //   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 //
 
-#ifndef GLASSPLAYER_H
-#define GLASSPLAYER_H
+#ifndef CONN_XCAST_H
+#define CONN_XCAST_H
 
-#include <QObject>
-#include <QUrl>
+#include <QTcpSocket>
 
 #include "connector.h"
 
-#define GLASSPLAYER_USAGE "--server-type=<type> --server-url=<url>\n"
-
-class MainObject : public QObject
+class XCast : public Connector
 {
- Q_OBJECT;
+  Q_OBJECT;
  public:
-  MainObject(QObject *parent=0);
+  XCast(QObject *parent=0);
+  ~XCast();
+  Connector::ServerType serverType() const;
+
+ protected:
+  void connectToHostConnector(const QString &hostname,uint16_t port);
+  void disconnectFromHostConnector();
 
  private slots:
-  void streamNowPlayingChangedData(const QString &str);
+  void connectedData();
+  void readyReadData();
+  void errorData(QAbstractSocket::SocketError err);
 
  private:
-  void StartServerConnection();
-  Connector::ServerType server_type;
-  QUrl server_url;
-  QStringList device_keys;
-  QStringList device_values;
-
-  Connector *sir_connector;
+  void SendHeader(const QString &str);
+  void ProcessHeader(const QString &str);
+  QString xcast_header;
+  bool xcast_header_active;
+  QTcpSocket *xcast_socket;
+  int xcast_result_code;
+  int xcast_metadata_interval;
+  int xcast_metadata_istate;
+  QString xcast_metadata_string;
 };
 
 
-#endif  // GLASSPLAYER_H
+#endif  // CONN_XCAST_H

@@ -1,6 +1,6 @@
-// glassplayer.h
+// connectorfactory.cpp
 //
-// glassplayer(1) Audio Player
+// Instantiate Connector classes.
 //
 //   (C) Copyright 2014-2016 Fred Gleason <fredg@paravelsystems.com>
 //
@@ -18,34 +18,21 @@
 //   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 //
 
-#ifndef GLASSPLAYER_H
-#define GLASSPLAYER_H
+#include "conn_xcast.h"
+#include "connectorfactory.h"
 
-#include <QObject>
-#include <QUrl>
-
-#include "connector.h"
-
-#define GLASSPLAYER_USAGE "--server-type=<type> --server-url=<url>\n"
-
-class MainObject : public QObject
+Connector *ConnectorFactory(Connector::ServerType type,QObject *parent)
 {
- Q_OBJECT;
- public:
-  MainObject(QObject *parent=0);
+  Connector *conn=NULL;
 
- private slots:
-  void streamNowPlayingChangedData(const QString &str);
+  switch(type) {
+  case Connector::XCastServer:
+    conn=new XCast(parent);
+    break;
 
- private:
-  void StartServerConnection();
-  Connector::ServerType server_type;
-  QUrl server_url;
-  QStringList device_keys;
-  QStringList device_values;
+  case Connector::LastServer:
+    break;
+  }
 
-  Connector *sir_connector;
-};
-
-
-#endif  // GLASSPLAYER_H
+  return conn;
+}

@@ -30,11 +30,16 @@ moc_%.cpp:	%.h
 
 bin_PROGRAMS = glassplayer
 
-dist_glassplayer_SOURCES = glassplayer.cpp glassplayer.h
+dist_glassplayer_SOURCES = conn_xcast.cpp conn_xcast.h\
+                           glassplayer.cpp glassplayer.h
 
 nodist_glassplayer_SOURCES = cmdswitch.cpp cmdswitch.h\
+                             connector.cpp connector.h\
+                             connectorfactory.cpp connectorfactory.h\
                              glasslimits.h\
                              logging.cpp logging.h\
+                             moc_conn_xcast.cpp\
+                             moc_connector.cpp\
                              moc_glassplayer.cpp\
                              ringbuffer.cpp ringbuffer.h
 
@@ -49,6 +54,7 @@ CLEANFILES = *~\
              *ilk
 
 DISTCLEANFILES = cmdswitch.cpp cmdswitch.h\
+                 connector.cpp connector.h\
                  glasslimits.h\
                  logging.cpp logging.h\
                  ringbuffer.cpp ringbuffer.h
