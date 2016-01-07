@@ -7,3 +7,6 @@
 	'src/common/connector.h'.
 	* Added an 'XCast' class in 'src/glassplayer/conn_xcast.cpp' and
 	'src/glassplayer/conn_xcast.h'.
+2016-01-07 Fred Gleason <fredg@paravelsystems.com>
+	* Added a 'Codec' class in 'src/common/codec.cpp' and
+	'src/common/codec.h'.
