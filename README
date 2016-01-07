@@ -1,0 +1,28 @@
+This is the README file for the GlassPlayer package.
+
+This software comes with ABSOLUTELY NO WARRANTY.  See the file 'COPYING' for
+details.
+
+See the file 'INSTALL' for instructions on building GlassCoder from source.
+
+GlassPlayer is a minimalist audio stream player for IceCast and Shoutcast
+streaming servers as well as HTTP Live Streaming (HLS). It supports the
+following audio destinations:
+
+  Advanced Linux Sound Architeture (ALSA)
+  AudioScience HPI (ASIHPI)
+  File Streaming (FILE)
+  JACK Audio Connection Kit (JACK)
+
+The base GlassPlayer component utilizes no configuration files or
+GUI interface whatsoever; with the 'user interface' consisting entirely of
+the command-line invocation.  As such, it is well suited for use cases where
+the player is completely driven by an external system or script.
+
+The following audio codecs are supported:
+
+   MPEG-1/1.5 Layer 2 ('MP2')
+   MPEG-1/1.5 Layer 3 ('MP3')
+   MPEG-2 Advanced Audio Coding, Main Profile ('AAC')
+   MPEG-4 Advanced Audio Coding, High Efficiency Profile ('HE-AAC+')
+   Ogg Vorbis

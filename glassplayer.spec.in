@@ -1,0 +1,108 @@
+## glasscoder.spec.in
+##
+##    Minimalist Audio Streaming Encoder
+##
+##    Copyright (C) 2014-2015  Fred Gleason <fredg@paravelsystems.com>
+##
+##    This program is free software; you can redistribute it and/or modify
+##    it under the terms of version 2 of the GNU General Public License as
+##    published by the Free Software Foundation;
+##
+##    This program is distributed in the hope that it will be useful,
+##    but WITHOUT ANY WARRANTY; without even the implied warranty of
+##    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+##    GNU General Public License for more details.
+##
+##    You should have received a copy of the GNU General Public License
+##    along with this program; if not, write to the Free Software
+##    Foundation, Inc., 59 Temple Place, Suite 330, 
+##    Boston, MA  02111-1307  USA
+##
+
+Summary: Minimalist Audio Streaming Encoder
+Name: glasscoder
+Version: @VERSION@
+Release: @RPM_RELEASE@%{?dist}
+License: GPLv2
+Packager: Fred Gleason <fredg@paravelsystems.com>
+Group: Productivity/Multimedia/Other
+Source: %{name}-@VERSION@.tar.gz
+BuildRequires: qt-devel libsamplerate-devel libsndfile-devel alsa-lib-devel hpklinux-devel
+BuildRoot: /var/tmp/%{name}-@VERSION@
+Requires: curl
+
+%description
+Glasscoder is a live audio encoder intended for use with Shoutcast and Icecast
+streaming servers as well as HTTP Live Streams [HLS].  It can source audio
+from ALSA, JACK and AudioScience HPI devices and is capable of generating live
+audio streams in a variety of formats. It is controlled completely from the
+command-line, with no configuration files or GUI required.
+
+
+%package gui
+Summary: GlassGui control applet for GlassCoder
+Group: Productivity/Multimedia/Other
+Requires: glasscoder
+
+%description gui
+GlassGui is a control applet for driving the GlassCoder audio streaming
+encoder.  It provides a complete point-and-click interface for setting
+all of the GlassCoder parameters and can be used directly to instantiate an
+actual instance of GlassCoder or to generate a command-line invocation that
+can copy/pasted into another environment.
+
+
+%prep
+
+
+%setup
+
+
+%build
+%configure
+make
+
+
+%install
+rm -rf $RPM_BUILD_ROOT
+make install DESTDIR=$RPM_BUILD_ROOT
+
+%post
+
+
+%clean
+rm -rf $RPM_BUILD_ROOT
+
+
+%files
+%defattr(-,root,root)
+%{_bindir}/glasscoder
+%{_mandir}/man1/glasscoder.1.gz
+%{_mandir}/man1/glassgui.1.gz
+%doc AUTHORS
+%doc ChangeLog
+%doc COPYING 
+%doc NEWS 
+%doc README 
+%doc conf/httpd/hls.conf
+%doc conf/httpd/hls_methods.pl
+%doc conf/httpd/hls.passwd
+%doc conf/httpd/README.httpd
+
+%files gui
+%{_bindir}/glassgui
+%{_datadir}/applications/glassgui.desktop
+%{_datadir}/icons/hicolor/16x16/apps/glasscoder.png
+%{_datadir}/icons/hicolor/22x22/apps/glasscoder.png
+%{_datadir}/icons/hicolor/48x48/apps/glasscoder.png
+
+%changelog
+* Wed Aug 26 2015 Fred Gleason <fredg@paravelsystems.com>
+-- Added a 'gui' subpackage.
+* Tue Aug 11 2015 Fred Gleason <fredg@paravelsystems.com>
+-- Added a curl(1) dependency.
+-- Added HLS httpd example configuration.
+* Thu Jun 10 2014 Fred Gleason <fredg@paravelsystems.com>
+-- Removed the 'libshout-devel' and 'lame-devel' build dependencies.
+* Tue Feb 18 2014 Fred Gleason <fredg@paravelsystems.com>
+-- Initial RPM creation.
