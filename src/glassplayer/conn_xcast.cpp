@@ -226,21 +226,19 @@ void XCast::readyReadData()
 	  break;
 
 	case 13:
-	  if(data[i]=='\'') {
-	    setStreamNowPlaying(xcast_metadata_string);
+	  if((data[i]==';')&&(xcast_metadata_string.right(1)=="'")) {
+	    setStreamNowPlaying(xcast_metadata_string.
+				left(xcast_metadata_string.length()-1));
 	    xcast_metadata_string="";
-	    xcast_metadata_istate=14;
+	    xcast_metadata_istate=0;
 	  }
 	  else {
 	    xcast_metadata_string+=data[i];
 	  }
 	  break;
-
-	case 14:   // The trailing ';'
-	  xcast_metadata_istate=0;
-	  break;
 	}
       }
+      emit dataReceived(data,n);
     }
   }
 }

@@ -12,3 +12,6 @@
 	'src/common/codec.h'.
 2016-01-07 Fred Gleason <fredg@paravelsystems.com>
 	* Tweaked minor bugs in 'configure.ac'.
+2016-01-08 Fred Gleason <fredg@paravelsystems.com>
+	* Fixed a bug in 'src/glassplay/conn_xcast.cpp' that caused metadata
+	strings to be truncated if they contained an apostrophe character.
