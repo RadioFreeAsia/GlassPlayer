@@ -1,6 +1,6 @@
-// glassplayer.h
+// codec_null.h
 //
-// glassplayer(1) Audio Player
+// Null codec that dumps the bitstream to standard output.
 //
 //   (C) Copyright 2014-2016 Fred Gleason <fredg@paravelsystems.com>
 //
@@ -18,39 +18,26 @@
 //   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 //
 
-#ifndef GLASSPLAYER_H
-#define GLASSPLAYER_H
-
-#include <QObject>
-#include <QUrl>
+#ifndef CODEC_NULL_H
+#define CODEC_NULL_H
 
 #include "codec.h"
-#include "connector.h"
-#include "ringbuffer.h"
 
-#define GLASSPLAYER_USAGE "--server-type=<type> --server-url=<url> --dump-bitstream\n"
-
-class MainObject : public QObject
+class CodecNull : public Codec
 {
- Q_OBJECT;
+  Q_OBJECT;
  public:
-  MainObject(QObject *parent=0);
+  CodecNull(Ringbuffer *ring,QObject *parent=0);
+  ~CodecNull();
+  bool isAvailable() const;
+  QString contentType() const;
+  QString defaultExtension() const;
+  QString formatIdentifier() const;
+  void process(const QByteArray &data);
 
- private slots:
-  void serverConnectedData(bool state);
-  void streamMetadataChangedData(const QString &str);
-
- private:
-  void StartServerConnection();
-  Connector::ServerType server_type;
-  QUrl server_url;
-  bool dump_bitstream;
-  QStringList device_keys;
-  QStringList device_values;
-  Ringbuffer *sir_ring;
-  Codec *sir_codec;
-  Connector *sir_connector;
+ protected:
+  bool startCodec();
 };
 
 
-#endif  // GLASSPLAYER_H
+#endif  // CODEC_NULL_H

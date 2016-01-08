@@ -18,6 +18,7 @@
 //   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 //
 
+#include <QByteArray>
 #include <QStringList>
 
 #include "conn_xcast.h"
@@ -67,9 +68,10 @@ void XCast::connectedData()
   xcast_metadata_interval=0;
   xcast_metadata_istate=0;
   xcast_metadata_string="";
+  xcast_metadata_counter=0;
   SendHeader("GET "+serverMountpoint()+" HTTP/1.1");
   SendHeader("Host: "+hostHostname()+":"+QString().sprintf("%u",hostPort()));
-  SendHeader("icy-metadata: 1");
+  SendHeader(QString().sprintf("icy-metadata: %d",streamMetadataEnabled()));
   SendHeader("Accept: */*");
   SendHeader("User-Agent: glassplayer/"+QString(VERSION));
   SendHeader("Cache-control: no-cache");
@@ -80,14 +82,16 @@ void XCast::connectedData()
 
 void XCast::readyReadData()
 {
-  char data[1501];
-  int n;
+  QByteArray data;
+  int md_start;
+  int md_len;
 
-  while((n=xcast_socket->read(data,1500))>0) {
-    data[n]=0;
+  while(xcast_socket->bytesAvailable()>0) {
+    md_start=0;
+    data=xcast_socket->read(1024);
     if(xcast_header_active) {   // Get headers
-      for(int i=0;i<n;i++) {
-	switch(0xFF&data[i]) {
+      for(int i=0;i<data.length();i++) {
+	switch(0xFF&data.data()[i]) {
 	case 13:
 	  if(!xcast_header.isEmpty()) {
 	    ProcessHeader(xcast_header);
@@ -97,148 +101,30 @@ void XCast::readyReadData()
 	case 10:
 	  if(xcast_header.isEmpty()) {
 	    xcast_header_active=false;
+	    emit connected(true);
 	    return;
 	  }
 	  xcast_header="";
 	  break;
 
 	default:
-	  xcast_header+=data[i];
+	  xcast_header+=data.data()[i];
 	  break;
 	}
       }
     }
     else {   // Scan for metadata updates
-      for(int i=0;i<n;i++) {
-	switch(xcast_metadata_istate) {
-	case 0:
-	  if(data[i]=='S') {
-	    xcast_metadata_istate=1;
-	  }
-	  break;
-
-	case 1:
-	  if(data[i]=='t') {
-	    xcast_metadata_istate=2;
-	  }
-	  else {
-	    xcast_metadata_istate=0;
-	  }
-	  break;
-
-	case 2:
-	  if(data[i]=='r') {
-	    xcast_metadata_istate=3;
-	  }
-	  else {
-	    xcast_metadata_istate=0;
-	  }
-	  break;
-
-	case 3:
-	  if(data[i]=='e') {
-	    xcast_metadata_istate=4;
-	  }
-	  else {
-	    xcast_metadata_istate=0;
-	  }
-	  break;
-
-	case 4:
-	  if(data[i]=='a') {
-	    xcast_metadata_istate=5;
-	  }
-	  else {
-	    xcast_metadata_istate=0;
-	  }
-	  break;
-
-	case 5:
-	  if(data[i]=='m') {
-	    xcast_metadata_istate=6;
-	  }
-	  else {
-	    xcast_metadata_istate=0;
-	  }
-	  break;
-
-	case 6:
-	  if(data[i]=='T') {
-	    xcast_metadata_istate=7;
-	  }
-	  else {
-	    xcast_metadata_istate=0;
-	  }
-	  break;
-
-	case 7:
-	  if(data[i]=='i') {
-	    xcast_metadata_istate=8;
-	  }
-	  else {
-	    xcast_metadata_istate=0;
-	  }
-	  break;
-
-	case 8:
-	  if(data[i]=='t') {
-	    xcast_metadata_istate=9;
-	  }
-	  else {
-	    xcast_metadata_istate=0;
-	  }
-	  break;
-
-	case 9:
-	  if(data[i]=='l') {
-	    xcast_metadata_istate=10;
-	  }
-	  else {
-	    xcast_metadata_istate=0;
-	  }
-	  break;
-
-	case 10:
-	  if(data[i]=='e') {
-	    xcast_metadata_istate=11;
-	  }
-	  else {
-	    xcast_metadata_istate=0;
-	  }
-	  break;
-
-	case 11:
-	  if(data[i]=='=') {
-	    xcast_metadata_istate=12;
-	  }
-	  else {
-	    xcast_metadata_istate=0;
-	  }
-	  break;
-
-	case 12:
-	  if(data[i]=='\'') {
-	    xcast_metadata_istate=13;
-	  }
-	  else {
-	    xcast_metadata_istate=0;
-	  }
-	  break;
-
-	case 13:
-	  if((data[i]==';')&&(xcast_metadata_string.right(1)=="'")) {
-	    setStreamNowPlaying(xcast_metadata_string.
-				left(xcast_metadata_string.length()-1));
-	    xcast_metadata_string="";
-	    xcast_metadata_istate=0;
-	  }
-	  else {
-	    xcast_metadata_string+=data[i];
-	  }
-	  break;
-	}
+      if(xcast_metadata_counter+data.length()>xcast_metadata_interval) {
+	md_start=xcast_metadata_interval-xcast_metadata_counter;
+	md_len=0xFF&data[md_start]*16;
+	ProcessMetadata(data.mid(md_start+1,md_len));
+	xcast_metadata_counter=data.size()-(md_start+md_len+1);
+	data.remove(md_start,md_len+1);
       }
-      emit dataReceived(data,n);
+      else {
+	xcast_metadata_counter+=data.length();
+      }
+      emit dataReceived(data);
     }
   }
 }
@@ -257,9 +143,9 @@ void XCast::SendHeader(const QString &str)
 
 void XCast::ProcessHeader(const QString &str)
 {
-  printf("%s\n",(const char *)str.toUtf8());
-
   QStringList f0;
+
+  //fprintf(stderr,"%s\n",(const char *)str.toUtf8());
 
   if(xcast_result_code==0) {
     f0=str.split(" ",QString::SkipEmptyParts);
@@ -303,5 +189,14 @@ void XCast::ProcessHeader(const QString &str)
 	setStreamUrl(value);
       }
     }
+  }
+}
+
+
+void XCast::ProcessMetadata(const QByteArray &mdata)
+{
+  QString str=mdata.mid(13,mdata.lastIndexOf("';")-13);
+  if(!str.isEmpty()) {
+    setStreamMetadata(str);
   }
 }

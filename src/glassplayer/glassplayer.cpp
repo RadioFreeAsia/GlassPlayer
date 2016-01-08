@@ -21,6 +21,7 @@
 #include <QCoreApplication>
 
 #include "cmdswitch.h"
+#include "codecfactory.h"
 #include "connectorfactory.h"
 #include "glasslimits.h"
 #include "glassplayer.h"
@@ -29,11 +30,19 @@
 MainObject::MainObject(QObject *parent)
   : QObject(parent)
 {
+  sir_codec=NULL;
+  sir_ring=NULL;
+
+  dump_bitstream=false;
   server_type=Connector::XCastServer;
 
   CmdSwitch *cmd=
     new CmdSwitch(qApp->argc(),qApp->argv(),"glassplayer",GLASSPLAYER_USAGE);
   for(unsigned i=0;i<cmd->keys();i++) {
+    if(cmd->key(i)=="--dump-bitstream") {
+      dump_bitstream=true;
+      cmd->setProcessed(i,true);
+    }
     if(cmd->key(i)=="--server-type") {
       for(int j=0;j<Connector::LastServer;j++) {
 	if(Connector::optionKeyword((Connector::ServerType)j)==
@@ -79,9 +88,23 @@ MainObject::MainObject(QObject *parent)
 }
 
 
-void MainObject::streamNowPlayingChangedData(const QString &str)
+void MainObject::serverConnectedData(bool state)
 {
-  printf("Stream Now Playing: %s\n",(const char *)str.toUtf8());
+  if(state) {
+    if(dump_bitstream) {  // Dump raw bitstream to standard output
+      sir_codec=CodecFactory(Codec::TypeNull,NULL,this);  // No ringbuffer!
+    }
+    else {   // Normal codec initialization here
+    }
+    connect(sir_connector,SIGNAL(dataReceived(const QByteArray &)),
+	    sir_codec,SLOT(process(const QByteArray &)));
+  }
+}
+
+
+void MainObject::streamMetadataChangedData(const QString &str)
+{
+  fprintf(stderr,"Stream Now Playing: %s\n",(const char *)str.toUtf8());
 }
 
 
@@ -92,8 +115,10 @@ void MainObject::StartServerConnection()
     port=DEFAULT_SERVER_PORT;
   }
   sir_connector=ConnectorFactory(server_type,this);
-  connect(sir_connector,SIGNAL(streamNowPlayingChanged(const QString &)),
-	  this,SLOT(streamNowPlayingChangedData(const QString &)));
+  connect(sir_connector,SIGNAL(connected(bool)),
+	  this,SLOT(serverConnectedData(bool)));
+  connect(sir_connector,SIGNAL(streamMetadataChanged(const QString &)),
+	  this,SLOT(streamMetadataChangedData(const QString &)));
   if(server_url.path().isEmpty()) {
     sir_connector->setServerMountpoint("/");
   }

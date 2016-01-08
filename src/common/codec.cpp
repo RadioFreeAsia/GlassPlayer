@@ -147,32 +147,20 @@ QString Codec::codecTypeText(Codec::Type type)
   QString ret=tr("Unknown");
 
   switch(type) {
-  case Codec::TypeAac:
-    ret=tr("MPEG-2 AAC Main Profile");
-    break;
-
   case Codec::TypeFdk:
-    ret=tr("MPEG-4 AAC High Efficiency");
+    ret=tr("AAC");
     break;
 
-  case Codec::TypeMpegL2:
-    ret=tr("MPEG-1 Layer 2");
+  case Codec::TypeMad:
+    ret=tr("MPEG-1/1.5");
     break;
  
-  case Codec::TypeMpegL3:
-    ret=tr("MPEG-1 Layer 3");
-    break;
- 
-  case Codec::TypeOpus:
-    ret=tr("Opus [RFC 6716]");
-    break;
-
-  case Codec::TypePcm16:
-    ret=tr("PCM16 Uncompressed");
-    break;
-
   case Codec::TypeVorbis:
     ret=tr("Ogg Vorbis");
+    break;
+
+  case Codec::TypeNull:
+    ret=tr("Null");
     break;
 
   case Codec::TypeLast:
@@ -180,32 +168,6 @@ QString Codec::codecTypeText(Codec::Type type)
   }
 
   return ret;
-}
-
-
-void Codec::decode(Connector *conn)
-{
-  /*
-  int n;
-  int err=0;
-
-  if(codec_src_state!=NULL) {
-    while(codec_ring1->readSpace()>=pcmFrames()) {
-      n=codec_ring1->read(codec_pcm_in,pcmFrames());
-      codec_src_data->input_frames=n;
-      if((err=src_process(codec_src_state,codec_src_data))!=0) {
-	Log(LOG_WARNING,QString().sprintf("SRC error [%s]",src_strerror(err)));
-	continue;
-      }
-      n=codec_src_data->output_frames_gen;
-      codec_ring2->write(codec_pcm_out,n);
-    }
-  }
-  while(codec_ring2->readSpace()>=pcmFrames()) {
-    n=codec_ring2->read(codec_pcm_in,pcmFrames());
-    encodeData(conn,codec_pcm_in,n);
-  }
-  */
 }
 
 

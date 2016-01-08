@@ -15,3 +15,9 @@
 2016-01-08 Fred Gleason <fredg@paravelsystems.com>
 	* Fixed a bug in 'src/glassplay/conn_xcast.cpp' that caused metadata
 	strings to be truncated if they contained an apostrophe character.
+2016-01-08 Fred Gleason <fredg@paravelsystems.com>
+	* Added a Null codec in 'src/glassplayer/codec_null.cpp' and
+	'src/glassplayer/codec_null.h'.
+	* Added a '--dump-bitstream' switch to glassplayer(1).
+	* Fixed a bug in 'src/glassplay/conn_xcast.cpp' that caused gaps in
+	the downloaded bitstream when process metadata updates.

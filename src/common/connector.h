@@ -25,6 +25,7 @@
 
 #include <vector>
 
+#include <QByteArray>
 #include <QObject>
 #include <QString>
 #include <QTcpSocket>
@@ -69,8 +70,10 @@ class Connector : public QObject
   void setStreamAim(const QString &str);
   QString streamGenre() const;
   void setStreamGenre(const QString &str);
-  QString streamNowPlaying() const;
-  void setStreamNowPlaying(const QString &str);
+  bool streamMetadataEnabled() const;
+  void setStreamMetadataEnabled(bool state);
+  QString streamMetadata() const;
+  void setStreamMetadata(const QString &str);
   bool streamPublic() const;
   void setStreamPublic(bool state);
   QString extension() const;
@@ -99,10 +102,11 @@ class Connector : public QObject
 
  signals:
   void connected(bool state);
-  void dataReceived(Connector *conn);
+  //  void dataReceived(void *data,uint64_t len);
+  void dataReceived(const QByteArray &data);
   void error(QAbstractSocket::SocketError err);
   void stopped();
-  void streamNowPlayingChanged(const QString &str);
+  void streamMetadataChanged(const QString &str);
 
  protected:
   virtual void startStopping();
@@ -129,7 +133,8 @@ class Connector : public QObject
   QString conn_stream_icq;
   QString conn_stream_aim;
   QString conn_stream_genre;
-  QString conn_stream_now_playing;
+  bool conn_stream_metadata_enabled;
+  QString conn_stream_metadata;
   bool conn_stream_public;
   QString conn_extension;
   QString conn_format_identifier;

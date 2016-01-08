@@ -45,13 +45,16 @@ class XCast : public Connector
  private:
   void SendHeader(const QString &str);
   void ProcessHeader(const QString &str);
+  void ProcessMetadata(const QByteArray &mdata);
   QString xcast_header;
   bool xcast_header_active;
   QTcpSocket *xcast_socket;
   int xcast_result_code;
   int xcast_metadata_interval;
   int xcast_metadata_istate;
+  QString xcast_metadata_backstore;
   QString xcast_metadata_string;
+  int xcast_metadata_counter;
 };
 
 

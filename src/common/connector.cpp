@@ -43,6 +43,8 @@ Connector::Connector(QObject *parent)
   conn_stream_aim="";
   conn_stream_genre="unknown";
   conn_stream_public=true;
+  conn_stream_metadata_enabled=true;
+  conn_stream_metadata="";
   conn_host_hostname="";
   conn_host_port=0;
   conn_connected=false;
@@ -270,17 +272,29 @@ void Connector::setStreamGenre(const QString &str)
 }
 
 
-QString Connector::streamNowPlaying() const
+bool Connector::streamMetadataEnabled() const
 {
-  return conn_stream_now_playing;
+  return conn_stream_metadata_enabled;
 }
 
 
-void Connector::setStreamNowPlaying(const QString &str)
+void Connector::setStreamMetadataEnabled(bool state)
 {
-  if(str!=conn_stream_now_playing) {
-    conn_stream_now_playing=str;
-    emit streamNowPlayingChanged(str);
+  conn_stream_metadata_enabled=state;
+}
+
+
+QString Connector::streamMetadata() const
+{
+  return conn_stream_metadata;
+}
+
+
+void Connector::setStreamMetadata(const QString &str)
+{
+  if(str!=conn_stream_metadata) {
+    conn_stream_metadata=str;
+    emit streamMetadataChanged(str);
   }
 }
 

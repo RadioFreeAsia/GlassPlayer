@@ -41,8 +41,7 @@ class Codec : public QObject
 {
   Q_OBJECT;
  public:
-  enum Type {TypeAac=0,TypeFdk=1,TypeMpegL2=2,TypeMpegL3=3,
-	     TypeVorbis=4,TypeOpus=7,TypePcm16=5,TypeLast=6};
+  enum Type {TypeFdk=0,TypeMad=1,TypeVorbis=2,TypeNull=3,TypeLast=4};
   Codec(Codec::Type type,Ringbuffer *ring,QObject *parent=0);
   ~Codec();
   unsigned bitrate() const;
@@ -63,10 +62,10 @@ class Codec : public QObject
   static QString codecTypeText(Codec::Type type);
 
  public slots:
-  virtual void decode(Connector *conn);
+   //  virtual void process(void *data,uint64_t len)=0;
+  virtual void process(const QByteArray &data)=0;
 
  protected:
-  virtual void decodeData(Connector *conn,const float *pcm,int len)=0;
   virtual bool startCodec()=0;
   Ringbuffer *ring();
 

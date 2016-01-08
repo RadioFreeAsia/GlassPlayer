@@ -1,6 +1,6 @@
-// glassplayer.h
+// codecfactory.h
 //
-// glassplayer(1) Audio Player
+// Instantiate Codec classes
 //
 //   (C) Copyright 2014-2016 Fred Gleason <fredg@paravelsystems.com>
 //
@@ -18,39 +18,12 @@
 //   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 //
 
-#ifndef GLASSPLAYER_H
-#define GLASSPLAYER_H
-
-#include <QObject>
-#include <QUrl>
+#ifndef CODECFACTORY_H
+#define CODECFACTORY_H
 
 #include "codec.h"
-#include "connector.h"
-#include "ringbuffer.h"
 
-#define GLASSPLAYER_USAGE "--server-type=<type> --server-url=<url> --dump-bitstream\n"
-
-class MainObject : public QObject
-{
- Q_OBJECT;
- public:
-  MainObject(QObject *parent=0);
-
- private slots:
-  void serverConnectedData(bool state);
-  void streamMetadataChangedData(const QString &str);
-
- private:
-  void StartServerConnection();
-  Connector::ServerType server_type;
-  QUrl server_url;
-  bool dump_bitstream;
-  QStringList device_keys;
-  QStringList device_values;
-  Ringbuffer *sir_ring;
-  Codec *sir_codec;
-  Connector *sir_connector;
-};
+Codec *CodecFactory(Codec::Type type,Ringbuffer *ring,QObject *parent=0);
 
 
-#endif  // GLASSPLAYER_H
+#endif  // CODECFACTORY_H
