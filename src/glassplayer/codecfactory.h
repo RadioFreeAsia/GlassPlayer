@@ -23,7 +23,7 @@
 
 #include "codec.h"
 
-Codec *CodecFactory(Codec::Type type,Ringbuffer *ring,QObject *parent=0);
+Codec *CodecFactory(Codec::Type type,unsigned bitrate,QObject *parent=0);
 
 
 #endif  // CODECFACTORY_H

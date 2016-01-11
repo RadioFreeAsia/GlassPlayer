@@ -24,3 +24,6 @@
 2016-01-11 Fred Gleason <fredg@paravelsystems.com>
 	* Fixed a bug in 'src/glassplayer/conn_xcast.cpp' that made it
 	impossible to process blank metadata updates.
+2016-01-11 Fred Gleason <fredg@paravelsystems.com>
+	* Implemented an MPEG-1/1.5 decoder in 'src/glassplayer/codec_mpeg1.cpp'
+	and 'src/glassplay/codec_mpeg1.h'.

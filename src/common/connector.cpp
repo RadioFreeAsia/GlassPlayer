@@ -32,8 +32,8 @@ Connector::Connector(QObject *parent)
   conn_server_password="";
   conn_server_mountpoint="";
   conn_content_type="";
-  conn_audio_channels=2;
-  conn_audio_samplerate=44100;
+  //  conn_audio_channels=2;
+  //  conn_audio_samplerate=44100;
   conn_audio_bitrates.push_back(128);
   conn_stream_name="no name";
   conn_stream_description="unknown";
@@ -135,7 +135,7 @@ void Connector::setContentType(const QString &str)
   conn_content_type=str;
 }
 
-
+/*
 unsigned Connector::audioChannels() const
 {
   return conn_audio_channels;
@@ -158,7 +158,7 @@ void Connector::setAudioSamplerate(unsigned rate)
 {
   conn_audio_samplerate=rate;
 }
-
+*/
 
 unsigned Connector::audioBitrate() const
 {

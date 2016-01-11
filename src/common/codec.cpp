@@ -21,15 +21,15 @@
 #include "codec.h"
 #include "logging.h"
 
-Codec::Codec(Codec::Type type,Ringbuffer *ring,QObject *parent)
+Codec::Codec(Codec::Type type,unsigned bitrate,QObject *parent)
 {
-  codec_ring1=ring;
-  codec_bitrate=128;
+  codec_bitrate=bitrate;
   codec_channels=2;
   codec_quality=0.5;
-  codec_source_samplerate=48000;
-  codec_stream_samplerate=48000;
+  codec_samplerate=48000;
+  codec_ring1=NULL;
   codec_ring2=NULL;
+  codec_is_framed=false;
 }
 
 
@@ -50,12 +50,6 @@ Codec::~Codec()
 unsigned Codec::bitrate() const
 {
   return codec_bitrate;
-}
-
-
-void Codec::setBitrate(unsigned rate)
-{
-  codec_bitrate=rate;
 }
 
 
@@ -83,62 +77,78 @@ void Codec::setQuality(double qual)
 }
 
 
-unsigned Codec::sourceSamplerate() const
+unsigned Codec::samplerate() const
 {
-  return codec_source_samplerate;
+  return codec_samplerate;
 }
 
 
-void Codec::setSourceSamplerate(unsigned rate)
+void Codec::setSamplerate(unsigned rate)
 {
-  codec_source_samplerate=rate;
+  codec_samplerate=rate;
 }
 
 
-unsigned Codec::streamSamplerate() const
+bool Codec::isFramed() const
 {
-  return codec_stream_samplerate;
+  return codec_is_framed;
 }
 
 
-void Codec::setStreamSamplerate(unsigned rate)
+bool Codec::acceptsContentType(Type type,const QString &mimetype)
 {
-  codec_stream_samplerate=rate;
-}
+  bool ret=false;
 
+  switch(type) {
+  case Codec::TypeNull:
+    ret=true;
+    break;
 
-bool Codec::start()
-{
-  int err;
+  case Codec::TypeMpeg1:
+    ret=mimetype.toLower()=="audio/mpeg";
+    break;
+ 
+  case Codec::TypeVorbis:
+    ret=mimetype.toLower()=="audio/ogg";
+    break;
 
-  if(codec_source_samplerate==codec_stream_samplerate) {
-    codec_pcm_buffer[0]=new float[MAX_AUDIO_CHANNELS*MAX_AUDIO_BUFFER];
-    codec_pcm_buffer[1]=NULL;
-    codec_pcm_in=codec_pcm_buffer[0];
-    codec_pcm_out=codec_pcm_buffer[0];
-    codec_src_state=NULL;
-    codec_src_data=NULL;
-    codec_ring2=codec_ring1;
+  case Codec::TypeAac:
+    ret=mimetype.toLower()=="audio/aac";
+    break;
+
+  case Codec::TypeLast:
+    break;
   }
-  else {
-    codec_pcm_buffer[0]=new float[MAX_AUDIO_CHANNELS*MAX_AUDIO_BUFFER];
-    codec_pcm_buffer[1]=new float[MAX_AUDIO_CHANNELS*MAX_AUDIO_BUFFER*6];
-    codec_pcm_in=codec_pcm_buffer[0];
-    codec_pcm_out=codec_pcm_buffer[1];
-    if((codec_src_state=src_new(SRC_SINC_FASTEST,codec_channels,&err))==NULL) {
-      Log(LOG_ERR,"unable to create sample rate converter");
-      return false;
-    }
-    codec_src_data=new SRC_DATA;
-    memset(codec_src_data,0,sizeof(SRC_DATA));
-    codec_src_data->data_in=codec_pcm_buffer[0];
-    codec_src_data->data_out=codec_pcm_buffer[1];
-    codec_src_data->output_frames=MAX_AUDIO_BUFFER*6;
-    codec_src_data->src_ratio=
-      (double)codec_stream_samplerate/(double)codec_source_samplerate;
-    codec_ring2=new Ringbuffer(262144,codec_channels);
+
+  return ret;
+}
+
+
+bool Codec::acceptsFormatIdentifier(Type type,const QString &fmt_id)
+{
+  bool ret=false;
+
+  switch(type) {
+  case Codec::TypeNull:
+    ret=true;
+    break;
+
+  case Codec::TypeMpeg1:
+    ret=(fmt_id=="mp4a.40.32")||(fmt_id=="mp4a.40.33")||(fmt_id=="mp4a.40.34");
+    break;
+ 
+  case Codec::TypeVorbis:
+    break;
+
+  case Codec::TypeAac:
+    ret=(fmt_id=="mp4a.40.1")||(fmt_id=="mp4a.40.2")||(fmt_id=="mp4a.40.5");
+    break;
+
+  case Codec::TypeLast:
+    break;
   }
-  return startCodec();
+
+  return ret;
 }
 
 
@@ -147,11 +157,11 @@ QString Codec::codecTypeText(Codec::Type type)
   QString ret=tr("Unknown");
 
   switch(type) {
-  case Codec::TypeFdk:
+  case Codec::TypeAac:
     ret=tr("AAC");
     break;
 
-  case Codec::TypeMad:
+  case Codec::TypeMpeg1:
     ret=tr("MPEG-1/1.5");
     break;
  
@@ -168,6 +178,16 @@ QString Codec::codecTypeText(Codec::Type type)
   }
 
   return ret;
+}
+
+
+void Codec::setFramed(unsigned chans,unsigned samprate,unsigned bitrate)
+{
+  codec_channels=chans;
+  codec_samplerate=samprate;
+  codec_bitrate=bitrate;
+  codec_is_framed=true;
+  emit framed();
 }
 
 

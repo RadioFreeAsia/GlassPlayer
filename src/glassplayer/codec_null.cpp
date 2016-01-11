@@ -22,8 +22,8 @@
 
 #include "codec_null.h"
 
-CodecNull::CodecNull(Ringbuffer *ring,QObject *parent)
-  : Codec(Codec::TypeNull,ring,parent)
+CodecNull::CodecNull(unsigned bitrate,QObject *parent)
+  : Codec(Codec::TypeNull,bitrate,parent)
 {
 }
 
@@ -39,9 +39,9 @@ bool CodecNull::isAvailable() const
 }
 
 
-QString CodecNull::contentType() const
+bool CodecNull::acceptsContentType(const QString &str) const
 {
-  return QString("application/octet-stream");
+  return true;
 }
 
 
@@ -51,19 +51,13 @@ QString CodecNull::defaultExtension() const
 }
 
 
-QString CodecNull::formatIdentifier() const
+bool CodecNull::acceptsFormatIdentifier(const QString &str) const
 {
-  return QString("");
+  return true;
 }
 
 
 void CodecNull::process(const QByteArray &data)
 {
   write(1,data.data(),data.length());
-}
-
-
-bool CodecNull::startCodec()
-{
-  return true;
 }

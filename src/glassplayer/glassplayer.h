@@ -38,6 +38,7 @@ class MainObject : public QObject
 
  private slots:
   void serverConnectedData(bool state);
+  void codecFramedData();
   void streamMetadataChangedData(const QString &str);
 
  private:

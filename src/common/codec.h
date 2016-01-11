@@ -41,32 +41,31 @@ class Codec : public QObject
 {
   Q_OBJECT;
  public:
-  enum Type {TypeFdk=0,TypeMad=1,TypeVorbis=2,TypeNull=3,TypeLast=4};
-  Codec(Codec::Type type,Ringbuffer *ring,QObject *parent=0);
+  enum Type {TypeNull=0,TypeMpeg1=1,TypeVorbis=2,TypeAac=3,TypeLast=4};
+  Codec(Codec::Type type,unsigned bitrate,QObject *parent=0);
   ~Codec();
   unsigned bitrate() const;
-  void setBitrate(unsigned rate);
   unsigned channels() const;
   void setChannels(unsigned chans);
   double quality() const;
   void setQuality(double qual);
-  unsigned sourceSamplerate() const;
-  void setSourceSamplerate(unsigned rate);
-  unsigned streamSamplerate() const;
-  void setStreamSamplerate(unsigned rate);
+  unsigned samplerate() const;
+  void setSamplerate(unsigned rate);
+  bool isFramed() const;
   virtual bool isAvailable() const=0;
-  virtual QString contentType() const=0;
   virtual QString defaultExtension() const=0;
-  virtual QString formatIdentifier() const=0;
-  virtual bool start();
+  static bool acceptsContentType(Type type,const QString &mimetype);
+  static bool acceptsFormatIdentifier(Type type,const QString &fmt_id);
   static QString codecTypeText(Codec::Type type);
 
+ signals:
+  void framed();
+
  public slots:
-   //  virtual void process(void *data,uint64_t len)=0;
   virtual void process(const QByteArray &data)=0;
 
  protected:
-  virtual bool startCodec()=0;
+  virtual void setFramed(unsigned chans,unsigned samprate,unsigned bitrate);
   Ringbuffer *ring();
 
  private:
@@ -75,13 +74,13 @@ class Codec : public QObject
   unsigned codec_bitrate;
   unsigned codec_channels;
   double codec_quality;
-  unsigned codec_source_samplerate;
-  unsigned codec_stream_samplerate;
+  unsigned codec_samplerate;
   SRC_STATE *codec_src_state;
   SRC_DATA *codec_src_data;
   float *codec_pcm_in;
   float *codec_pcm_out;
   float *codec_pcm_buffer[2];
+  bool codec_is_framed;
 };
 
 

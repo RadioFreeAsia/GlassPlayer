@@ -30,7 +30,8 @@ moc_%.cpp:	%.h
 
 bin_PROGRAMS = glassplayer
 
-dist_glassplayer_SOURCES = codec_null.cpp codec_null.h\
+dist_glassplayer_SOURCES = codec_mpeg1.cpp codec_mpeg1.h\
+                           codec_null.cpp codec_null.h\
                            codecfactory.cpp codecfactory.h\
                            conn_xcast.cpp conn_xcast.h\
                            connectorfactory.cpp connectorfactory.h\
@@ -42,6 +43,7 @@ nodist_glassplayer_SOURCES = cmdswitch.cpp cmdswitch.h\
                              glasslimits.h\
                              logging.cpp logging.h\
                              moc_codec.cpp\
+                             moc_codec_mpeg1.cpp\
                              moc_codec_null.cpp\
                              moc_conn_xcast.cpp\
                              moc_connector.cpp\

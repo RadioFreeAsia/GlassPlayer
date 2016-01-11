@@ -92,13 +92,35 @@ void MainObject::serverConnectedData(bool state)
 {
   if(state) {
     if(dump_bitstream) {  // Dump raw bitstream to standard output
-      sir_codec=CodecFactory(Codec::TypeNull,NULL,this);  // No ringbuffer!
+      sir_codec=
+	CodecFactory(Codec::TypeNull,sir_connector->audioBitrate(),this);
     }
     else {   // Normal codec initialization here
+      for(int i=1;i<Codec::TypeLast;i++) {
+	if(Codec::acceptsContentType((Codec::Type)i,
+				     sir_connector->contentType())) {
+	  sir_codec=
+	    CodecFactory((Codec::Type)i,sir_connector->audioBitrate(),this);
+	}
+      }
+    }
+    if((sir_codec==NULL)||(!sir_codec->isAvailable())) {
+      fprintf(stderr,"glassplayer: unsupported codec [%s]\n",
+	      (const char *)sir_connector->contentType().toUtf8());
+      exit(256);
     }
     connect(sir_connector,SIGNAL(dataReceived(const QByteArray &)),
 	    sir_codec,SLOT(process(const QByteArray &)));
+    connect(sir_codec,SIGNAL(framed()),this,SLOT(codecFramedData()));
   }
+}
+
+
+void MainObject::codecFramedData()
+{
+  fprintf(stderr,"codec framed: %u channels, %u samples/sec, %u kbps\n",
+	  sir_codec->channels(),sir_codec->samplerate(),
+	  sir_codec->bitrate());
 }
 
 

@@ -18,25 +18,27 @@
 //   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 //
 
+#include "codec_mpeg1.h"
 #include "codec_null.h"
 #include "codecfactory.h"
 
-Codec *CodecFactory(Codec::Type type,Ringbuffer *ring,QObject *parent)
+Codec *CodecFactory(Codec::Type type,unsigned bitrate,QObject *parent)
 {
   Codec *codec=NULL;
 
   switch(type) {
-  case Codec::TypeFdk:
+  case Codec::TypeAac:
     break;
 
-  case Codec::TypeMad:
+  case Codec::TypeMpeg1:
+    codec=new CodecMpeg1(bitrate,parent);
     break;
  
   case Codec::TypeVorbis:
     break;
 
   case Codec::TypeNull:
-    codec=new CodecNull(ring,parent);
+    codec=new CodecNull(bitrate,parent);
     break;
 
   case Codec::TypeLast:

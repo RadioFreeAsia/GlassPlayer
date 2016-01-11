@@ -27,16 +27,13 @@ class CodecNull : public Codec
 {
   Q_OBJECT;
  public:
-  CodecNull(Ringbuffer *ring,QObject *parent=0);
+  CodecNull(unsigned bitrate,QObject *parent=0);
   ~CodecNull();
   bool isAvailable() const;
-  QString contentType() const;
+  bool acceptsContentType(const QString &str) const;
   QString defaultExtension() const;
-  QString formatIdentifier() const;
+  bool acceptsFormatIdentifier(const QString &str) const;
   void process(const QByteArray &data);
-
- protected:
-  bool startCodec();
 };
 
 

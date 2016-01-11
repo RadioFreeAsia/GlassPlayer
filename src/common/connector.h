@@ -48,10 +48,12 @@ class Connector : public QObject
   void setServerMountpoint(const QString &str);
   QString contentType() const;
   void setContentType(const QString &str);
+  /*
   unsigned audioChannels() const;
   void setAudioChannels(unsigned chans);
   unsigned audioSamplerate() const;
   void setAudioSamplerate(unsigned rate);
+  */
   unsigned audioBitrate() const;
   void setAudioBitrate(unsigned rate);
   std::vector<unsigned> *audioBitrates();
@@ -123,8 +125,8 @@ class Connector : public QObject
   QString conn_server_password;
   QString conn_server_mountpoint;
   QString conn_content_type;
-  unsigned conn_audio_channels;
-  unsigned conn_audio_samplerate;
+  //  unsigned conn_audio_channels;
+  //  unsigned conn_audio_samplerate;
   std::vector<unsigned> conn_audio_bitrates;
   QString conn_stream_name;
   QString conn_stream_description;
