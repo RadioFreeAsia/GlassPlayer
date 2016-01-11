@@ -195,8 +195,10 @@ void XCast::ProcessHeader(const QString &str)
 
 void XCast::ProcessMetadata(const QByteArray &mdata)
 {
-  QString str=mdata.mid(13,mdata.lastIndexOf("';")-13);
-  if(!str.isEmpty()) {
-    setStreamMetadata(str);
+  QStringList f0=QString(mdata).split("=");
+  if(f0.size()>1) {
+    if(f0[0].toLower()=="streamtitle") {
+      setStreamMetadata(mdata.mid(13,mdata.lastIndexOf("';")-13));
+    }
   }
 }

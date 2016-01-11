@@ -21,3 +21,6 @@
 	* Added a '--dump-bitstream' switch to glassplayer(1).
 	* Fixed a bug in 'src/glassplay/conn_xcast.cpp' that caused gaps in
 	the downloaded bitstream when process metadata updates.
+2016-01-11 Fred Gleason <fredg@paravelsystems.com>
+	* Fixed a bug in 'src/glassplayer/conn_xcast.cpp' that made it
+	impossible to process blank metadata updates.
