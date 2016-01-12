@@ -77,6 +77,10 @@ MainObject::MainObject(QObject *parent)
       }
       cmd->setProcessed(i,true);
     }
+    if(cmd->key(i)=="--verbose") {
+      global_log_verbose=true;
+      cmd->setProcessed(i,true);
+    }
     if(!cmd->processed(i)) {
       device_keys.push_back(cmd->key(i));
       device_values.push_back(cmd->value(i));
@@ -87,11 +91,11 @@ MainObject::MainObject(QObject *parent)
   // Sanity Checks
   //
   if(server_url.host().isEmpty()) {
-    fprintf(stderr,"glassplayer: you must specify a --server-url\n");
+    Log(LOG_ERR,"you must specify a --server-url\n");
     exit(256);
   }
   if((device_keys.size()!=0)||(device_values.size()!=0)) {
-    fprintf(stderr,"glassplayer: unknown option\n");
+    Log(LOG_ERR,"unknown option\n");
     exit(256);
   }
 
@@ -116,9 +120,12 @@ void MainObject::serverConnectedData(bool state)
       }
     }
     if((sir_codec==NULL)||(!sir_codec->isAvailable())) {
-      fprintf(stderr,"glassplayer: unsupported codec [%s]\n",
-	      (const char *)sir_connector->contentType().toUtf8());
+      Log(LOG_ERR,"unsupported codec ["+sir_connector->contentType()+"]");
       exit(256);
+    }
+    if(global_log_verbose) {
+      Log(LOG_INFO,"Streaming from "+
+	  Connector::serverTypeText(sir_connector->serverType())+" server");
     }
     connect(sir_connector,SIGNAL(dataReceived(const QByteArray &)),
 	    sir_codec,SLOT(process(const QByteArray &)));
@@ -132,11 +139,14 @@ void MainObject::serverConnectedData(bool state)
 void MainObject::codecFramedData(unsigned chans,unsigned samprate,
 				 unsigned bitrate,Ringbuffer *ring)
 {
-  fprintf(stderr,"codec framed: %u channels, %u samples/sec, %u kbps\n",
-	  chans,samprate,bitrate);
+  if(global_log_verbose) {
+    Log(LOG_INFO,"Using "+Codec::typeText(sir_codec->type())+
+	QString().sprintf(" decoder, %u channels, %u samples/sec, %u kbps\n",
+			  chans,samprate,bitrate));
+  }
   if((sir_audio_device=
       AudioDeviceFactory(audio_device_type,sir_codec,this))==NULL) {
-    fprintf(stderr,"glassplay: unsupported audio device\n");
+    Log(LOG_ERR,"unsupported audio device");
     exit(256);
   }
 }
@@ -144,7 +154,9 @@ void MainObject::codecFramedData(unsigned chans,unsigned samprate,
 
 void MainObject::streamMetadataChangedData(const QString &str)
 {
-  fprintf(stderr,"Stream Now Playing: %s\n",(const char *)str.toUtf8());
+  if(global_log_verbose) {
+    Log(LOG_INFO,"Stream Now Playing: "+str);
+  }
 }
 
 

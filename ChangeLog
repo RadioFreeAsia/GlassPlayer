@@ -34,3 +34,5 @@
 	and 'src/glassplayer/dst_stdout.h'.
 2016-01-12 Fred Gleason <fredg@paravelsystems.com>
 	* Added a glassplayer(1) man page.
+2016-01-12 Fred Gleason <fredg@paravelsystems.com>
+	* Implemented the '--verbose' option.

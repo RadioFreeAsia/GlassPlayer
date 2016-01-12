@@ -45,6 +45,7 @@ class Codec : public QObject
   enum Type {TypeNull=0,TypeMpeg1=1,TypeVorbis=2,TypeAac=3,TypeLast=4};
   Codec(Codec::Type type,unsigned bitrate,QObject *parent=0);
   ~Codec();
+  Type type() const;
   unsigned bitrate() const;
   unsigned channels() const;
   void setChannels(unsigned chans);
@@ -58,7 +59,7 @@ class Codec : public QObject
   virtual QString defaultExtension() const=0;
   static bool acceptsContentType(Type type,const QString &mimetype);
   static bool acceptsFormatIdentifier(Type type,const QString &fmt_id);
-  static QString codecTypeText(Codec::Type type);
+  static QString typeText(Codec::Type type);
 
  signals:
   void framed(unsigned chans,unsigned samprate,unsigned bitrate,
@@ -83,6 +84,7 @@ class Codec : public QObject
   float *codec_pcm_out;
   float *codec_pcm_buffer[2];
   bool codec_is_framed;
+  Codec::Type codec_type;
 };
 
 

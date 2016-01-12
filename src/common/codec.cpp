@@ -23,6 +23,7 @@
 
 Codec::Codec(Codec::Type type,unsigned bitrate,QObject *parent)
 {
+  codec_type=type;
   codec_bitrate=bitrate;
   codec_channels=2;
   codec_quality=0.5;
@@ -40,6 +41,12 @@ Codec::~Codec()
   if(codec_src_data!=NULL) {
     delete codec_src_data;
   }
+}
+
+
+Codec::Type Codec::type() const
+{
+  return codec_type;
 }
 
 
@@ -154,7 +161,7 @@ bool Codec::acceptsFormatIdentifier(Type type,const QString &fmt_id)
 }
 
 
-QString Codec::codecTypeText(Codec::Type type)
+QString Codec::typeText(Codec::Type type)
 {
   QString ret=tr("Unknown");
 
