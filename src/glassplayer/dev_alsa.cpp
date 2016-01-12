@@ -25,27 +25,29 @@ void *AlsaCallback(void *ptr)
 {
 #ifdef ALSA
   static DevAlsa *dev=(DevAlsa *)ptr;
-  static float pcm[32768];
+  static float pcm_in[32768];
+  static float pcm_out[32768];
   static int16_t pcm16[32768];
   static int32_t pcm32[32768];
   static int n;
 
   while(1==1) {
     if((n=dev->codec()->ring()->
-	read(pcm,dev->alsa_buffer_size/(dev->alsa_period_quantity*2)))>0) {
+	read(pcm_in,dev->alsa_buffer_size/(dev->alsa_period_quantity*2)))>0) {
+      dev->remixChannels(pcm_out,dev->alsa_channels,pcm_in,dev->codec()->channels(),n);
       switch(dev->alsa_format) {
       case AudioDevice::S16_LE:
-	dev->convertFromFloat(pcm16,pcm,n,dev->codec()->channels());
+	dev->convertFromFloat(pcm16,pcm_out,n,dev->alsa_channels);
 	snd_pcm_writei(dev->alsa_pcm,pcm16,n);
 	break;
 
       case AudioDevice::S32_LE:
-	dev->convertFromFloat(pcm32,pcm,n,dev->codec()->channels());
+	dev->convertFromFloat(pcm32,pcm_out,n,dev->alsa_channels);
 	snd_pcm_writei(dev->alsa_pcm,pcm32,n);
 	break;
 
       case AudioDevice::FLOAT:
-	snd_pcm_writei(dev->alsa_pcm,pcm,n);
+	snd_pcm_writei(dev->alsa_pcm,pcm_out,n);
 	break;
 
       case AudioDevice::LastFormat:
