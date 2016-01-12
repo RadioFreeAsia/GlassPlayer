@@ -18,6 +18,8 @@
 //   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 //
 
+#include <signal.h>
+
 #include <QCoreApplication>
 
 #include "audiodevicefactory.h"
@@ -27,6 +29,22 @@
 #include "glasslimits.h"
 #include "glassplayer.h"
 #include "logging.h"
+
+//
+// Globals
+//
+bool global_exiting=false;
+
+void SigHandler(int signo)
+{
+  switch(signo) {
+  case SIGINT:
+  case SIGTERM:
+    global_exiting=true;
+    break;
+  }
+}
+
 
 MainObject::MainObject(QObject *parent)
   : QObject(parent)
@@ -95,6 +113,15 @@ MainObject::MainObject(QObject *parent)
     exit(256);
   }
 
+  //
+  // Set Signals
+  //
+  QTimer *timer=new QTimer(this);
+  connect(timer,SIGNAL(timeout()),this,SLOT(exitData()));
+  timer->start(200);
+  ::signal(SIGINT,SigHandler);
+  ::signal(SIGTERM,SigHandler);
+
   StartServerConnection();
 }
 
@@ -151,6 +178,10 @@ void MainObject::codecFramedData(unsigned chans,unsigned samprate,
     Log(LOG_ERR,err);
     exit(256);
   }
+  if(!sir_audio_device->start(&err)) {
+    Log(LOG_ERR,err);
+    exit(256);
+  }
 }
 
 
@@ -158,6 +189,17 @@ void MainObject::streamMetadataChangedData(const QString &str)
 {
   if(global_log_verbose) {
     Log(LOG_INFO,"Stream Now Playing: "+str);
+  }
+}
+
+
+void MainObject::exitData()
+{
+  if(global_exiting) {
+    if(sir_audio_device!=NULL) {
+      sir_audio_device->stop();
+    }
+    exit(0);
   }
 }
 

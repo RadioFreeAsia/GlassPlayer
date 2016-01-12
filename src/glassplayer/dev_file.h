@@ -1,6 +1,6 @@
-// audiodevicefactory.cpp
+// dev_file.h
 //
-// Instantiate AudioDevice classes.
+// Send audio to a WAV file.
 //
 //   (C) Copyright 2014-2016 Fred Gleason <fredg@paravelsystems.com>
 //
@@ -18,35 +18,32 @@
 //   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 //
 
-#include "dev_file.h"
-#include "dev_stdout.h"
-#include "audiodevicefactory.h"
+#ifndef DEV_FILE_H
+#define DEV_FILE_H
 
-AudioDevice *AudioDeviceFactory(AudioDevice::Type type,Codec *codec,QObject *parent)
+#include <sndfile.h>
+
+#include "audiodevice.h"
+
+class DevFile : public AudioDevice
 {
-  AudioDevice *audiodevice=NULL;
+  Q_OBJECT;
+ public:
+  DevFile(Codec *codec,QObject *parent=0);
+  ~DevFile();
+  bool processOptions(QString *err,const QStringList &keys,
+		      const QStringList &values);
+  bool start(QString *err);
+  void stop();
 
-  switch(type) {
-  case AudioDevice::Stdout:
-    audiodevice=new DevStdout(codec,parent);
-    break;
+ public slots:
+   void synchronousWrite(unsigned frames);
 
-  case AudioDevice::Alsa:
-    break;
- 
-  case AudioDevice::AsiHpi:
-    break;
+ private:
+  AudioDevice::Format file_format;
+  QString file_file_name;
+  SNDFILE *file_sndfile;
+};
 
-  case AudioDevice::File:
-    audiodevice=new DevFile(codec,parent);
-    break;
 
-  case AudioDevice::Jack:
-    break;
-
-  case AudioDevice::LastType:
-    break;
-  }
-
-  return audiodevice;
-}
+#endif  // DEV_FILE_H

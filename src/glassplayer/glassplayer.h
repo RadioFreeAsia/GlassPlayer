@@ -42,6 +42,7 @@ class MainObject : public QObject
   void codecFramedData(unsigned chans,unsigned samprate,unsigned bitrate,
 		       Ringbuffer *ring);
   void streamMetadataChangedData(const QString &str);
+  void exitData();
 
  private:
   void StartServerConnection();

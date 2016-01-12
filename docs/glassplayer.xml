@@ -92,6 +92,7 @@
 	    </varlistentry>
 	  </variablelist>
 	</blockquote>
+-->
 	<blockquote remap='RS'>
 	  <variablelist remap='TP'>
 	    <varlistentry>
@@ -100,12 +101,13 @@
 	      </term>
 	      <listitem>
 		<para>
-		  Stream directly to a file.
+		  Save decoded PCM data to a WAV file.
 		</para>
 	      </listitem>
 	    </varlistentry>
 	  </variablelist>
 	</blockquote>
+<!--
 	<blockquote remap='RS'>
 	  <variablelist remap='TP'>
 	    <varlistentry>
@@ -615,23 +617,35 @@
       </variablelist>
     </listitem>
   </varlistentry>
-
+-->
 
   <varlistentry>
     <term>
-      <emphasis remap='B'>Direct File Streaming</emphasis>
-      (<option>- -audio-device=</option><userinput>FILE</userinput>)
+      <emphasis remap='B'>Save to File</emphasis>
+      (<option>--audio-device=</option><userinput>FILE</userinput>)
     </term>
     <listitem>
       <variablelist>
 	<varlistentry>
 	  <term>
-	    <option>- -file-name=</option><replaceable>name</replaceable>
+	    <option>--file-format=</option><replaceable>fmt</replaceable>
 	  </term>
 	  <listitem>
 	    <para>
-	      The name of the file to stream.  If no
-	      <option>- -file-name</option> option is given,
+	      The PCM format to output.  See the <emphasis remap='B'>OUTPUT
+	      FORMATS</emphasis> section for the list of available output
+	      formats.  The default value is <userinput>S16_LE</userinput>.
+	    </para>
+	  </listitem>
+	</varlistentry>
+	<varlistentry>
+	  <term>
+	    <option>--file-name=</option><replaceable>name</replaceable>
+	  </term>
+	  <listitem>
+	    <para>
+	      The name of the file to which to save the stream audio.  If no
+	      <option>--file-name</option> option is given,
 	      then the name of the file will be read from standard input.
 	    </para>
 	  </listitem>
@@ -639,7 +653,7 @@
       </variablelist>
     </listitem>
   </varlistentry>
-
+<!--
   <varlistentry>
     <term>
       <emphasis remap='B'>The Jack Audio Connection Kit</emphasis>

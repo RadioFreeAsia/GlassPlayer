@@ -43,6 +43,7 @@ class AudioDevice : public QObject
   virtual bool processOptions(QString *err,const QStringList &keys,
 			      const QStringList &values)=0;
   virtual bool start(QString *err)=0;
+  virtual void stop();
   void meterLevels(int *lvls) const;
   static QString typeText(AudioDevice::Type type);
   static QString optionKeyword(AudioDevice::Type type);

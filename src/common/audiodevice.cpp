@@ -50,6 +50,11 @@ bool AudioDevice::isAvailable() const
 }
 
 
+void AudioDevice::stop()
+{
+}
+
+
 void AudioDevice::meterLevels(int *lvls) const
 {
   for(unsigned i=0;i<MAX_AUDIO_CHANNELS;i++) {
