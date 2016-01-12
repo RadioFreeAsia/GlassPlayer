@@ -18,6 +18,7 @@
 //   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 //
 
+#include "dev_alsa.h"
 #include "dev_file.h"
 #include "dev_stdout.h"
 #include "audiodevicefactory.h"
@@ -32,6 +33,7 @@ AudioDevice *AudioDeviceFactory(AudioDevice::Type type,Codec *codec,QObject *par
     break;
 
   case AudioDevice::Alsa:
+    audiodevice=new DevAlsa(codec,parent);
     break;
  
   case AudioDevice::AsiHpi:

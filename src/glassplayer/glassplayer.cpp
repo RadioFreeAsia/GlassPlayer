@@ -166,7 +166,7 @@ void MainObject::codecFramedData(unsigned chans,unsigned samprate,
 
   if(global_log_verbose) {
     Log(LOG_INFO,"Using "+Codec::typeText(sir_codec->type())+
-	QString().sprintf(" decoder, %u channels, %u samples/sec, %u kbps\n",
+	QString().sprintf(" decoder, %u channels, %u samples/sec, %u kbps",
 			  chans,samprate,bitrate));
   }
   if((sir_audio_device=

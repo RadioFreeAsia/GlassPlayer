@@ -126,6 +126,6 @@ void DevFile::synchronousWrite(unsigned frames)
   float pcm[frames*codec()->channels()];
   int n;
 
-  n=codec()->ring()->read(pcm,frames*codec()->channels());
+  n=codec()->ring()->read(pcm,frames);
   sf_writef_float(file_sndfile,pcm,n);
 }

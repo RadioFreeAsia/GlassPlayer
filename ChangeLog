@@ -41,3 +41,6 @@
 2016-01-12 Fred Gleason <fredg@paravelsystems.com>
 	* Implemented a FILE audio device in 'src/glassplayer/dst_file.cpp'
 	and 'src/glassplayer/dst_file.h'.
+2016-01-12 Fred Gleason <fredg@paravelsystems.com>
+	* Implemented an ALSA audio device in 'src/glassplayer/dst_alsa.cpp'
+	and 'src/glassplayer/dst_alsa.h'.

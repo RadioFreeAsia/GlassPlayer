@@ -1,6 +1,6 @@
 // logging.cpp
 //
-// Logging routines for glasscoder(1).
+// Logging routines for glassplayer(1).
 //
 //   (C) Copyright 2015 Fred Gleason <fredg@paravelsystems.com>
 //
@@ -39,7 +39,7 @@ void Log(int prio,const QString &msg)
     break;
 
   default:
-    fprintf(stderr,"glasscoder: %s\n",(const char *)msg.toUtf8());
+    fprintf(stderr,"glassplayer: %s\n",(const char *)msg.toUtf8());
     break;
   }
 }

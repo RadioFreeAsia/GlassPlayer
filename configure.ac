@@ -293,48 +293,49 @@ AC_MSG_NOTICE("|                       MPEG-1 (via LibMad) ... No    |")
 else
 AC_MSG_NOTICE("|                       MPEG-1 (via LibMad) ... Yes   |")
 fi
-if test -z $USING_FDKAAC ; then
-AC_MSG_NOTICE("|               MPEG-4 HE-AAC+ (via FDKAAC) ... No    |")
-else
-AC_MSG_NOTICE("|               MPEG-4 HE-AAC+ (via FDKAAC) ... Yes   |")
-fi
+#if test -z $USING_FDKAAC ; then
+#AC_MSG_NOTICE("|               MPEG-4 HE-AAC+ (via FDKAAC) ... No    |")
+#else
+#AC_MSG_NOTICE("|               MPEG-4 HE-AAC+ (via FDKAAC) ... Yes   |")
+#fi
 #if test -z $USING_OPUS ; then
 #AC_MSG_NOTICE("|         Ogg Opus (via libogg and libopus) ... No    |")
 #else
 #AC_MSG_NOTICE("|         Ogg Opus (via libogg and libopus) ... Yes   |")
 #fi
-if test -z $USING_VORBIS ; then
-AC_MSG_NOTICE("|     Ogg Vorbis (via libogg and libvorbis) ... No    |")
-else
-AC_MSG_NOTICE("|     Ogg Vorbis (via libogg and libvorbis) ... Yes   |")
-fi
-if test -z $USING_SNDFILE ; then
-AC_MSG_NOTICE("|                    PCM16 (via libsndfile) ... No    |")
-else
-AC_MSG_NOTICE("|                    PCM16 (via libsndfile) ... Yes   |")
-fi
+#if test -z $USING_VORBIS ; then
+#AC_MSG_NOTICE("|     Ogg Vorbis (via libogg and libvorbis) ... No    |")
+#else
+#AC_MSG_NOTICE("|     Ogg Vorbis (via libogg and libvorbis) ... Yes   |")
+#fi
+#if test -z $USING_SNDFILE ; then
+#AC_MSG_NOTICE("|                    PCM16 (via libsndfile) ... No    |")
+#else
+#AC_MSG_NOTICE("|                    PCM16 (via libsndfile) ... Yes   |")
+#fi
 AC_MSG_NOTICE("|                                                     |")
-AC_MSG_NOTICE("| Audio Sources:                                      |")
+AC_MSG_NOTICE("| Audio Outputs:                                      |")
 if test -z $USING_ALSA ; then
 AC_MSG_NOTICE("|  Advanced Linux Sound Architecture (ALSA) ... No    |")
 else
 AC_MSG_NOTICE("|  Advanced Linux Sound Architecture (ALSA) ... Yes   |")
 fi
-if test -z $USING_ASIHPI ; then
-AC_MSG_NOTICE("|                 AudioScience HPI (ASIHPI) ... No    |")
-else
-AC_MSG_NOTICE("|                 AudioScience HPI (ASIHPI) ... Yes   |")
-fi
+#if test -z $USING_ASIHPI ; then
+#AC_MSG_NOTICE("|                 AudioScience HPI (ASIHPI) ... No    |")
+#else
+#AC_MSG_NOTICE("|                 AudioScience HPI (ASIHPI) ... Yes   |")
+#fi
 if test -z $USING_SNDFILE ; then
-AC_MSG_NOTICE("|                     File Streaming (FILE) ... No    |")
+AC_MSG_NOTICE("|                       Save to File (FILE) ... No    |")
 else
-AC_MSG_NOTICE("|                     File Streaming (FILE) ... Yes   |")
+AC_MSG_NOTICE("|                       Save to File (FILE) ... Yes   |")
 fi
-if test -z $USING_JACK ; then
-AC_MSG_NOTICE("|          Jack Audio Connection Kit (JACK) ... No    |")
-else
-AC_MSG_NOTICE("|          Jack Audio Connection Kit (JACK) ... Yes   |")
-fi
+AC_MSG_NOTICE("|                  Standard Output (STDOUT) ... Yes   |")
+#if test -z $USING_JACK ; then
+#AC_MSG_NOTICE("|          Jack Audio Connection Kit (JACK) ... No    |")
+#else
+#AC_MSG_NOTICE("|          Jack Audio Connection Kit (JACK) ... Yes   |")
+#fi
 AC_MSG_NOTICE("|                                                     |")
 AC_MSG_NOTICE("| Miscellaneous:                                      |")
 if test -z $USING_DOCBOOK ; then

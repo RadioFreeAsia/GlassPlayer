@@ -88,7 +88,7 @@ void CodecMpeg1::process(const QByteArray &data)
 void CodecMpeg1::ProcessBlock(const QByteArray &mpeg)
 {
   mpeg1_mpeg.append(mpeg);
-  float pcm[32768];
+  float pcm[32768*4];
   int frame_offset=0;
   int lost_frames;
 
@@ -108,9 +108,10 @@ void CodecMpeg1::ProcessBlock(const QByteArray &mpeg)
     Log(LOG_WARNING,QString().sprintf("XRUN: possible loss of %d frames",
 				      lost_frames));
   }
-  ring()->write(pcm,frame_offset);
-  emit audioWritten(frame_offset);
-  //  write(1,pcm,frame_offset*channels()*sizeof(float));
+  if(frame_offset>0) {
+    ring()->write(pcm,frame_offset/channels());
+    emit audioWritten(frame_offset/channels());
+  }
   mpeg1_mpeg=
     mpeg1_mpeg.right(mpeg1_mad_stream.bufend-mpeg1_mad_stream.next_frame);
 }
