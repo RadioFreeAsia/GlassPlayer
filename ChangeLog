@@ -44,3 +44,6 @@
 2016-01-12 Fred Gleason <fredg@paravelsystems.com>
 	* Implemented an ALSA audio device in 'src/glassplayer/dst_alsa.cpp'
 	and 'src/glassplayer/dst_alsa.h'.
+2016-01-12 Fred Gleason <fredg@paravelsystems.com>
+	* Changed the default audio device type from STDOUT to ALSA in
+	'src/glassplayer/glassplayer.cpp'.

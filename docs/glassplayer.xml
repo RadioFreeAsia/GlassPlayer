@@ -58,12 +58,11 @@
       <listitem>
 	<para>
 	  The type of audio device to use.  The default value is
-	  <userinput>STDOUT</userinput>. See the
+	  <userinput>ALSA</userinput>. See the
 	  <emphasis remap='B'>DEVICE OPTIONS</emphasis> section (below) for
 	  the options appropriate for each audio device type.  Valid values
 	  are:
 	</para>
-<!--
 	<blockquote remap='RS'>
 	  <variablelist remap='TP'>
 	    <varlistentry>
@@ -78,6 +77,7 @@
 	    </varlistentry>
 	  </variablelist>
 	</blockquote>
+<!--
 	<blockquote remap='RS'>
 	  <variablelist remap='TP'>
 	    <varlistentry>
@@ -316,22 +316,21 @@
 
 <refsect1 id='device_options'><title>Device Options</title>
 <variablelist remap='TP'>
-<!--
   <varlistentry>
     <term>
       <emphasis remap='B'>Advanced Linux Sound Architecture</emphasis> 
-      (<option>- -audio-device=</option><userinput>ALSA</userinput>)
+      (<option>--audio-device=</option><userinput>ALSA</userinput>)
     </term>    
     <listitem>
       <variablelist>
 	<varlistentry>
 	  <term>
-	    <option>- -alsa-device=</option><replaceable>dev</replaceable>
+	    <option>--alsa-device=</option><replaceable>dev</replaceable>
 	  </term>
 	  <listitem>
 	    <para>
 	      The name of the ALSA device to use.  If no
-	      <option>- -audio-device</option> option is given,
+	      <option>--audio-device</option> option is given,
 	      then the <userinput>hw:0</userinput> device will be used.
 	    </para>
 	  </listitem>
@@ -339,7 +338,7 @@
       </variablelist>
     </listitem>
   </varlistentry>
-
+<!--
   <varlistentry>
     <term>
       <emphasis remap='B'>AudioScience HPI</emphasis> 

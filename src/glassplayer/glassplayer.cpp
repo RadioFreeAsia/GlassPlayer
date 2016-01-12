@@ -52,7 +52,7 @@ MainObject::MainObject(QObject *parent)
   sir_codec=NULL;
   sir_ring=NULL;
 
-  audio_device_type=AudioDevice::Stdout;
+  audio_device_type=AudioDevice::Alsa;
   dump_bitstream=false;
   server_type=Connector::XCastServer;
 
