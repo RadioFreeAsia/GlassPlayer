@@ -30,23 +30,28 @@ moc_%.cpp:	%.h
 
 bin_PROGRAMS = glassplayer
 
-dist_glassplayer_SOURCES = codec_mpeg1.cpp codec_mpeg1.h\
+dist_glassplayer_SOURCES = audiodevicefactory.cpp audiodevicefactory.h\
+                           codec_mpeg1.cpp codec_mpeg1.h\
                            codec_null.cpp codec_null.h\
                            codecfactory.cpp codecfactory.h\
                            conn_xcast.cpp conn_xcast.h\
                            connectorfactory.cpp connectorfactory.h\
+                           dev_stdout.cpp dev_stdout.h\
                            glassplayer.cpp glassplayer.h
 
-nodist_glassplayer_SOURCES = cmdswitch.cpp cmdswitch.h\
+nodist_glassplayer_SOURCES = audiodevice.cpp audiodevice.h\
+                             cmdswitch.cpp cmdswitch.h\
                              codec.cpp codec.h\
                              connector.cpp connector.h\
                              glasslimits.h\
                              logging.cpp logging.h\
+                             moc_audiodevice.cpp\
                              moc_codec.cpp\
                              moc_codec_mpeg1.cpp\
                              moc_codec_null.cpp\
                              moc_conn_xcast.cpp\
                              moc_connector.cpp\
+                             moc_dev_stdout.cpp\
                              moc_glassplayer.cpp\
                              ringbuffer.cpp ringbuffer.h
 
@@ -60,7 +65,8 @@ CLEANFILES = *~\
              *.pdb\
              *ilk
 
-DISTCLEANFILES = cmdswitch.cpp cmdswitch.h\
+DISTCLEANFILES = audiodevice.cpp audiodevice.h\
+                 cmdswitch.cpp cmdswitch.h\
                  codec.cpp codec.h\
                  connector.cpp connector.h\
                  glasslimits.h\

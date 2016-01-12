@@ -27,8 +27,7 @@ Codec::Codec(Codec::Type type,unsigned bitrate,QObject *parent)
   codec_channels=2;
   codec_quality=0.5;
   codec_samplerate=48000;
-  codec_ring1=NULL;
-  codec_ring2=NULL;
+  codec_ring=NULL;
   codec_is_framed=false;
 }
 
@@ -40,9 +39,6 @@ Codec::~Codec()
   }
   if(codec_src_data!=NULL) {
     delete codec_src_data;
-  }
-  if((codec_ring2!=codec_ring1)&&(codec_ring2!=NULL)) {
-    delete codec_ring2;
   }
 }
 
@@ -92,6 +88,12 @@ void Codec::setSamplerate(unsigned rate)
 bool Codec::isFramed() const
 {
   return codec_is_framed;
+}
+
+
+Ringbuffer *Codec::ring()
+{
+  return codec_ring;
 }
 
 
@@ -187,11 +189,8 @@ void Codec::setFramed(unsigned chans,unsigned samprate,unsigned bitrate)
   codec_samplerate=samprate;
   codec_bitrate=bitrate;
   codec_is_framed=true;
-  emit framed();
-}
 
+  codec_ring=new Ringbuffer(CODEC_RINGBUFFER_SIZE,chans);
 
-Ringbuffer *Codec::ring()
-{
-  return codec_ring1;
+  emit framed(chans,samprate,bitrate,codec_ring);
 }

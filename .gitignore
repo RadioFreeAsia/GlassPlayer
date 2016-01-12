@@ -13,6 +13,8 @@ Makefile
 Makefile.in
 missing
 moc_*
+src/glassplayer/audiodevice.cpp
+src/glassplayer/audiodevice.h
 src/glassplayer/cmdswitch.cpp
 src/glassplayer/cmdswitch.h
 src/glassplayer/codec.cpp

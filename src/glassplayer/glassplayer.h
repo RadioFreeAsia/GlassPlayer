@@ -24,11 +24,12 @@
 #include <QObject>
 #include <QUrl>
 
+#include "audiodevice.h"
 #include "codec.h"
 #include "connector.h"
 #include "ringbuffer.h"
 
-#define GLASSPLAYER_USAGE "--server-type=<type> --server-url=<url> --dump-bitstream\n"
+#define GLASSPLAYER_USAGE "--server-type=<type> --server-url=<url> --dump-bitstream --audio-device=<dev>\n"
 
 class MainObject : public QObject
 {
@@ -38,12 +39,14 @@ class MainObject : public QObject
 
  private slots:
   void serverConnectedData(bool state);
-  void codecFramedData();
+  void codecFramedData(unsigned chans,unsigned samprate,unsigned bitrate,
+		       Ringbuffer *ring);
   void streamMetadataChangedData(const QString &str);
 
  private:
   void StartServerConnection();
   Connector::ServerType server_type;
+  AudioDevice::Type audio_device_type;
   QUrl server_url;
   bool dump_bitstream;
   QStringList device_keys;
@@ -51,6 +54,7 @@ class MainObject : public QObject
   Ringbuffer *sir_ring;
   Codec *sir_codec;
   Connector *sir_connector;
+  AudioDevice *sir_audio_device;
 };
 
 

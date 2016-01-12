@@ -20,7 +20,8 @@
 ##
 ## Use automake to process this into a Makefile.in
 
-EXTRA_DIST = cmdswitch.cpp cmdswitch.h\
+EXTRA_DIST = audiodevice.cpp auudiodevice.h\
+             cmdswitch.cpp cmdswitch.h\
              codec.cpp codec.h\
              connector.cpp connector.h\
              glasslimits.h\

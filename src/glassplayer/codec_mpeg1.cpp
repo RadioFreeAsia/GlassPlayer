@@ -21,6 +21,7 @@
 #include <unistd.h>
 
 #include "codec_mpeg1.h"
+#include "logging.h"
 
 CodecMpeg1::CodecMpeg1(unsigned bitrate,QObject *parent)
   : Codec(Codec::TypeMpeg1,bitrate,parent)
@@ -89,6 +90,7 @@ void CodecMpeg1::ProcessBlock(const QByteArray &mpeg)
   mpeg1_mpeg.append(mpeg);
   float pcm[32768];
   int frame_offset=0;
+  int lost_frames;
 
   mad_stream_buffer(&mpeg1_mad_stream,(const unsigned char *)mpeg1_mpeg.data(),
 		    mpeg1_mpeg.length());
@@ -102,7 +104,13 @@ void CodecMpeg1::ProcessBlock(const QByteArray &mpeg)
     }
     frame_offset+=(mpeg1_mad_synth.pcm.length*mpeg1_mad_synth.pcm.channels);
   }
-  write(1,pcm,frame_offset*channels()*sizeof(float));
+  if((lost_frames=frame_offset-ring()->writeSpace())>0) {
+    Log(LOG_WARNING,QString().sprintf("XRUN: possible loss of %d frames",
+				      lost_frames));
+  }
+  ring()->write(pcm,frame_offset);
+  emit audioWritten(frame_offset);
+  //  write(1,pcm,frame_offset*channels()*sizeof(float));
   mpeg1_mpeg=
     mpeg1_mpeg.right(mpeg1_mad_stream.bufend-mpeg1_mad_stream.next_frame);
 }

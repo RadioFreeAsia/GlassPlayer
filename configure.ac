@@ -264,6 +264,11 @@ ln -s ../../src/common/ringbuffer.cpp src/glassplayer/ringbuffer.cpp
 rm -f src/glassplayer/ringbuffer.h
 ln -s ../../src/common/ringbuffer.h src/glassplayer/ringbuffer.h
 
+rm -f src/glassplayer/audiodevice.cpp
+ln -s ../../src/common/audiodevice.cpp src/glassplayer/audiodevice.cpp
+rm -f src/glassplayer/audiodevice.h
+ln -s ../../src/common/audiodevice.h src/glassplayer/audiodevice.h
+
 rm -f src/glassplayer/glasslimits.h
 ln -s ../../src/common/glasslimits.h src/glassplayer/glasslimits.h
 

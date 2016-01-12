@@ -20,6 +20,7 @@
 
 #include <QCoreApplication>
 
+#include "audiodevicefactory.h"
 #include "cmdswitch.h"
 #include "codecfactory.h"
 #include "connectorfactory.h"
@@ -33,12 +34,22 @@ MainObject::MainObject(QObject *parent)
   sir_codec=NULL;
   sir_ring=NULL;
 
+  audio_device_type=AudioDevice::Stdout;
   dump_bitstream=false;
   server_type=Connector::XCastServer;
 
   CmdSwitch *cmd=
     new CmdSwitch(qApp->argc(),qApp->argv(),"glassplayer",GLASSPLAYER_USAGE);
   for(unsigned i=0;i<cmd->keys();i++) {
+    if(cmd->key(i)=="--audio-device") {
+      for(int j=0;j<AudioDevice::LastType;j++) {
+	if(cmd->value(i).toLower()==
+	   AudioDevice::optionKeyword((AudioDevice::Type)j)) {
+	  audio_device_type=(AudioDevice::Type)j;
+	  cmd->setProcessed(i,true);
+	}
+      }
+    }
     if(cmd->key(i)=="--dump-bitstream") {
       dump_bitstream=true;
       cmd->setProcessed(i,true);
@@ -111,16 +122,23 @@ void MainObject::serverConnectedData(bool state)
     }
     connect(sir_connector,SIGNAL(dataReceived(const QByteArray &)),
 	    sir_codec,SLOT(process(const QByteArray &)));
-    connect(sir_codec,SIGNAL(framed()),this,SLOT(codecFramedData()));
+    connect(sir_codec,SIGNAL(framed(unsigned,unsigned,unsigned,Ringbuffer *)),
+	    this,
+	    SLOT(codecFramedData(unsigned,unsigned,unsigned,Ringbuffer *)));
   }
 }
 
 
-void MainObject::codecFramedData()
+void MainObject::codecFramedData(unsigned chans,unsigned samprate,
+				 unsigned bitrate,Ringbuffer *ring)
 {
   fprintf(stderr,"codec framed: %u channels, %u samples/sec, %u kbps\n",
-	  sir_codec->channels(),sir_codec->samplerate(),
-	  sir_codec->bitrate());
+	  chans,samprate,bitrate);
+  if((sir_audio_device=
+      AudioDeviceFactory(audio_device_type,sir_codec,this))==NULL) {
+    fprintf(stderr,"glassplay: unsupported audio device\n");
+    exit(256);
+  }
 }
 
 

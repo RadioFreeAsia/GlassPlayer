@@ -36,6 +36,7 @@
 #include "ringbuffer.h"
 
 #define MAX_AUDIO_BUFFER 4096
+#define CODEC_RINGBUFFER_SIZE 4194304
 
 class Codec : public QObject
 {
@@ -52,6 +53,7 @@ class Codec : public QObject
   unsigned samplerate() const;
   void setSamplerate(unsigned rate);
   bool isFramed() const;
+  Ringbuffer *ring();
   virtual bool isAvailable() const=0;
   virtual QString defaultExtension() const=0;
   static bool acceptsContentType(Type type,const QString &mimetype);
@@ -59,18 +61,18 @@ class Codec : public QObject
   static QString codecTypeText(Codec::Type type);
 
  signals:
-  void framed();
+  void framed(unsigned chans,unsigned samprate,unsigned bitrate,
+	      Ringbuffer *ring);
+  void audioWritten(unsigned frames);
 
  public slots:
   virtual void process(const QByteArray &data)=0;
 
  protected:
   virtual void setFramed(unsigned chans,unsigned samprate,unsigned bitrate);
-  Ringbuffer *ring();
 
  private:
-  Ringbuffer *codec_ring1;
-  Ringbuffer *codec_ring2;
+  Ringbuffer *codec_ring;
   unsigned codec_bitrate;
   unsigned codec_channels;
   double codec_quality;
