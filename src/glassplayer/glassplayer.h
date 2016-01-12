@@ -29,7 +29,7 @@
 #include "connector.h"
 #include "ringbuffer.h"
 
-#define GLASSPLAYER_USAGE "--server-type=<type> --server-url=<url> --dump-bitstream --audio-device=<dev>\n"
+#define GLASSPLAYER_USAGE "[options]\n"
 
 class MainObject : public QObject
 {

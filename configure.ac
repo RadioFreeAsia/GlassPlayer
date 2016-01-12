@@ -70,6 +70,7 @@ AC_ARG_ENABLE(file,[  --disable-file          disable FILE sound support],
 		      [SNDFILE_DISABLED=yes],[])
 AC_ARG_ENABLE(jack,[  --disable-jack          disable JACK sound support],
 		      [JACK_DISABLED=yes],[])
+AC_ARG_ENABLE(docbook,[  --disable-docbook       disable building of DocBook documentation],[DOCBOOK_DISABLED=yes],[])
 
 #AC_ARG_ENABLE(opus,[  --disable-opus          disable Opus support],
 #	      [OPUS_DISABLED=yes],[]) 
@@ -182,6 +183,14 @@ if test $FDKAAC_FOUND ; then
 fi
 
 #
+# Check for DocBook Toolchain
+#
+if test -z $DOCBOOK_DISABLED ; then
+  USING_DOCBOOK=yes
+fi
+AM_CONDITIONAL([DOCBOOK_AM], [test "$USING_DOCBOOK" = yes])
+
+#
 # Determine the target architecture
 #
 AR_GCC_TARGET()
@@ -229,6 +238,7 @@ else
 fi 
 
 AC_CONFIG_FILES([ \
+    docs/Makefile \
     src/Makefile \
     src/common/Makefile \
     src/glassplayer/Makefile \
@@ -324,6 +334,13 @@ if test -z $USING_JACK ; then
 AC_MSG_NOTICE("|          Jack Audio Connection Kit (JACK) ... No    |")
 else
 AC_MSG_NOTICE("|          Jack Audio Connection Kit (JACK) ... Yes   |")
+fi
+AC_MSG_NOTICE("|                                                     |")
+AC_MSG_NOTICE("| Miscellaneous:                                      |")
+if test -z $USING_DOCBOOK ; then
+AC_MSG_NOTICE("|                     DocBook Documentation ... No    |")
+else
+AC_MSG_NOTICE("|                     DocBook Documentation ... Yes   |")
 fi
 AC_MSG_NOTICE("|-----------------------------------------------------|")
 AC_MSG_NOTICE()

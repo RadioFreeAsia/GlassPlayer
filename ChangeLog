@@ -32,3 +32,5 @@
 	and 'src/common/audiodevice.h'.
 	* Implemented a STDOUT audio device in 'src/glassplayer/dst_stdout.cpp'
 	and 'src/glassplayer/dst_stdout.h'.
+2016-01-12 Fred Gleason <fredg@paravelsystems.com>
+	* Added a glassplayer(1) man page.

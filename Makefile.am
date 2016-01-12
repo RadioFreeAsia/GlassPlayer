@@ -20,7 +20,11 @@
 ##   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 ##
 
-SUBDIRS = src
+if DOCBOOK_AM
+  DOCBOOK_AM_OPT = docs
+endif
+
+SUBDIRS = $(DOCBOOK_AM_OPT) src
 
 rpm:	dist
 	cp glassplayer-$(VERSION).tar.gz $(HOME)/rpmbuild/SOURCES/

@@ -1,5 +1,6 @@
 *~
 *.o
+*.1
 *.spec
 .deps
 aclocal.m4
