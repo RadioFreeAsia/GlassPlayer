@@ -94,10 +94,6 @@ MainObject::MainObject(QObject *parent)
     Log(LOG_ERR,"you must specify a --server-url\n");
     exit(256);
   }
-  if((device_keys.size()!=0)||(device_values.size()!=0)) {
-    Log(LOG_ERR,"unknown option\n");
-    exit(256);
-  }
 
   StartServerConnection();
 }
@@ -139,6 +135,8 @@ void MainObject::serverConnectedData(bool state)
 void MainObject::codecFramedData(unsigned chans,unsigned samprate,
 				 unsigned bitrate,Ringbuffer *ring)
 {
+  QString err;
+
   if(global_log_verbose) {
     Log(LOG_INFO,"Using "+Codec::typeText(sir_codec->type())+
 	QString().sprintf(" decoder, %u channels, %u samples/sec, %u kbps\n",
@@ -147,6 +145,10 @@ void MainObject::codecFramedData(unsigned chans,unsigned samprate,
   if((sir_audio_device=
       AudioDeviceFactory(audio_device_type,sir_codec,this))==NULL) {
     Log(LOG_ERR,"unsupported audio device");
+    exit(256);
+  }
+  if(!sir_audio_device->processOptions(&err,device_keys,device_values)) {
+    Log(LOG_ERR,err);
     exit(256);
   }
 }

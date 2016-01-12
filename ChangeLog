@@ -36,3 +36,5 @@
 	* Added a glassplayer(1) man page.
 2016-01-12 Fred Gleason <fredg@paravelsystems.com>
 	* Implemented the '--verbose' option.
+2016-01-12 Fred Gleason <fredg@paravelsystems.com>
+	* Implemented a 'stdout-format=' switch for glassplayer(1).

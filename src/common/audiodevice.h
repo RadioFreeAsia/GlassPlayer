@@ -62,8 +62,10 @@ class AudioDevice : public QObject
   Codec *codec();
   void remixChannels(float *pcm_out,unsigned chans_out,
 		     float *pcm_in,unsigned chans_in,unsigned nframes); 
-  void convertToFloat(float *pcm_out,const void *pcm_in,Format fmt_in,
-		      unsigned nframes,unsigned chans);
+  void convertFromFloat(int16_t *pcm_out,const float *pcm_in,
+			unsigned nframes,unsigned chans);
+  void convertFromFloat(int32_t *pcm_out,const float *pcm_in,
+			unsigned nframes,unsigned chans);
   void peakLevels(float *lvls,const float *pcm,unsigned nframes,unsigned chans);
   void peakLevels(int *lvls,const float *pcm,unsigned nframes,unsigned chans);
 

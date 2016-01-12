@@ -232,25 +232,17 @@ void AudioDevice::remixChannels(float *pcm_out,unsigned chans_out,float *pcm_in,
 }
 
 
-void AudioDevice::convertToFloat(float *pcm_out,const void *pcm_in,
-				 Format fmt_in,unsigned nframes,unsigned chans)
+void AudioDevice::convertFromFloat(int16_t *pcm_out,const float *pcm_in,
+				   unsigned nframes,unsigned chans)
 {
-  switch(fmt_in) {
-  case AudioDevice::FLOAT:
-    break;
+  src_float_to_short_array(pcm_in,(short *)pcm_out,nframes*chans);
+}
 
-  case AudioDevice::S16_LE:
-    src_short_to_float_array((const short *)pcm_in,pcm_out,nframes*chans);
-    break;
 
-  case AudioDevice::S32_LE:
-    src_int_to_float_array((const int *)pcm_in,pcm_out,nframes*chans);
-
-    break;
-
-  case AudioDevice::LastFormat:
-    break;
-  }
+void AudioDevice::convertFromFloat(int32_t *pcm_out,const float *pcm_in,
+				   unsigned nframes,unsigned chans)
+{
+  src_float_to_int_array(pcm_in,(int *)pcm_out,nframes*chans);
 }
 
 

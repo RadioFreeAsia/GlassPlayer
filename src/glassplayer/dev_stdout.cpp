@@ -25,6 +25,7 @@
 DevStdout::DevStdout(Codec *codec,QObject *parent)
   : AudioDevice(codec,parent)
 {
+  stdout_format=AudioDevice::S16_LE;
 }
 
 
@@ -36,6 +37,31 @@ DevStdout::~DevStdout()
 bool DevStdout::processOptions(QString *err,const QStringList &keys,
 			       const QStringList &values)
 {
+  for(int i=0;i<keys.size();i++) {
+    bool processed=false;
+    if(keys[i]=="--stdout-format") {
+      if(values[i].toLower()=="float") {
+	stdout_format=AudioDevice::FLOAT;
+	processed=true;
+      }
+      if(values[i].toLower()=="s16_le") {
+	stdout_format=AudioDevice::S16_LE;
+	processed=true;
+      }
+      if(values[i].toLower()=="s32_le") {
+	stdout_format=AudioDevice::S32_LE;
+	processed=true;
+      }
+      if(!processed) {
+	*err=tr("invalid --stdout-format value");
+	return false;
+      }
+    }
+    if(!processed) {
+      *err=tr("unrecognized option")+" "+keys[i]+"\"";
+      return false;
+    }
+  }
   return true;
 }
 
@@ -49,7 +75,30 @@ bool DevStdout::start(QString *err)
 void DevStdout::synchronousWrite(unsigned frames)
 {
   float pcm[frames*codec()->channels()];
+  int16_t *pcm16;
+  int32_t *pcm32;
 
   codec()->ring()->read(pcm,frames);
-  write(1,pcm,frames*codec()->channels()*sizeof(float));
+  switch(stdout_format) {
+  case AudioDevice::FLOAT:
+    write(1,pcm,frames*codec()->channels()*sizeof(float));
+    break;
+
+  case AudioDevice::S16_LE:
+    pcm16=new int16_t[frames*codec()->channels()];
+    convertFromFloat(pcm16,pcm,frames,codec()->channels());
+    write(1,pcm16,frames*codec()->channels()*sizeof(int16_t));
+    delete pcm16;
+    break;
+
+  case AudioDevice::S32_LE:
+    pcm32=new int32_t[frames*codec()->channels()];
+    convertFromFloat(pcm32,pcm,frames,codec()->channels());
+    write(1,pcm32,frames*codec()->channels()*sizeof(int32_t));
+    delete pcm32;
+    break;
+
+  case AudioDevice::LastFormat:
+    break;
+  }
 }

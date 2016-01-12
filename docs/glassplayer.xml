@@ -672,8 +672,80 @@
     </listitem>
   </varlistentry>
 -->
+
+  <varlistentry>
+    <term>
+      <emphasis remap='B'>Standard Output</emphasis>
+      (<option>--audio-device=</option><userinput>STDOUT</userinput>)
+    </term>
+    <listitem>
+      <variablelist>
+	<varlistentry>
+	  <term>
+	    <option>--stdout-format=</option><replaceable>fmt</replaceable>
+	  </term>
+	  <listitem>
+	    <para>
+	      The PCM format to output.  See the <emphasis remap='B'>OUTPUT
+	      FORMATS</emphasis> section for the list of available output
+	      formats.  The default value is <userinput>S16_LE</userinput>.
+	    </para>
+	  </listitem>
+	</varlistentry>
+      </variablelist>
+    </listitem>
+  </varlistentry>
 </variablelist>
 </refsect1>
+
+<refsect1 id='output_formats'><title>Output Formats</title>
+<para>
+  Some devices allow the PCM output format to be specified as follows:
+</para>
+<blockquote remap='RS'>
+  <variablelist remap='TP'>
+    <varlistentry>
+      <term>
+	<userinput>FLOAT</userinput>
+      </term>
+      <listitem>
+	<para>
+	  32 bit floating point.
+	</para>
+      </listitem>
+    </varlistentry>
+  </variablelist>
+</blockquote>
+<blockquote remap='RS'>
+  <variablelist remap='TP'>
+    <varlistentry>
+      <term>
+	<userinput>S16_LE</userinput>
+      </term>
+      <listitem>
+	<para>
+	  16 bit integer, little endian.
+	</para>
+      </listitem>
+    </varlistentry>
+  </variablelist>
+</blockquote>
+<blockquote remap='RS'>
+  <variablelist remap='TP'>
+    <varlistentry>
+      <term>
+	<userinput>S32_LE</userinput>
+      </term>
+      <listitem>
+	<para>
+	  32 bit integer, little-endian.
+	</para>
+      </listitem>
+    </varlistentry>
+  </variablelist>
+</blockquote>
+</refsect1>
+
 
 <refsect1 id='author'><title>Author</title>
 <para>

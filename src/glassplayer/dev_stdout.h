@@ -35,6 +35,9 @@ class DevStdout : public AudioDevice
 
  public slots:
   void synchronousWrite(unsigned frames);
+
+ private:
+  AudioDevice::Format stdout_format;
 };
 
 
