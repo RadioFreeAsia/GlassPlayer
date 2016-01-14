@@ -135,30 +135,6 @@ void Connector::setContentType(const QString &str)
   conn_content_type=str;
 }
 
-/*
-unsigned Connector::audioChannels() const
-{
-  return conn_audio_channels;
-}
-
-
-void Connector::setAudioChannels(unsigned chans)
-{
-  conn_audio_channels=chans;
-}
-
-
-unsigned Connector::audioSamplerate() const
-{
-  return conn_audio_samplerate;
-}
-
-
-void Connector::setAudioSamplerate(unsigned rate)
-{
-  conn_audio_samplerate=rate;
-}
-*/
 
 unsigned Connector::audioBitrate() const
 {

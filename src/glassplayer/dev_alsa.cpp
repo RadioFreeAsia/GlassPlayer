@@ -31,7 +31,20 @@ void *AlsaCallback(void *ptr)
   static int32_t pcm32[32768];
   static int n;
 
+  //
+  // Wait for PCM buffer to fill
+  //
+  //  fprintf(stderr,"CALLBACK STARTS\n");
+  while(dev->codec()->ring()->readSpace()<2*dev->codec()->samplerate()) {
+    usleep(36);
+  }
+
   while(1==1) {
+    //fprintf(stderr,"CALLBACK RUNNING\n");
+    if(snd_pcm_state(dev->alsa_pcm)!=SND_PCM_STATE_RUNNING) {
+      snd_pcm_drop(dev->alsa_pcm);
+      snd_pcm_prepare(dev->alsa_pcm);
+    }
     if((n=dev->codec()->ring()->
 	read(pcm_in,dev->alsa_buffer_size/(dev->alsa_period_quantity*2)))>0) {
       dev->remixChannels(pcm_out,dev->alsa_channels,pcm_in,dev->codec()->channels(),n);

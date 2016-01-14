@@ -1,6 +1,6 @@
 // codec_mpeg1.h
 //
-// MPEG-1/1.5 codec
+// MPEG-1 codec
 //
 //   (C) Copyright 2014-2016 Fred Gleason <fredg@paravelsystems.com>
 //
@@ -38,25 +38,30 @@ class CodecMpeg1 : public Codec
   void process(const QByteArray &data);
 
  private:
-  enum MpegID {NonMpeg=0,Mpeg1=1,Mpeg2=2,Mpeg25=3};
-  void ProcessBlock(const QByteArray &mpeg);
-  bool FindHeader(const uint8_t *data);
+  void Reset();
+  bool LoadLibmad();
+  void FreeLibmad();
   void *mpeg1_mad_handle;
 #ifdef HAVE_LIBMAD
   void (*mad_stream_init)(struct mad_stream *);
   void (*mad_frame_init)(struct mad_frame *);
   void (*mad_synth_init)(struct mad_synth *);
+  void (*mad_header_init)(struct mad_header *);
   void (*mad_stream_buffer)(struct mad_stream *,unsigned char const *,
 			    unsigned long);
+  int (*mad_header_decode)(struct mad_header *, struct mad_stream *);
   int (*mad_frame_decode)(struct mad_frame *, struct mad_stream *);
   void (*mad_synth_frame)(struct mad_synth *, struct mad_frame const *);
+  void (*mad_frame_mute)(struct mad_frame *);
+  void (*mad_synth_mute)(struct mad_synth *);
+  int (*mad_stream_sync)(struct mad_stream *);
   void (*mad_frame_finish)(struct mad_frame *);
   void (*mad_stream_finish)(struct mad_stream *);
+  QByteArray mpeg1_mpeg;
   struct mad_stream mpeg1_mad_stream;
   struct mad_frame mpeg1_mad_frame;
   struct mad_synth mpeg1_mad_synth;
-  //  int mpeg1_frame_size;
-  QByteArray mpeg1_mpeg;
+  //  struct mad_header mpeg1_mad_header;
 #endif  // HAVE_LIBMAD
 };
 

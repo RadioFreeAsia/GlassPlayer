@@ -142,6 +142,18 @@
 
     <varlistentry>
       <term>
+	<option>--disable-stream-metadata</option>
+      </term>
+      <listitem>
+	<para>
+	  Disable realtime stream metadata updates.  Useless except for
+	  debugging.
+	</para>
+      </listitem>
+    </varlistentry>
+
+    <varlistentry>
+      <term>
 	<option>--dump-bitstream</option>
       </term>
       <listitem>
@@ -151,6 +163,7 @@
 	</para>
       </listitem>
     </varlistentry>
+
 <!--
     <varlistentry>
       <term>

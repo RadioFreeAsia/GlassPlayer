@@ -49,6 +49,7 @@ class MainObject : public QObject
   Connector::ServerType server_type;
   AudioDevice::Type audio_device_type;
   QUrl server_url;
+  bool disable_stream_metadata;
   bool dump_bitstream;
   QStringList device_keys;
   QStringList device_values;

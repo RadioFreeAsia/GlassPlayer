@@ -25,11 +25,17 @@ Codec::Codec(Codec::Type type,unsigned bitrate,QObject *parent)
 {
   codec_type=type;
   codec_bitrate=bitrate;
+  codec_ring=NULL;
   codec_channels=2;
   codec_quality=0.5;
   codec_samplerate=48000;
-  codec_ring=NULL;
   codec_is_framed=false;
+  codec_src_state=NULL;
+  codec_src_data=NULL;
+  codec_pcm_in=NULL;
+  codec_pcm_out=NULL;
+  codec_pcm_buffer[0]=NULL;
+  codec_pcm_buffer[1]=NULL;
 }
 
 
@@ -171,7 +177,7 @@ QString Codec::typeText(Codec::Type type)
     break;
 
   case Codec::TypeMpeg1:
-    ret=tr("MPEG-1/1.5");
+    ret=tr("MPEG-1");
     break;
  
   case Codec::TypeVorbis:

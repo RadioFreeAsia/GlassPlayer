@@ -51,6 +51,7 @@ MainObject::MainObject(QObject *parent)
 {
   sir_codec=NULL;
   sir_ring=NULL;
+  disable_stream_metadata=false;
 
   audio_device_type=AudioDevice::Alsa;
   dump_bitstream=false;
@@ -67,6 +68,10 @@ MainObject::MainObject(QObject *parent)
 	  cmd->setProcessed(i,true);
 	}
       }
+    }
+    if(cmd->key(i)=="--disable-stream-metadata") {
+      disable_stream_metadata=true;
+      cmd->setProcessed(i,true);
     }
     if(cmd->key(i)=="--dump-bitstream") {
       dump_bitstream=true;
@@ -211,6 +216,7 @@ void MainObject::StartServerConnection()
     port=DEFAULT_SERVER_PORT;
   }
   sir_connector=ConnectorFactory(server_type,this);
+  sir_connector->setStreamMetadataEnabled(!disable_stream_metadata);
   connect(sir_connector,SIGNAL(connected(bool)),
 	  this,SLOT(serverConnectedData(bool)));
   connect(sir_connector,SIGNAL(streamMetadataChanged(const QString &)),

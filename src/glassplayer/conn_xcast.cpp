@@ -27,8 +27,12 @@
 XCast::XCast(QObject *parent)
   : Connector(parent)
 {
-  xcast_header_active=false;
   xcast_header="";
+  xcast_header_active=false;
+  xcast_result_code=0;
+  xcast_metadata_istate=0;
+  xcast_metadata_interval=0;
+  xcast_metadata_counter=0;
 
   xcast_socket=new QTcpSocket(this);
   connect(xcast_socket,SIGNAL(connected()),this,SLOT(connectedData()));
@@ -83,8 +87,8 @@ void XCast::connectedData()
 void XCast::readyReadData()
 {
   QByteArray data;
-  int md_start;
-  int md_len;
+  int md_start=0;
+  int md_len=0;
 
   while(xcast_socket->bytesAvailable()>0) {
     md_start=0;
@@ -114,15 +118,17 @@ void XCast::readyReadData()
       }
     }
     else {   // Scan for metadata updates
-      if(xcast_metadata_counter+data.length()>xcast_metadata_interval) {
-	md_start=xcast_metadata_interval-xcast_metadata_counter;
-	md_len=0xFF&data[md_start]*16;
-	ProcessMetadata(data.mid(md_start+1,md_len));
-	xcast_metadata_counter=data.size()-(md_start+md_len+1);
-	data.remove(md_start,md_len+1);
-      }
-      else {
-	xcast_metadata_counter+=data.length();
+      if(xcast_metadata_interval>0) {
+	if(xcast_metadata_counter+data.length()>xcast_metadata_interval) {
+	  md_start=xcast_metadata_interval-xcast_metadata_counter;
+	  md_len=0xFF&data[md_start]*16;
+	  ProcessMetadata(data.mid(md_start+1,md_len));
+	  xcast_metadata_counter=data.size()-(md_start+md_len+1);
+	  data.remove(md_start,md_len+1);
+	}
+	else {
+	  xcast_metadata_counter+=data.length();
+	}
       }
       emit dataReceived(data);
     }
