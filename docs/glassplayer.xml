@@ -31,6 +31,7 @@
     <cmdsynopsis>
       <command>glassplayer</command>
       <arg choice='opt'><replaceable>OPTIONS</replaceable></arg>
+      <arg choice='req'><replaceable>stream-url</replaceable></arg>
       <sbr/>
     </cmdsynopsis>
   </refsynopsisdiv>
@@ -291,17 +292,6 @@
       </listitem>
     </varlistentry>
 -->
-    <varlistentry>
-      <term>
-	<option>--server-url=</option><replaceable>url</replaceable>
-      </term>
-      <listitem>
-	<para>
-	  The URL describing the server resource to stream from.  This parameter
-	  has no default.
-	</para>
-      </listitem>
-    </varlistentry>
 
     <varlistentry>
       <term>

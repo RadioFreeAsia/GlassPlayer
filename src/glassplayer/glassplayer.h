@@ -29,7 +29,7 @@
 #include "connector.h"
 #include "ringbuffer.h"
 
-#define GLASSPLAYER_USAGE "[options]\n"
+#define GLASSPLAYER_USAGE "[options] stream-url\n"
 
 class MainObject : public QObject
 {

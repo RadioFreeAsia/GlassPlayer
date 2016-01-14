@@ -63,3 +63,6 @@
 2016-01-14 Fred Gleason <fredg@paravelsystems.com>
 	* Increased the value of CODEC_RINGBUFFER_SIZE to '33554432' in
 	'src/common/codec.h'.
+2016-01-14 Fred Gleason <fredg@paravelsystems.com>
+	* Refactored the input interface to accept the server URL value
+	as the last argument on the command line.

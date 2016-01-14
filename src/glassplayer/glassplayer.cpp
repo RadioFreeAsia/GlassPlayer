@@ -59,7 +59,7 @@ MainObject::MainObject(QObject *parent)
 
   CmdSwitch *cmd=
     new CmdSwitch(qApp->argc(),qApp->argv(),"glassplayer",GLASSPLAYER_USAGE);
-  for(unsigned i=0;i<cmd->keys();i++) {
+  for(unsigned i=0;i<(cmd->keys()-1);i++) {
     if(cmd->key(i)=="--audio-device") {
       for(int j=0;j<AudioDevice::LastType;j++) {
 	if(cmd->value(i).toLower()==
@@ -92,14 +92,6 @@ MainObject::MainObject(QObject *parent)
 	exit(256);
       }
     }
-    if(cmd->key(i)=="--server-url") {
-      server_url.setUrl(cmd->value(i));
-      if(!server_url.isValid()) {
-	Log(LOG_ERR,"invalid argument for --server-url");
-	exit(256);
-      }
-      cmd->setProcessed(i,true);
-    }
     if(cmd->key(i)=="--verbose") {
       global_log_verbose=true;
       cmd->setProcessed(i,true);
@@ -108,6 +100,11 @@ MainObject::MainObject(QObject *parent)
       device_keys.push_back(cmd->key(i));
       device_values.push_back(cmd->value(i));
     }
+  }
+  server_url.setUrl(cmd->key(cmd->keys()-1));
+  if(!server_url.isValid()) {
+    Log(LOG_ERR,"invalid stream URL");
+    exit(256);
   }
 
   //
