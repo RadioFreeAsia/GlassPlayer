@@ -151,17 +151,18 @@ void XCast::ProcessHeader(const QString &str)
 {
   QStringList f0;
 
-  //fprintf(stderr,"%s\n",(const char *)str.toUtf8());
+  //  fprintf(stderr,"%s\n",(const char *)str.toUtf8());
 
   if(xcast_result_code==0) {
     f0=str.split(" ",QString::SkipEmptyParts);
-    if(f0.size()!=3) {
+    if(f0.size()<3) {
       Log(LOG_ERR,"malformed response from server ["+str+"]");
       exit(256);
     }
     xcast_result_code=f0[1].toInt();
     if((xcast_result_code<200)||(xcast_result_code>=300)) {
-      Log(LOG_ERR,"server returned error ["+f0[1]+" "+f0[2]+"]");
+      f0.erase(f0.begin());
+      Log(LOG_ERR,"server returned error ["+f0.join(" ")+"]");
       exit(256);
     }
   }

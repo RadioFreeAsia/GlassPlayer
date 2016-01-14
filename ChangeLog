@@ -54,3 +54,6 @@
 	* Implemented a '--disable-stream-metadata' option.
 	* Added an MPEG-1 codec in 'src/glassplayer/codec_mpeg1.cpp' and
 	'src/glassplayer/codec_mpeg1.h'.
+2016-01-14 Fred Gleason <fredg@paravelsystems.com>
+	* Cleaned up Shoutcast error handling in
+	'src/glassplayer/conn_xcast.cpp'.
