@@ -111,7 +111,7 @@ MainObject::MainObject(QObject *parent)
   // Sanity Checks
   //
   if(server_url.host().isEmpty()) {
-    Log(LOG_ERR,"you must specify a --server-url\n");
+    Log(LOG_ERR,"you must specify a stream URL");
     exit(256);
   }
 
@@ -189,9 +189,7 @@ void MainObject::codecFramedData(unsigned chans,unsigned samprate,
 
 void MainObject::streamMetadataChangedData(const QString &str)
 {
-  if(global_log_verbose) {
-    Log(LOG_INFO,"Stream Now Playing: "+str);
-  }
+  Log(LOG_INFO,"Now Playing: "+str);
 }
 
 

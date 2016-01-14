@@ -66,3 +66,6 @@
 2016-01-14 Fred Gleason <fredg@paravelsystems.com>
 	* Refactored the input interface to accept the server URL value
 	as the last argument on the command line.
+2016-01-14 Fred Gleason <fredg@paravelsystems.com>
+	* Cleaned up logging statements to reduce output to STDERR when
+	the '--verbose' switch was not specified.

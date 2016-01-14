@@ -144,13 +144,17 @@ bool DevAlsa::start(QString *err)
   if(snd_pcm_hw_params_set_format(alsa_pcm,hwparams,
 				  SND_PCM_FORMAT_S32_LE)==0) {
     alsa_format=AudioDevice::S32_LE;
-    Log(LOG_INFO,"using ALSA S32_LE sample format");
+    if(global_log_verbose) {
+      Log(LOG_INFO,"using ALSA S32_LE sample format");
+    }
   }
   else {
     if(snd_pcm_hw_params_set_format(alsa_pcm,hwparams,
 				    SND_PCM_FORMAT_S16_LE)==0) {
       alsa_format=AudioDevice::S16_LE;
-      Log(LOG_INFO,"using ALSA S16_LE sample format");
+      if(global_log_verbose) {
+	Log(LOG_INFO,"using ALSA S16_LE sample format");
+      }
     }
     else {
       *err=tr("incompatible sample format");
@@ -164,9 +168,11 @@ bool DevAlsa::start(QString *err)
   alsa_samplerate=codec()->samplerate();
   snd_pcm_hw_params_set_rate_near(alsa_pcm,hwparams,&alsa_samplerate,&dir);
   if(alsa_samplerate!=codec()->samplerate()) {
-    Log(LOG_INFO,
-	QString().sprintf("using ALSA sample rate of %u samples/sec",
-			  alsa_samplerate));
+    if(global_log_verbose) {
+      Log(LOG_INFO,
+	  QString().sprintf("using ALSA sample rate of %u samples/sec",
+			    alsa_samplerate));
+    }
   }
 
   //
@@ -175,8 +181,10 @@ bool DevAlsa::start(QString *err)
   alsa_channels=codec()->channels();
   snd_pcm_hw_params_set_channels_near(alsa_pcm,hwparams,&alsa_channels);
   if(alsa_channels!=codec()->channels()) {
-    Log(LOG_INFO,
-	QString().sprintf("using ALSA channel count of %u",alsa_channels));
+    if(global_log_verbose) {
+      Log(LOG_INFO,
+	  QString().sprintf("using ALSA channel count of %u",alsa_channels));
+    }
   }
 
   //
@@ -186,16 +194,20 @@ bool DevAlsa::start(QString *err)
   snd_pcm_hw_params_set_periods_near(alsa_pcm,hwparams,&alsa_period_quantity,
 				     &dir);
   if(alsa_period_quantity!=ALSA_PERIOD_QUANTITY) {
-    Log(LOG_INFO,
-	QString().sprintf("using ALSA period quantity of %u",
-			  alsa_period_quantity));
+    if(global_log_verbose) {
+      Log(LOG_INFO,
+	  QString().sprintf("using ALSA period quantity of %u",
+			    alsa_period_quantity));
+    }
   }
   alsa_buffer_size=alsa_samplerate/2;
   snd_pcm_hw_params_set_buffer_size_near(alsa_pcm,hwparams,&alsa_buffer_size);
   if(alsa_buffer_size!=(alsa_samplerate/2)) {
-    Log(LOG_INFO,
-	QString().sprintf("using ALSA buffer size of %lu frames",
-			  alsa_buffer_size));
+    if(global_log_verbose) {
+      Log(LOG_INFO,
+	  QString().sprintf("using ALSA buffer size of %lu frames",
+			    alsa_buffer_size));
+    }
   }
 
   //
