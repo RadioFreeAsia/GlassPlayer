@@ -57,3 +57,6 @@
 2016-01-14 Fred Gleason <fredg@paravelsystems.com>
 	* Cleaned up Shoutcast error handling in
 	'src/glassplayer/conn_xcast.cpp'.
+2016-01-14 Fred Gleason <fredg@paravelsystems.com>
+	* Fixed a bug in 'src/glassplayer/codec_mpeg1.cpp' that broke
+	the build when configured without LibMad.

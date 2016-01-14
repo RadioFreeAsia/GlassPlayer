@@ -56,6 +56,7 @@ QString CodecMpeg1::defaultExtension() const
 
 void CodecMpeg1::process(const QByteArray &data)
 {
+#ifdef HAVE_LIBMAD
   float pcm[32768*4];
   int frame_offset=0;
   int lost_frames=0;
@@ -103,6 +104,7 @@ void CodecMpeg1::process(const QByteArray &data)
     mpeg1_mpeg=
       mpeg1_mpeg.right(mpeg1_mad_stream.bufend-mpeg1_mad_stream.next_frame);
   }
+#endif  // HAVE_LIBMAD
 }
 
 
@@ -150,8 +152,10 @@ bool CodecMpeg1::LoadLibmad()
 
 void CodecMpeg1::FreeLibmad()
 {
+#ifdef HAVE_LIBMAD
   mad_frame_finish(&mpeg1_mad_frame);
   mad_synth_finish(&mpeg1_mad_synth);
   mad_stream_finish(&mpeg1_mad_stream);
   dlclose(mpeg1_mad_handle);
+#endif  // HAVE_LIBMAD
 }
