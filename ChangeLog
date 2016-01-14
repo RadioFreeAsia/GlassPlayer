@@ -60,3 +60,6 @@
 2016-01-14 Fred Gleason <fredg@paravelsystems.com>
 	* Fixed a bug in 'src/glassplayer/codec_mpeg1.cpp' that broke
 	the build when configured without LibMad.
+2016-01-14 Fred Gleason <fredg@paravelsystems.com>
+	* Increased the value of CODEC_RINGBUFFER_SIZE to '33554432' in
+	'src/common/codec.h'.

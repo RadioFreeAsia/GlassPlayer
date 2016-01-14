@@ -36,7 +36,7 @@
 #include "ringbuffer.h"
 
 #define MAX_AUDIO_BUFFER 4096
-#define CODEC_RINGBUFFER_SIZE 4194304
+#define CODEC_RINGBUFFER_SIZE 33554432
 
 class Codec : public QObject
 {
