@@ -23,6 +23,10 @@
 #include "dev_alsa.h"
 #include "logging.h"
 
+#define PLL_SETTLE_INTERVAL 100
+#define PLL_CORRECTION 0.00001
+#define PLL_CORRECTION_LIMIT 0.001
+
 void *AlsaCallback(void *ptr)
 {
 #ifdef ALSA
@@ -32,30 +36,30 @@ void *AlsaCallback(void *ptr)
   static float *pcm_s3;
   static int16_t pcm16[32768];
   static int32_t pcm32[32768];
-  static int s;
   static int n;
   static SRC_STATE *src=NULL;
   static SRC_DATA data;
   static int err;
+  static double pll_setpoint_ratio=1.0;
+  static unsigned pll_setpoint_frames=0;
+  static double pll_offset=0.0;
+  static unsigned ring_frames=0;
+  static unsigned count=0;
 
   //
   // Initialize sample rate converter
   //
-  if(dev->codec()->samplerate()==dev->alsa_samplerate) {
-    pcm_s2=pcm_s1;
-  }
-  else {
-    pcm_s2=new float[262144];
-    memset(&data,0,sizeof(data));
-    data.data_in=pcm_s1;
-    data.data_out=pcm_s2;
-    data.output_frames=262144/dev->alsa_channels;
-    data.src_ratio=
-      (double)dev->alsa_samplerate/(double)dev->codec()->samplerate();
-    if((src=src_new(SRC_SINC_FASTEST,dev->codec()->channels(),&err))==NULL) {
-      fprintf(stderr,"SRC initialization error [%s]\n",src_strerror(err));
-      exit(256);
-    }
+  pcm_s2=new float[262144];
+  memset(&data,0,sizeof(data));
+  data.data_in=pcm_s1;
+  data.data_out=pcm_s2;
+  data.output_frames=262144/dev->alsa_channels;
+  pll_setpoint_ratio=
+    (double)dev->alsa_samplerate/(double)dev->codec()->samplerate();
+  data.src_ratio=pll_setpoint_ratio;
+  if((src=src_new(SRC_SINC_FASTEST,dev->codec()->channels(),&err))==NULL) {
+    fprintf(stderr,"SRC initialization error [%s]\n",src_strerror(err));
+    exit(256);
   }
 
   //
@@ -67,8 +71,6 @@ void *AlsaCallback(void *ptr)
   else {
     pcm_s3=new float[32768];
   }
-  //  printf("s1: %p  s2: %p  s3: %p\n",pcm_s1,pcm_s2,pcm_s3);
-  //  printf("chan1: %u  chan2: %u\n",dev->codec()->channels(),dev->alsa_channels);
 
   //
   // Wait for PCM buffer to fill
@@ -78,15 +80,36 @@ void *AlsaCallback(void *ptr)
   }
 
   while(1==1) {
+    if(count<PLL_SETTLE_INTERVAL) {  // Allow the ringbuffer to stabilize
+      if((ring_frames=dev->codec()->ring()->readSpace())>pll_setpoint_frames) {
+	pll_setpoint_frames=ring_frames;
+      }
+      pll_setpoint_frames=ring_frames;
+      count++;
+    }
+    else {
+      ring_frames=dev->codec()->ring()->readSpace();
+      if(ring_frames>pll_setpoint_frames) {
+	if(pll_offset>(-PLL_CORRECTION_LIMIT)) {
+	  pll_offset-=PLL_CORRECTION;
+	}
+      }
+      else {
+	if(pll_offset<(PLL_CORRECTION_LIMIT)) {
+	  pll_offset+=PLL_CORRECTION;
+	}
+      }
+      data.src_ratio=pll_setpoint_ratio+pll_offset;
+      src_set_ratio(src,data.src_ratio);
+      //fprintf(stderr,"setpt: %u  frames: %u  ratio: %7.5lf,  offset: %7.5lf\n",
+      //	      pll_setpoint_frames,ring_frames,data.src_ratio,pll_offset);
+    }
     if(snd_pcm_state(dev->alsa_pcm)!=SND_PCM_STATE_RUNNING) {
       snd_pcm_drop(dev->alsa_pcm);
       snd_pcm_prepare(dev->alsa_pcm);
     }
-    s=dev->alsa_buffer_size/(dev->alsa_period_quantity*2);
-    if(src!=NULL) {
-      s=(double)s/data.src_ratio;
-    }
-    if((n=dev->codec()->ring()->read(pcm_s1,s))>0) {
+    if((n=dev->codec()->ring()->
+	read(pcm_s1,dev->alsa_buffer_size/(dev->alsa_period_quantity*2)))>0) {
       if(src!=NULL) {
 	data.input_frames=n;
 	if((err=src_process(src,&data))<0) {
