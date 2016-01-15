@@ -18,6 +18,8 @@
 //   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 //
 
+#include <samplerate.h>
+
 #include "dev_alsa.h"
 #include "logging.h"
 
@@ -30,7 +32,11 @@ void *AlsaCallback(void *ptr)
   static float *pcm_s3;
   static int16_t pcm16[32768];
   static int32_t pcm32[32768];
+  static int s;
   static int n;
+  static SRC_STATE *src=NULL;
+  static SRC_DATA data;
+  static int err;
 
   //
   // Initialize sample rate converter
@@ -39,7 +45,17 @@ void *AlsaCallback(void *ptr)
     pcm_s2=pcm_s1;
   }
   else {
-    pcm_s2=new float[32768];
+    pcm_s2=new float[262144];
+    memset(&data,0,sizeof(data));
+    data.data_in=pcm_s1;
+    data.data_out=pcm_s2;
+    data.output_frames=262144/dev->alsa_channels;
+    data.src_ratio=
+      (double)dev->alsa_samplerate/(double)dev->codec()->samplerate();
+    if((src=src_new(SRC_SINC_FASTEST,dev->codec()->channels(),&err))==NULL) {
+      fprintf(stderr,"SRC initialization error [%s]\n",src_strerror(err));
+      exit(256);
+    }
   }
 
   //
@@ -51,8 +67,8 @@ void *AlsaCallback(void *ptr)
   else {
     pcm_s3=new float[32768];
   }
-  //  printf("s1: %p  s1: %p  s1: %p\n",pcm_s1,pcm_s2,pcm_s3);
-  //printf("chan1: %u  chan2: %u\n",dev->codec()->channels(),dev->alsa_channels);
+  //  printf("s1: %p  s2: %p  s3: %p\n",pcm_s1,pcm_s2,pcm_s3);
+  //  printf("chan1: %u  chan2: %u\n",dev->codec()->channels(),dev->alsa_channels);
 
   //
   // Wait for PCM buffer to fill
@@ -66,8 +82,19 @@ void *AlsaCallback(void *ptr)
       snd_pcm_drop(dev->alsa_pcm);
       snd_pcm_prepare(dev->alsa_pcm);
     }
-    if((n=dev->codec()->ring()->
-	read(pcm_s1,dev->alsa_buffer_size/(dev->alsa_period_quantity*2)))>0) {
+    s=dev->alsa_buffer_size/(dev->alsa_period_quantity*2);
+    if(src!=NULL) {
+      s=(double)s/data.src_ratio;
+    }
+    if((n=dev->codec()->ring()->read(pcm_s1,s))>0) {
+      if(src!=NULL) {
+	data.input_frames=n;
+	if((err=src_process(src,&data))<0) {
+	  fprintf(stderr,"SRC processing error [%s]\n",src_strerror(err));
+	  exit(256);
+	}
+	n=data.output_frames_gen;
+      }
       if(dev->codec()->channels()!=dev->alsa_channels) {
 	dev->remixChannels(pcm_s3,dev->alsa_channels,
 			   pcm_s2,dev->codec()->channels(),n);
