@@ -76,3 +76,5 @@
 	* Implemented sample-rate conversion in the ALSA audio device.
 2016-01-15 Fred Gleason <fredg@paravelsystems.com>
 	* Implemented PLL samplerate adaptation in the ALSA audio device.
+2016-01-15 Fred Gleason <fredg@paravelsystems.com>
+	* Implemented the 'make rpm' target.
