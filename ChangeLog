@@ -69,3 +69,6 @@
 2016-01-14 Fred Gleason <fredg@paravelsystems.com>
 	* Cleaned up logging statements to reduce output to STDERR when
 	the '--verbose' switch was not specified.
+2016-01-15 Fred Gleason <fredg@paravelsystems.com>
+	* Fixed a bug in 'src/glassplayer/codec_mpeg1.cpp' that caused
+	playout of single channel streams to be incorrect.

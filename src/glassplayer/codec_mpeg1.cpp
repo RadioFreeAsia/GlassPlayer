@@ -93,7 +93,11 @@ void CodecMpeg1::process(const QByteArray &data)
     }
     if(frame_offset>0) {
       if(!isFramed()) {
-	setFramed(2,mpeg1_mad_frame.header.samplerate,
+	int channels=2;
+	if(mpeg1_mad_frame.header.mode==MAD_MODE_SINGLE_CHANNEL) {
+	  channels=1;
+	}
+	setFramed(channels,mpeg1_mad_frame.header.samplerate,
 		  mpeg1_mad_frame.header.bitrate/1000);
       }
       else {

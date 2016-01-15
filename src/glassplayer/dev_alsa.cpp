@@ -25,42 +25,66 @@ void *AlsaCallback(void *ptr)
 {
 #ifdef ALSA
   static DevAlsa *dev=(DevAlsa *)ptr;
-  static float pcm_in[32768];
-  static float pcm_out[32768];
+  static float pcm_s1[32768];
+  static float *pcm_s2;
+  static float *pcm_s3;
   static int16_t pcm16[32768];
   static int32_t pcm32[32768];
   static int n;
 
   //
+  // Initialize sample rate converter
+  //
+  if(dev->codec()->samplerate()==dev->alsa_samplerate) {
+    pcm_s2=pcm_s1;
+  }
+  else {
+    pcm_s2=new float[32768];
+  }
+
+  //
+  // Initialize channel mixdown buffer
+  //
+  if(dev->codec()->channels()==dev->alsa_channels) {
+    pcm_s3=pcm_s2;
+  }
+  else {
+    pcm_s3=new float[32768];
+  }
+  //  printf("s1: %p  s1: %p  s1: %p\n",pcm_s1,pcm_s2,pcm_s3);
+  //printf("chan1: %u  chan2: %u\n",dev->codec()->channels(),dev->alsa_channels);
+
+  //
   // Wait for PCM buffer to fill
   //
-  //  fprintf(stderr,"CALLBACK STARTS\n");
   while(dev->codec()->ring()->readSpace()<2*dev->codec()->samplerate()) {
     usleep(36);
   }
 
   while(1==1) {
-    //fprintf(stderr,"CALLBACK RUNNING\n");
     if(snd_pcm_state(dev->alsa_pcm)!=SND_PCM_STATE_RUNNING) {
       snd_pcm_drop(dev->alsa_pcm);
       snd_pcm_prepare(dev->alsa_pcm);
     }
     if((n=dev->codec()->ring()->
-	read(pcm_in,dev->alsa_buffer_size/(dev->alsa_period_quantity*2)))>0) {
-      dev->remixChannels(pcm_out,dev->alsa_channels,pcm_in,dev->codec()->channels(),n);
+	read(pcm_s1,dev->alsa_buffer_size/(dev->alsa_period_quantity*2)))>0) {
+      if(dev->codec()->channels()!=dev->alsa_channels) {
+	dev->remixChannels(pcm_s3,dev->alsa_channels,
+			   pcm_s2,dev->codec()->channels(),n);
+      }
       switch(dev->alsa_format) {
       case AudioDevice::S16_LE:
-	dev->convertFromFloat(pcm16,pcm_out,n,dev->alsa_channels);
+	dev->convertFromFloat(pcm16,pcm_s3,n,dev->alsa_channels);
 	snd_pcm_writei(dev->alsa_pcm,pcm16,n);
 	break;
 
       case AudioDevice::S32_LE:
-	dev->convertFromFloat(pcm32,pcm_out,n,dev->alsa_channels);
+	dev->convertFromFloat(pcm32,pcm_s3,n,dev->alsa_channels);
 	snd_pcm_writei(dev->alsa_pcm,pcm32,n);
 	break;
 
       case AudioDevice::FLOAT:
-	snd_pcm_writei(dev->alsa_pcm,pcm_out,n);
+	snd_pcm_writei(dev->alsa_pcm,pcm_s3,n);
 	break;
 
       case AudioDevice::LastFormat:
