@@ -18,6 +18,7 @@
 //   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 //
 
+#include "codec_fdk.h"
 #include "codec_mpeg1.h"
 #include "codec_null.h"
 #include "codecfactory.h"
@@ -28,6 +29,7 @@ Codec *CodecFactory(Codec::Type type,unsigned bitrate,QObject *parent)
 
   switch(type) {
   case Codec::TypeAac:
+    codec=new CodecFdk(bitrate,parent);
     break;
 
   case Codec::TypeMpeg1:

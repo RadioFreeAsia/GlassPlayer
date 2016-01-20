@@ -293,11 +293,11 @@ AC_MSG_NOTICE("|                       MPEG-1 (via LibMad) ... No    |")
 else
 AC_MSG_NOTICE("|                       MPEG-1 (via LibMad) ... Yes   |")
 fi
-#if test -z $USING_FDKAAC ; then
-#AC_MSG_NOTICE("|               MPEG-4 HE-AAC+ (via FDKAAC) ... No    |")
-#else
-#AC_MSG_NOTICE("|               MPEG-4 HE-AAC+ (via FDKAAC) ... Yes   |")
-#fi
+if test -z $USING_FDKAAC ; then
+AC_MSG_NOTICE("|               MPEG-4 HE-AAC+ (via FDKAAC) ... No    |")
+else
+AC_MSG_NOTICE("|               MPEG-4 HE-AAC+ (via FDKAAC) ... Yes   |")
+fi
 #if test -z $USING_OPUS ; then
 #AC_MSG_NOTICE("|         Ogg Opus (via libogg and libopus) ... No    |")
 #else

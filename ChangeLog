@@ -78,3 +78,6 @@
 	* Implemented PLL samplerate adaptation in the ALSA audio device.
 2016-01-15 Fred Gleason <fredg@paravelsystems.com>
 	* Implemented the 'make rpm' target.
+2016-01-20 Fred Gleason <fredg@paravelsystems.com>
+	* Implemented an AAC decoder in 'src/glassplayer/codec_fdk.cpp'
+	and 'src/glassplayer/codec_fdk.h'.

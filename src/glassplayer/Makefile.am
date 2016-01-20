@@ -31,6 +31,7 @@ moc_%.cpp:	%.h
 bin_PROGRAMS = glassplayer
 
 dist_glassplayer_SOURCES = audiodevicefactory.cpp audiodevicefactory.h\
+                           codec_fdk.cpp codec_fdk.h\
                            codec_mpeg1.cpp codec_mpeg1.h\
                            codec_null.cpp codec_null.h\
                            codecfactory.cpp codecfactory.h\
@@ -49,6 +50,7 @@ nodist_glassplayer_SOURCES = audiodevice.cpp audiodevice.h\
                              logging.cpp logging.h\
                              moc_audiodevice.cpp\
                              moc_codec.cpp\
+                             moc_codec_fdk.cpp\
                              moc_codec_mpeg1.cpp\
                              moc_codec_null.cpp\
                              moc_conn_xcast.cpp\

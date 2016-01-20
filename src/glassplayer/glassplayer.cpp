@@ -145,7 +145,7 @@ void MainObject::serverConnectedData(bool state)
       }
     }
     if((sir_codec==NULL)||(!sir_codec->isAvailable())) {
-      Log(LOG_ERR,"unsupported codec ["+sir_connector->contentType()+"]");
+      Log(LOG_ERR,"unknown codec ["+sir_connector->contentType()+"]");
       exit(256);
     }
     if(global_log_verbose) {

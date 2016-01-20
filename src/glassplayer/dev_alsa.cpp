@@ -101,8 +101,6 @@ void *AlsaCallback(void *ptr)
       }
       data.src_ratio=pll_setpoint_ratio+pll_offset;
       src_set_ratio(src,data.src_ratio);
-      //fprintf(stderr,"setpt: %u  frames: %u  ratio: %7.5lf,  offset: %7.5lf\n",
-      //	      pll_setpoint_frames,ring_frames,data.src_ratio,pll_offset);
     }
     if(snd_pcm_state(dev->alsa_pcm)!=SND_PCM_STATE_RUNNING) {
       snd_pcm_drop(dev->alsa_pcm);
