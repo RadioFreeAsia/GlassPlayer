@@ -26,16 +26,6 @@ AC_SUBST(RPM_RELEASE,1)
 m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])])
 
 #
-# Some Fully Resolved Install Paths
-# (for the packaging system and friends)
-#
-if test ${prefix} = "NONE" ; then
-  AC_SUBST(LOCAL_PREFIX,/usr/local)
-else
-  AC_SUBST(LOCAL_PREFIX,${prefix})
-fi
-
-#
 # Basic Compiler Checks
 #
 AC_PROG_CXX
