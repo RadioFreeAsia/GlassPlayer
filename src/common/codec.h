@@ -78,8 +78,6 @@ class Codec : public QObject
   unsigned codec_channels;
   double codec_quality;
   unsigned codec_samplerate;
-  SRC_STATE *codec_src_state;
-  SRC_DATA *codec_src_data;
   float *codec_pcm_in;
   float *codec_pcm_out;
   float *codec_pcm_buffer[2];

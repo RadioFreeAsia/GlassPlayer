@@ -40,6 +40,7 @@ class DevAlsa : public AudioDevice
   bool processOptions(QString *err,const QStringList &keys,
 		      const QStringList &values);
   bool start(QString *err);
+  void stop();
 
  private:
 #ifdef ALSA
@@ -52,6 +53,7 @@ class DevAlsa : public AudioDevice
   snd_pcm_uframes_t alsa_buffer_size; 
   float *alsa_pcm_buffer;
   pthread_t alsa_pthread;
+  bool alsa_stopping;
   //  MeterAverage *alsa_meter_avg[MAX_AUDIO_CHANNELS];
   //  QTimer *alsa_meter_timer;
   friend void *AlsaCallback(void *ptr);

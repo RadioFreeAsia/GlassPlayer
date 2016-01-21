@@ -30,7 +30,7 @@
 void *AlsaCallback(void *ptr)
 {
 #ifdef ALSA
-  static DevAlsa *dev=(DevAlsa *)ptr;
+  static DevAlsa *dev=NULL;
   static float pcm_s1[32768];
   static float *pcm_s2;
   static float *pcm_s3;
@@ -45,7 +45,16 @@ void *AlsaCallback(void *ptr)
   static double pll_offset=0.0;
   static unsigned ring_frames=0;
   static unsigned count=0;
-  static bool started=false;
+  static bool show_xrun=false;
+
+  dev=(DevAlsa *)ptr;
+  src=NULL;
+  pll_setpoint_ratio=1.0;
+  pll_setpoint_frames=0;
+  pll_offset=0.0;
+  ring_frames=0;
+  count=0;
+  show_xrun=false;
 
   //
   // Initialize sample rate converter
@@ -76,7 +85,8 @@ void *AlsaCallback(void *ptr)
   //
   // Wait for PCM buffer to fill
   //
-  while(dev->codec()->ring()->readSpace()<2*dev->codec()->samplerate()) {
+  while((!dev->alsa_stopping)&&
+	(dev->codec()->ring()->readSpace()<2*dev->codec()->samplerate())) {
     usleep(36);
   }
 
@@ -87,7 +97,7 @@ void *AlsaCallback(void *ptr)
     pll_setpoint_frames=ring_frames;
     count++;
   }
-  while(1==1) {
+  while(!dev->alsa_stopping) {
     ring_frames=dev->codec()->ring()->readSpace();
     if(ring_frames>pll_setpoint_frames) {
       if(pll_offset>(-PLL_CORRECTION_LIMIT)) {
@@ -102,11 +112,15 @@ void *AlsaCallback(void *ptr)
     data.src_ratio=pll_setpoint_ratio+pll_offset;
     src_set_ratio(src,data.src_ratio);
     if(snd_pcm_state(dev->alsa_pcm)!=SND_PCM_STATE_RUNNING) {
-      if(started) {
+      if(show_xrun) {
 	fprintf(stderr,"*** XRUN ***\n");
 	snd_pcm_drop(dev->alsa_pcm);
 	snd_pcm_prepare(dev->alsa_pcm);
+	show_xrun=false;
       }
+    }
+    else {
+      show_xrun=true;
     }
     if((n=dev->codec()->ring()->
 	read(pcm_s1,dev->alsa_buffer_size/(dev->alsa_period_quantity*2)))>0) {
@@ -140,10 +154,22 @@ void *AlsaCallback(void *ptr)
       case AudioDevice::LastFormat:
 	break;
       }
-      started=true;
     }
   }
 
+  //
+  // Shutdown
+  //
+  snd_pcm_drain(dev->alsa_pcm);
+  snd_pcm_close(dev->alsa_pcm);
+  if((pcm_s3!=pcm_s2)&&(pcm_s3!=pcm_s1)) {
+    delete pcm_s3;
+  }
+  pcm_s3=NULL;
+  if(pcm_s2!=pcm_s1) {
+    delete pcm_s2;
+  }
+  pcm_s2=NULL;
 #endif  // ALSA
   return NULL;
 }
@@ -155,12 +181,17 @@ DevAlsa::DevAlsa(Codec *codec,QObject *parent)
 #ifdef ALSA
   alsa_device=ALSA_DEFAULT_DEVICE;
   alsa_pcm_buffer=NULL;
+  alsa_stopping=false;
 #endif  // ALSA
 }
 
 
 DevAlsa::~DevAlsa()
 {
+  stop();
+  if(alsa_pcm_buffer!=NULL) {
+    delete alsa_pcm_buffer;
+  }
 }
 
 
@@ -321,4 +352,11 @@ bool DevAlsa::start(QString *err)
 #else
   return false;
 #endif  // ALSA
+}
+
+
+void DevAlsa::stop()
+{
+  alsa_stopping=true;
+  pthread_join(alsa_pthread,NULL);
 }

@@ -88,3 +88,5 @@
 	'src/glassplay/dev_alsa.cpp'.
 2016-01-21 Fred Gleason <fredg@paravelsystems.com>
 	* Removed superfluous 'LOCAL_PATH' statments from 'configure.ac'.
+2016-01-21 Fred Gleason <fredg@paravelsystems.com>
+	* Implemented automatic reconnection for glassplayer(1).

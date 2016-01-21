@@ -27,10 +27,11 @@
 
 #include <QByteArray>
 #include <QObject>
+#include <QProcess>
 #include <QString>
 #include <QTcpSocket>
 #include <QTimer>
-#include <QProcess>
+#include <QUrl>
 
 class Connector : public QObject
 {
@@ -44,8 +45,9 @@ class Connector : public QObject
   void setServerUsername(const QString &str);
   QString serverPassword() const;
   void setServerPassword(const QString &str);
+  QUrl serverUrl() const;
+  void setServerUrl(const QUrl &url);
   QString serverMountpoint() const;
-  void setServerMountpoint(const QString &str);
   QString contentType() const;
   void setContentType(const QString &str);
   unsigned audioBitrate() const;
@@ -76,7 +78,7 @@ class Connector : public QObject
   void setExtension(const QString &str);
   QString formatIdentifier() const;
   void setFormatIdentifier(const QString &str);
-  virtual void connectToServer(const QString &hostname,uint16_t port);
+  virtual void connectToServer();
   void stop();
   QString scriptUp() const;
   void setScriptUp(const QString &cmd);
@@ -98,14 +100,11 @@ class Connector : public QObject
 
  signals:
   void connected(bool state);
-  //  void dataReceived(void *data,uint64_t len);
   void dataReceived(const QByteArray &data);
   void error(QAbstractSocket::SocketError err);
-  void stopped();
   void streamMetadataChanged(const QString &str);
 
  protected:
-  virtual void startStopping();
   void setConnected(bool state);
   void setError(QAbstractSocket::SocketError err);
   virtual void connectToHostConnector(const QString &hostname,uint16_t port)=0;
@@ -117,10 +116,8 @@ class Connector : public QObject
  private:
   QString conn_server_username;
   QString conn_server_password;
-  QString conn_server_mountpoint;
+  QUrl conn_server_url;
   QString conn_content_type;
-  //  unsigned conn_audio_channels;
-  //  unsigned conn_audio_samplerate;
   std::vector<unsigned> conn_audio_bitrates;
   QString conn_stream_name;
   QString conn_stream_description;

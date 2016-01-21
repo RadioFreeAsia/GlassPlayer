@@ -23,6 +23,7 @@
 #include <QStringList>
 
 #include "connector.h"
+#include "glasslimits.h"
 #include "logging.h"
 
 Connector::Connector(QObject *parent)
@@ -30,10 +31,7 @@ Connector::Connector(QObject *parent)
 {
   conn_server_username="source";
   conn_server_password="";
-  conn_server_mountpoint="";
   conn_content_type="";
-  //  conn_audio_channels=2;
-  //  conn_audio_samplerate=44100;
   conn_audio_bitrates.push_back(128);
   conn_stream_name="no name";
   conn_stream_description="unknown";
@@ -48,43 +46,11 @@ Connector::Connector(QObject *parent)
   conn_host_hostname="";
   conn_host_port=0;
   conn_connected=false;
-  /*
-  conn_watchdog_active=false;
-  conn_script_up_process=NULL;
-  conn_script_down_process=NULL;
-
-  conn_data_timer=new QTimer(this);
-  connect(conn_data_timer,SIGNAL(timeout()),this,SLOT(dataTimeoutData()));
-  conn_data_timer->start(RINGBUFFER_SERVICE_INTERVAL);
-
-  conn_watchdog_timer=new QTimer(this);
-  conn_watchdog_timer->setSingleShot(true);
-  connect(conn_watchdog_timer,SIGNAL(timeout()),
-	  this,SLOT(watchdogTimeoutData()));
-
-  conn_stop_timer=new QTimer(this);
-  conn_stop_timer->setSingleShot(true);
-  connect(conn_stop_timer,SIGNAL(timeout()),this,SLOT(stopTimeoutData()));
-
-  conn_script_down_garbage_timer=new QTimer(this);
-  conn_script_down_garbage_timer->setSingleShot(true);
-  connect(conn_script_down_garbage_timer,SIGNAL(timeout()),
-	  this,SLOT(scriptDownCollectGarbageData()));
-
-  conn_script_up_garbage_timer=new QTimer(this);
-  conn_script_up_garbage_timer->setSingleShot(true);
-  connect(conn_script_up_garbage_timer,SIGNAL(timeout()),
-	  this,SLOT(scriptUpCollectGarbageData()));
-  */
 }
 
 
 Connector::~Connector()
 {
-  /*
-  delete conn_stop_timer;
-  delete conn_data_timer;
-  */
 }
 
 
@@ -112,15 +78,28 @@ void Connector::setServerPassword(const QString &str)
 }
 
 
-QString Connector::serverMountpoint() const
+QUrl Connector::serverUrl() const
 {
-  return conn_server_mountpoint;
+  return conn_server_url;
 }
 
 
-void Connector::setServerMountpoint(const QString &str)
+void Connector::setServerUrl(const QUrl &url)
 {
-  conn_server_mountpoint=str;
+  conn_server_url=url;
+  uint16_t port=conn_server_url.port();
+  if(port==65535) {
+    conn_server_url.setPort(DEFAULT_SERVER_PORT);
+  }
+  if(conn_server_url.path().isEmpty()) {
+    conn_server_url.setPath("/");
+  }
+}
+
+
+QString Connector::serverMountpoint() const
+{
+  return conn_server_url.path();
 }
 
 
@@ -311,17 +290,14 @@ void Connector::setFormatIdentifier(const QString &str)
 }
 
 
-void Connector::connectToServer(const QString &hostname,uint16_t port)
+void Connector::connectToServer()
 {
-  conn_host_hostname=hostname;
-  conn_host_port=port;
-  connectToHostConnector(hostname,port);
+  connectToHostConnector(conn_server_url.host(),conn_server_url.port());
 }
 
 
 void Connector::stop()
 {
-  startStopping();
   setConnected(false);
 }
 
@@ -424,12 +400,6 @@ QString Connector::basePart(const QString &fullpath)
 {
   QStringList f0=fullpath.split("/");
   return f0[f0.size()-1];
-}
-
-
-void Connector::startStopping()
-{
-  //  conn_stop_timer->start(0);
 }
 
 

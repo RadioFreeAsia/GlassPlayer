@@ -39,6 +39,14 @@ XCast::XCast(QObject *parent)
   connect(xcast_socket,SIGNAL(readyRead()),this,SLOT(readyReadData()));
   connect(xcast_socket,SIGNAL(error(QAbstractSocket::SocketError)),
 	  this,SLOT(errorData(QAbstractSocket::SocketError)));
+
+  //
+  // Watchdog Timer
+  //
+  xcast_watchdog_retry_timer=new QTimer(this);
+  xcast_watchdog_retry_timer->setSingleShot(true);
+  connect(xcast_watchdog_retry_timer,SIGNAL(timeout()),
+	  this,SLOT(watchdogRetryData()));
 }
 
 
@@ -138,6 +146,22 @@ void XCast::readyReadData()
 
 void XCast::errorData(QAbstractSocket::SocketError err)
 {
+  switch(err) {
+  case QAbstractSocket::HostNotFoundError:
+    fprintf(stderr,"glassplayer: host not found\n");
+    exit(255);
+
+  default:
+    emit connected(false);
+    xcast_watchdog_retry_timer->start(XCAST_WATCHDOG_RETRY_INTERVAL);
+    break;
+  }
+}
+
+
+void XCast::watchdogRetryData()
+{
+  connectToServer();
 }
 
 

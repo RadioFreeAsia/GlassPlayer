@@ -22,8 +22,11 @@
 #define CONN_XCAST_H
 
 #include <QTcpSocket>
+#include <QTimer>
 
 #include "connector.h"
+
+#define XCAST_WATCHDOG_RETRY_INTERVAL 5000
 
 class XCast : public Connector
 {
@@ -41,6 +44,7 @@ class XCast : public Connector
   void connectedData();
   void readyReadData();
   void errorData(QAbstractSocket::SocketError err);
+  void watchdogRetryData();
 
  private:
   void SendHeader(const QString &str);
@@ -55,6 +59,7 @@ class XCast : public Connector
   QString xcast_metadata_backstore;
   QString xcast_metadata_string;
   int xcast_metadata_counter;
+  QTimer *xcast_watchdog_retry_timer;
 };
 
 

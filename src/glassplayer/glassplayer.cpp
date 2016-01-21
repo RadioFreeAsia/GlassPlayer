@@ -158,6 +158,16 @@ void MainObject::serverConnectedData(bool state)
 	    this,
 	    SLOT(codecFramedData(unsigned,unsigned,unsigned,Ringbuffer *)));
   }
+  else {
+    if(sir_audio_device!=NULL) {
+      delete sir_audio_device;
+      sir_audio_device=NULL;
+    }
+    if(sir_codec!=NULL) {
+      delete sir_codec;
+      sir_codec=NULL;
+    }
+  }
 }
 
 
@@ -206,23 +216,14 @@ void MainObject::exitData()
 
 void MainObject::StartServerConnection()
 {
-  uint16_t port=server_url.port();
-  if(port==65535) {
-    port=DEFAULT_SERVER_PORT;
-  }
   sir_connector=ConnectorFactory(server_type,this);
   sir_connector->setStreamMetadataEnabled(!disable_stream_metadata);
   connect(sir_connector,SIGNAL(connected(bool)),
 	  this,SLOT(serverConnectedData(bool)));
   connect(sir_connector,SIGNAL(streamMetadataChanged(const QString &)),
 	  this,SLOT(streamMetadataChangedData(const QString &)));
-  if(server_url.path().isEmpty()) {
-    sir_connector->setServerMountpoint("/");
-  }
-  else {
-    sir_connector->setServerMountpoint(server_url.path());
-  }
-  sir_connector->connectToServer(server_url.host(),port);
+  sir_connector->setServerUrl(server_url);
+  sir_connector->connectToServer();
 }
 
 

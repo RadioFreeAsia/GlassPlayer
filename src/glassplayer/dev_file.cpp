@@ -32,6 +32,7 @@ DevFile::DevFile(Codec *codec,QObject *parent)
 
 DevFile::~DevFile()
 {
+  stop();
 }
 
 

@@ -65,6 +65,9 @@ CodecFdk::CodecFdk(unsigned bitrate,QObject *parent)
 
 CodecFdk::~CodecFdk()
 {
+#ifdef HAVE_FDKAAC
+  aacDecoder_Close(fdk_decoder);
+#endif  // HAVE_FDKAAC
 }
 
 

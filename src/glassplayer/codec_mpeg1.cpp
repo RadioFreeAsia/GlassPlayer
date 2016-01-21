@@ -39,6 +39,7 @@ CodecMpeg1::CodecMpeg1(unsigned bitrate,QObject *parent)
 
 CodecMpeg1::~CodecMpeg1()
 {
+  FreeLibmad();
 }
 
 

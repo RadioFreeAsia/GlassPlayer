@@ -61,7 +61,6 @@ class CodecMpeg1 : public Codec
   struct mad_stream mpeg1_mad_stream;
   struct mad_frame mpeg1_mad_frame;
   struct mad_synth mpeg1_mad_synth;
-  //  struct mad_header mpeg1_mad_header;
 #endif  // HAVE_LIBMAD
 };
 

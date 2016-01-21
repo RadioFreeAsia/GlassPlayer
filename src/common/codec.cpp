@@ -30,8 +30,6 @@ Codec::Codec(Codec::Type type,unsigned bitrate,QObject *parent)
   codec_quality=0.5;
   codec_samplerate=48000;
   codec_is_framed=false;
-  codec_src_state=NULL;
-  codec_src_data=NULL;
   codec_pcm_in=NULL;
   codec_pcm_out=NULL;
   codec_pcm_buffer[0]=NULL;
@@ -41,11 +39,8 @@ Codec::Codec(Codec::Type type,unsigned bitrate,QObject *parent)
 
 Codec::~Codec()
 {
-  if(codec_src_state!=NULL) {
-    src_delete(codec_src_state);
-  }
-  if(codec_src_data!=NULL) {
-    delete codec_src_data;
+  if(codec_ring!=NULL) {
+    delete codec_ring;
   }
 }
 
