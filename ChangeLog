@@ -83,3 +83,6 @@
 	and 'src/glassplayer/codec_fdk.h'.
 2016-01-20 Fred Gleason <fredg@paravelsystems.com>
 	* Incremented the package version to 0.6.0.
+2016-01-20 Fred Gleason <fredg@paravelsystems.com>
+	* Changed the SRC type from SRC_SINC_FASTEST to SRC_LINEAR in
+	'src/glassplay/dev_alsa.cpp'.

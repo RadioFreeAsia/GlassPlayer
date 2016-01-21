@@ -45,6 +45,7 @@ void *AlsaCallback(void *ptr)
   static double pll_offset=0.0;
   static unsigned ring_frames=0;
   static unsigned count=0;
+  static bool started=false;
 
   //
   // Initialize sample rate converter
@@ -57,7 +58,7 @@ void *AlsaCallback(void *ptr)
   pll_setpoint_ratio=
     (double)dev->alsa_samplerate/(double)dev->codec()->samplerate();
   data.src_ratio=pll_setpoint_ratio;
-  if((src=src_new(SRC_SINC_FASTEST,dev->codec()->channels(),&err))==NULL) {
+  if((src=src_new(SRC_LINEAR,dev->codec()->channels(),&err))==NULL) {
     fprintf(stderr,"SRC initialization error [%s]\n",src_strerror(err));
     exit(256);
   }
@@ -79,32 +80,33 @@ void *AlsaCallback(void *ptr)
     usleep(36);
   }
 
-  while(1==1) {
-    if(count<PLL_SETTLE_INTERVAL) {  // Allow the ringbuffer to stabilize
-      if((ring_frames=dev->codec()->ring()->readSpace())>pll_setpoint_frames) {
-	pll_setpoint_frames=ring_frames;
-      }
+  while(count<PLL_SETTLE_INTERVAL) {  // Allow ringbuffer to stabilize
+    if((ring_frames=dev->codec()->ring()->readSpace())>pll_setpoint_frames) {
       pll_setpoint_frames=ring_frames;
-      count++;
+    }
+    pll_setpoint_frames=ring_frames;
+    count++;
+  }
+  while(1==1) {
+    ring_frames=dev->codec()->ring()->readSpace();
+    if(ring_frames>pll_setpoint_frames) {
+      if(pll_offset>(-PLL_CORRECTION_LIMIT)) {
+	pll_offset-=PLL_CORRECTION;
+      }
     }
     else {
-      ring_frames=dev->codec()->ring()->readSpace();
-      if(ring_frames>pll_setpoint_frames) {
-	if(pll_offset>(-PLL_CORRECTION_LIMIT)) {
-	  pll_offset-=PLL_CORRECTION;
-	}
+      if(pll_offset<(PLL_CORRECTION_LIMIT)) {
+	pll_offset+=PLL_CORRECTION;
       }
-      else {
-	if(pll_offset<(PLL_CORRECTION_LIMIT)) {
-	  pll_offset+=PLL_CORRECTION;
-	}
-      }
-      data.src_ratio=pll_setpoint_ratio+pll_offset;
-      src_set_ratio(src,data.src_ratio);
     }
+    data.src_ratio=pll_setpoint_ratio+pll_offset;
+    src_set_ratio(src,data.src_ratio);
     if(snd_pcm_state(dev->alsa_pcm)!=SND_PCM_STATE_RUNNING) {
-      snd_pcm_drop(dev->alsa_pcm);
-      snd_pcm_prepare(dev->alsa_pcm);
+      if(started) {
+	fprintf(stderr,"*** XRUN ***\n");
+	snd_pcm_drop(dev->alsa_pcm);
+	snd_pcm_prepare(dev->alsa_pcm);
+      }
     }
     if((n=dev->codec()->ring()->
 	read(pcm_s1,dev->alsa_buffer_size/(dev->alsa_period_quantity*2)))>0) {
@@ -138,6 +140,7 @@ void *AlsaCallback(void *ptr)
       case AudioDevice::LastFormat:
 	break;
       }
+      started=true;
     }
   }
 
