@@ -397,6 +397,7 @@ Ringbuffer::Ringbuffer(size_t bytes,unsigned channels)
 {
   ring_channels=channels;
   ring_ring=glass_ringbuffer_create(bytes);
+  ring_reset=false;
 }
 
 
@@ -414,6 +415,7 @@ unsigned Ringbuffer::size() const
 
 unsigned Ringbuffer::read(float *data,unsigned frames)
 {
+  ring_reset=frames>readSpace();
   return glass_ringbuffer_read(ring_ring,(char *)data,
 			      frames*sizeof(float)*ring_channels)/
     (sizeof(float)*ring_channels);
@@ -453,4 +455,14 @@ unsigned Ringbuffer::dump(unsigned frames)
   glass_ringbuffer_read_advance(ring_ring,bytes);
 
   return ret;
+}
+
+
+bool Ringbuffer::isReset()
+{
+  if(ring_reset) {
+    ring_reset=false;
+    return true;
+  }
+  return false;
 }

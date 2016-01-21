@@ -80,6 +80,7 @@ class Connector : public QObject
   void setFormatIdentifier(const QString &str);
   virtual void connectToServer();
   void stop();
+  virtual void reset()=0;
   QString scriptUp() const;
   void setScriptUp(const QString &cmd);
   QString scriptDown() const;

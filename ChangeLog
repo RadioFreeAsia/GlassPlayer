@@ -90,3 +90,6 @@
 	* Removed superfluous 'LOCAL_PATH' statments from 'configure.ac'.
 2016-01-21 Fred Gleason <fredg@paravelsystems.com>
 	* Implemented automatic reconnection for glassplayer(1).
+2016-01-21 Fred Gleason <fredg@paravelsystems.com>
+	* Extended automatic reconnection to detect data starvation and
+	missing mountpoint conditions.

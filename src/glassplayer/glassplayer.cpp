@@ -51,6 +51,7 @@ MainObject::MainObject(QObject *parent)
 {
   sir_codec=NULL;
   sir_ring=NULL;
+  sir_audio_device=NULL;
   disable_stream_metadata=false;
 
   audio_device_type=AudioDevice::Alsa;
@@ -108,6 +109,12 @@ MainObject::MainObject(QObject *parent)
   }
 
   //
+  // Starvation Watchdog
+  //
+  sir_starvation_timer=new QTimer(this);
+  connect(sir_starvation_timer,SIGNAL(timeout()),this,SLOT(starvationData()));
+
+  //
   // Sanity Checks
   //
   if(server_url.host().isEmpty()) {
@@ -159,6 +166,7 @@ void MainObject::serverConnectedData(bool state)
 	    SLOT(codecFramedData(unsigned,unsigned,unsigned,Ringbuffer *)));
   }
   else {
+    sir_starvation_timer->stop();
     if(sir_audio_device!=NULL) {
       delete sir_audio_device;
       sir_audio_device=NULL;
@@ -194,12 +202,26 @@ void MainObject::codecFramedData(unsigned chans,unsigned samprate,
     Log(LOG_ERR,err);
     exit(256);
   }
+  sir_starvation_timer->start(1000);
 }
 
 
 void MainObject::streamMetadataChangedData(const QString &str)
 {
   Log(LOG_INFO,"Now Playing: "+str);
+}
+
+
+void MainObject::starvationData()
+{
+  if(sir_codec!=NULL) {
+    if(sir_codec->ring()!=NULL) {
+      if(sir_codec->ring()->isReset()) {
+	sir_connector->reset();
+	Log(LOG_WARNING,"stream data starvation detected, connection reset");
+      }
+    }
+  }
 }
 
 

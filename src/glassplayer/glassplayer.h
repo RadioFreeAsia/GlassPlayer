@@ -22,6 +22,7 @@
 #define GLASSPLAYER_H
 
 #include <QObject>
+#include <QTimer>
 #include <QUrl>
 
 #include "audiodevice.h"
@@ -42,6 +43,7 @@ class MainObject : public QObject
   void codecFramedData(unsigned chans,unsigned samprate,unsigned bitrate,
 		       Ringbuffer *ring);
   void streamMetadataChangedData(const QString &str);
+  void starvationData();
   void exitData();
 
  private:
@@ -57,6 +59,7 @@ class MainObject : public QObject
   Codec *sir_codec;
   Connector *sir_connector;
   AudioDevice *sir_audio_device;
+  QTimer *sir_starvation_timer;
 };
 
 

@@ -35,6 +35,7 @@ class XCast : public Connector
   XCast(QObject *parent=0);
   ~XCast();
   Connector::ServerType serverType() const;
+  void reset();
 
  protected:
   void connectToHostConnector(const QString &hostname,uint16_t port);
@@ -50,6 +51,7 @@ class XCast : public Connector
   void SendHeader(const QString &str);
   void ProcessHeader(const QString &str);
   void ProcessMetadata(const QByteArray &mdata);
+  void InitSocket();
   QString xcast_header;
   bool xcast_header_active;
   QTcpSocket *xcast_socket;

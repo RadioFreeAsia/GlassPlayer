@@ -34,11 +34,8 @@ XCast::XCast(QObject *parent)
   xcast_metadata_interval=0;
   xcast_metadata_counter=0;
 
-  xcast_socket=new QTcpSocket(this);
-  connect(xcast_socket,SIGNAL(connected()),this,SLOT(connectedData()));
-  connect(xcast_socket,SIGNAL(readyRead()),this,SLOT(readyReadData()));
-  connect(xcast_socket,SIGNAL(error(QAbstractSocket::SocketError)),
-	  this,SLOT(errorData(QAbstractSocket::SocketError)));
+  xcast_socket=NULL;
+  InitSocket();
 
   //
   // Watchdog Timer
@@ -59,6 +56,14 @@ XCast::~XCast()
 Connector::ServerType XCast::serverType() const
 {
   return Connector::XCastServer;
+}
+
+
+void XCast::reset()
+{
+  xcast_socket->disconnect();
+  emit connected(false);
+  xcast_watchdog_retry_timer->start(XCAST_WATCHDOG_RETRY_INTERVAL);
 }
 
 
@@ -113,7 +118,12 @@ void XCast::readyReadData()
 	case 10:
 	  if(xcast_header.isEmpty()) {
 	    xcast_header_active=false;
-	    emit connected(true);
+	    if((xcast_result_code>=200)&&(xcast_result_code<300)) {
+	      emit connected(true);
+	    }
+	    else {
+	      reset();
+	    }
 	    return;
 	  }
 	  xcast_header="";
@@ -148,12 +158,14 @@ void XCast::errorData(QAbstractSocket::SocketError err)
 {
   switch(err) {
   case QAbstractSocket::HostNotFoundError:
-    fprintf(stderr,"glassplayer: host not found\n");
+    Log(LOG_ERR,"glassplayer: host not found\n");
     exit(255);
 
   default:
     emit connected(false);
     xcast_watchdog_retry_timer->start(XCAST_WATCHDOG_RETRY_INTERVAL);
+    Log(LOG_WARNING,tr("server connection lost")+
+	QString().sprintf(" [error: %u], ",err)+tr("attempting reconnect"));
     break;
   }
 }
@@ -161,6 +173,7 @@ void XCast::errorData(QAbstractSocket::SocketError err)
 
 void XCast::watchdogRetryData()
 {
+  InitSocket();
   connectToServer();
 }
 
@@ -187,7 +200,7 @@ void XCast::ProcessHeader(const QString &str)
     if((xcast_result_code<200)||(xcast_result_code>=300)) {
       f0.erase(f0.begin());
       Log(LOG_ERR,"server returned error ["+f0.join(" ")+"]");
-      exit(256);
+      // exit(256);
     }
   }
   else {
@@ -232,4 +245,17 @@ void XCast::ProcessMetadata(const QByteArray &mdata)
       setStreamMetadata(mdata.mid(13,mdata.lastIndexOf("';")-13));
     }
   }
+}
+
+
+void XCast::InitSocket()
+{
+  if(xcast_socket!=NULL) {
+    delete xcast_socket;
+  }
+  xcast_socket=new QTcpSocket(this);
+  connect(xcast_socket,SIGNAL(connected()),this,SLOT(connectedData()));
+  connect(xcast_socket,SIGNAL(readyRead()),this,SLOT(readyReadData()));
+  connect(xcast_socket,SIGNAL(error(QAbstractSocket::SocketError)),
+	  this,SLOT(errorData(QAbstractSocket::SocketError)));
 }
