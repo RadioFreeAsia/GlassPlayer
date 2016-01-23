@@ -93,3 +93,6 @@
 2016-01-21 Fred Gleason <fredg@paravelsystems.com>
 	* Extended automatic reconnection to detect data starvation and
 	missing mountpoint conditions.
+2016-01-22 Fred Gleason <fredg@paravelsystems.com>
+	* Fixed a bug in 'src/glassplayer/glassplayer.cpp' that threw a
+	segfault when the program was invoked with no arguments.

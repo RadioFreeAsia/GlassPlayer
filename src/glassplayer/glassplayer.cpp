@@ -60,6 +60,10 @@ MainObject::MainObject(QObject *parent)
 
   CmdSwitch *cmd=
     new CmdSwitch(qApp->argc(),qApp->argv(),"glassplayer",GLASSPLAYER_USAGE);
+  if(cmd->keys()==0) {
+    fprintf(stderr,"glassplayer: no stream-URL specified\n");
+    exit(256);
+  }
   for(unsigned i=0;i<(cmd->keys()-1);i++) {
     if(cmd->key(i)=="--audio-device") {
       for(int j=0;j<AudioDevice::LastType;j++) {
