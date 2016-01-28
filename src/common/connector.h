@@ -88,6 +88,7 @@ class Connector : public QObject
   static QString serverTypeText(Connector::ServerType);
   static QString optionKeyword(Connector::ServerType type);
   static Connector::ServerType serverType(const QString &key);
+  static bool acceptsContentType(ServerType type,const QString &mimetype);
   static QString subMountpointName(const QString &mntpt,unsigned bitrate);
   static QString pathPart(const QString &fullpath);
   static QString basePart(const QString &fullpath);
@@ -98,6 +99,7 @@ class Connector : public QObject
   static QString curlStrError(int exit_code);
   static QString httpStrError(int status_code);
   static QString timezoneOffset();
+  static QString socketErrorText(QAbstractSocket::SocketError err);
 
  signals:
   void connected(bool state);

@@ -29,6 +29,7 @@
 #include "codec.h"
 #include "connector.h"
 #include "ringbuffer.h"
+#include "serverid.h"
 
 #define GLASSPLAYER_USAGE "[options] stream-url\n"
 
@@ -39,6 +40,7 @@ class MainObject : public QObject
   MainObject(QObject *parent=0);
 
  private slots:
+  void serverTypeFoundData(Connector::ServerType type,const QUrl &url);
   void serverConnectedData(bool state);
   void codecFramedData(unsigned chans,unsigned samprate,unsigned bitrate,
 		       Ringbuffer *ring);
@@ -47,7 +49,6 @@ class MainObject : public QObject
   void exitData();
 
  private:
-  void StartServerConnection();
   Connector::ServerType server_type;
   AudioDevice::Type audio_device_type;
   QUrl server_url;
@@ -60,6 +61,7 @@ class MainObject : public QObject
   Connector *sir_connector;
   AudioDevice *sir_audio_device;
   QTimer *sir_starvation_timer;
+  ServerId *sir_server_id;
 };
 
 

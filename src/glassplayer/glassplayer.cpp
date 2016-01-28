@@ -52,6 +52,7 @@ MainObject::MainObject(QObject *parent)
   sir_codec=NULL;
   sir_ring=NULL;
   sir_audio_device=NULL;
+  sir_server_id=NULL;
   disable_stream_metadata=false;
 
   audio_device_type=AudioDevice::Alsa;
@@ -120,7 +121,26 @@ MainObject::MainObject(QObject *parent)
   ::signal(SIGINT,SigHandler);
   ::signal(SIGTERM,SigHandler);
 
-  StartServerConnection();
+  //
+  // Attempt to auto-detect remote server type
+  //
+  sir_server_id=new ServerId(this);
+  connect(sir_server_id,SIGNAL(typeFound(Connector::ServerType,const QUrl &)),
+	  this,SLOT(serverTypeFoundData(Connector::ServerType,const QUrl &)));
+  sir_server_id->connectToServer(server_url);
+}
+
+
+void MainObject::serverTypeFoundData(Connector::ServerType type,const QUrl &url)
+{
+  sir_connector=ConnectorFactory(type,this);
+  sir_connector->setStreamMetadataEnabled(!disable_stream_metadata);
+  connect(sir_connector,SIGNAL(connected(bool)),
+	  this,SLOT(serverConnectedData(bool)));
+  connect(sir_connector,SIGNAL(streamMetadataChanged(const QString &)),
+	  this,SLOT(streamMetadataChangedData(const QString &)));
+  sir_connector->setServerUrl(url);
+  sir_connector->connectToServer();
 }
 
 
@@ -222,19 +242,6 @@ void MainObject::exitData()
     }
     exit(0);
   }
-}
-
-
-void MainObject::StartServerConnection()
-{
-  sir_connector=ConnectorFactory(server_type,this);
-  sir_connector->setStreamMetadataEnabled(!disable_stream_metadata);
-  connect(sir_connector,SIGNAL(connected(bool)),
-	  this,SLOT(serverConnectedData(bool)));
-  connect(sir_connector,SIGNAL(streamMetadataChanged(const QString &)),
-	  this,SLOT(streamMetadataChangedData(const QString &)));
-  sir_connector->setServerUrl(server_url);
-  sir_connector->connectToServer();
 }
 
 

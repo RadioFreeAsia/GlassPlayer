@@ -40,7 +40,8 @@ dist_glassplayer_SOURCES = audiodevicefactory.cpp audiodevicefactory.h\
                            dev_alsa.cpp dev_alsa.h\
                            dev_file.cpp dev_file.h\
                            dev_stdout.cpp dev_stdout.h\
-                           glassplayer.cpp glassplayer.h
+                           glassplayer.cpp glassplayer.h\
+                           serverid.cpp serverid.h
 
 nodist_glassplayer_SOURCES = audiodevice.cpp audiodevice.h\
                              cmdswitch.cpp cmdswitch.h\
@@ -59,6 +60,7 @@ nodist_glassplayer_SOURCES = audiodevice.cpp audiodevice.h\
                              moc_dev_file.cpp\
                              moc_dev_stdout.cpp\
                              moc_glassplayer.cpp\
+                             moc_serverid.cpp\
                              ringbuffer.cpp ringbuffer.h
 
 glassplayer_LDADD = @SIRLIBS@ @LIBJACK@ @SNDFILE_LIBS@ @ALSA_LIBS@ @ASIHPI_LIBS@ -lpthread

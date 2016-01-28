@@ -375,6 +375,25 @@ Connector::ServerType Connector::serverType(const QString &key)
 }
 
 
+bool Connector:: acceptsContentType(Connector::ServerType type,
+				    const QString &mimetype)
+{
+  bool ret=false;
+
+  switch(type) {
+  case Connector::XCastServer:
+    ret=(mimetype.toLower()=="audio/mpeg")||
+      (mimetype.toLower()=="audio/aacp");
+    break;
+
+  case Connector::LastServer:
+    break;
+  }
+
+  return ret;
+}
+
+
 QString Connector::subMountpointName(const QString &mntpt,unsigned bitrate)
 {
   QStringList f0=mntpt.split(".");
@@ -1205,6 +1224,59 @@ QString Connector::timezoneOffset()
   }
   if(gmt>lt) {
     ret=QString().sprintf("+%02ld:%02ld",(gmt-lt)/3600,((gmt-lt)%3600)/60);
+  }
+
+  return ret;
+}
+
+
+QString Connector::socketErrorText(QAbstractSocket::SocketError err)
+{
+  QString ret=tr("Unknown socket error")+QString().sprintf(" [%u]",err);
+
+  switch(err) {
+  case QAbstractSocket::ConnectionRefusedError:
+    ret=tr("connection refused");
+    break;
+
+  case QAbstractSocket::RemoteHostClosedError:
+    ret=tr("remote host closed connection");
+    break;
+
+  case QAbstractSocket::HostNotFoundError:
+    ret=tr("host not found");
+    break;
+
+  case QAbstractSocket::SocketAccessError:
+    ret=tr("socket access error");
+    break;
+
+  case QAbstractSocket::SocketTimeoutError:
+    ret=tr("operation timed out");
+    break;
+
+  case QAbstractSocket::DatagramTooLargeError:
+    ret=tr("datagram too large");
+    break;
+
+  case QAbstractSocket::NetworkError:
+    ret=tr("network error");
+    break;
+
+  case QAbstractSocket::AddressInUseError:
+    ret=tr("address in use");
+    break;
+
+  case QAbstractSocket::SocketAddressNotAvailableError:
+    ret=tr("address not available");
+    break;
+
+  case QAbstractSocket::UnsupportedSocketOperationError:
+    ret=tr("unsupported socket operation");
+    break;
+
+  default:
+    break;
   }
 
   return ret;
