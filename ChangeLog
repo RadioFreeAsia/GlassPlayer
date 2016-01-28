@@ -106,3 +106,5 @@
 2016-01-28 Fred Gleason <fredg@paravelsystems.com>
 	* Fixed a bug that caused GET requests to return 400 in
 	'src/glassplayer/serverid.cpp'.
+2016-01-28 Fred Gleason <fredg@paravelsystems.com>
+	* Incremented the package version to 0.6.2.
