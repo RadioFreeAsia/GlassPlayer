@@ -96,5 +96,8 @@
 2016-01-22 Fred Gleason <fredg@paravelsystems.com>
 	* Fixed a bug in 'src/glassplayer/glassplayer.cpp' that threw a
 	segfault when the program was invoked with no arguments.
-2016-01-20 Fred Gleason <fredg@paravelsystems.com>
+2016-01-26 Fred Gleason <fredg@paravelsystems.com>
 	* Incremented the package version to 0.6.1.
+2016-01-28 Fred Gleason <fredg@paravelsystems.com>
+	* Removed support for '--server-type=' option in
+	'src/glassplayer/glassplayer.cpp'.

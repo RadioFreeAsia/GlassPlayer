@@ -82,21 +82,6 @@ MainObject::MainObject(QObject *parent)
       dump_bitstream=true;
       cmd->setProcessed(i,true);
     }
-    if(cmd->key(i)=="--server-type") {
-      for(int j=0;j<Connector::LastServer;j++) {
-	if(Connector::optionKeyword((Connector::ServerType)j)==
-	   cmd->value(i).toLower()) {
-	  server_type=(Connector::ServerType)j;
-	  cmd->setProcessed(i,true);
-	}
-      }
-      if(!cmd->processed(i)) {
-	Log(LOG_ERR,
-	    QString().sprintf("unknown --server-type value \"%s\"",
-			      (const char *)cmd->value(i).toAscii()));
-	exit(256);
-      }
-    }
     if(cmd->key(i)=="--verbose") {
       global_log_verbose=true;
       cmd->setProcessed(i,true);
