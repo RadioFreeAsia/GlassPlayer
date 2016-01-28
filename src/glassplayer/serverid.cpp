@@ -57,7 +57,7 @@ void ServerId::connectedData()
   id_result_code=0;
   id_content_type="";
   SendHeader("GET "+id_url.path()+" HTTP/1.1");
-  SendHeader("Host: "+id_url.host()+":"+QString().sprintf("%u",id_url.port()));
+  SendHeader("Host: "+id_url.host()+":"+QString().sprintf("%u",id_url.port(80)));
   SendHeader("Accept: */*");
   SendHeader("User-Agent: glassplayer/"+QString(VERSION));
   SendHeader("Cache-control: no-cache");
@@ -123,6 +123,8 @@ void ServerId::errorData(QAbstractSocket::SocketError err)
       id_kill_timer->start(0);
       return;
     }
+    Log(LOG_ERR,tr("unsupported stream type")+" ["+id_content_type+"]");
+    exit(256);
     break;
 
   default:

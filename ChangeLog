@@ -103,3 +103,6 @@
 	'src/glassplayer/glassplayer.cpp'.
 2016-01-28 Fred Gleason <fredg@paravelsystems.com>
 	* Added support for handling M3U stream URLs.
+2016-01-28 Fred Gleason <fredg@paravelsystems.com>
+	* Fixed a bug that caused GET requests to return 400 in
+	'src/glassplayer/serverid.cpp'.
