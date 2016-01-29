@@ -21,5 +21,4 @@ The following audio codecs are supported:
 
    MPEG-1/2 Layer 2 ('MP2')
    MPEG-1/2 Layer 3 ('MP3')
-   MPEG-2 Advanced Audio Coding, Main Profile ('AAC')
    MPEG-4 Advanced Audio Coding, High Efficiency Profile ('HE-AAC+')
