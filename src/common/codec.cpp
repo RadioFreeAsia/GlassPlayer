@@ -191,6 +191,32 @@ QString Codec::typeText(Codec::Type type)
 }
 
 
+QString Codec::optionKeyword(Codec::Type type)
+{
+  QString ret;
+
+  switch(type) {
+  case Codec::TypeAac:
+    ret="aac";
+    break;
+
+  case Codec::TypeMpeg1:
+    ret="mpeg";
+    break;
+ 
+  case Codec::TypeVorbis:
+    ret="vorbis";
+    break;
+ 
+  case Codec::TypeNull:
+  case Codec::TypeLast:
+    break;
+  }
+
+  return ret;
+}
+
+
 void Codec::setFramed(unsigned chans,unsigned samprate,unsigned bitrate)
 {
   codec_channels=chans;

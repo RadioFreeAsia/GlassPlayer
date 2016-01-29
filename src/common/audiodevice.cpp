@@ -34,8 +34,10 @@ AudioDevice::AudioDevice(Codec *codec,QObject *parent)
 {
   audio_codec=codec;
 
-  connect(codec,SIGNAL(audioWritten(unsigned)),
-	  this,SLOT(synchronousWrite(unsigned)));
+  if(codec!=NULL) {
+    connect(codec,SIGNAL(audioWritten(unsigned)),
+	    this,SLOT(synchronousWrite(unsigned)));
+  }
 }
 
 

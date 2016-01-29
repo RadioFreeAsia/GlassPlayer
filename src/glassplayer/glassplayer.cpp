@@ -57,6 +57,8 @@ MainObject::MainObject(QObject *parent)
 
   audio_device_type=AudioDevice::Alsa;
   dump_bitstream=false;
+  list_codecs=false;
+  list_devices=false;
   server_type=Connector::XCastServer;
 
   CmdSwitch *cmd=
@@ -83,7 +85,15 @@ MainObject::MainObject(QObject *parent)
       dump_bitstream=true;
       cmd->setProcessed(i,true);
     }
-    if(cmd->key(i)=="--verbose") {
+    if(cmd->key(i)=="--list-codecs") {
+      list_codecs=true;
+      cmd->setProcessed(i,true);
+    }
+    if(cmd->key(i)=="--list-devices") {
+      list_devices=true;
+      cmd->setProcessed(i,true);
+    }
+   if(cmd->key(i)=="--verbose") {
       global_log_verbose=true;
       cmd->setProcessed(i,true);
     }
@@ -92,10 +102,32 @@ MainObject::MainObject(QObject *parent)
       device_values.push_back(cmd->value(i));
     }
   }
-  server_url.setUrl(cmd->key(cmd->keys()-1));
-  if(!server_url.isValid()) {
-    Log(LOG_ERR,"invalid stream URL");
-    exit(256);
+  if(cmd->key(cmd->keys()-1)=="--list-codecs") {
+    list_codecs=true;
+  }
+  else {
+    if(cmd->key(cmd->keys()-1)=="--list-devices") {
+      list_devices=true;
+    }
+    else {
+      server_url.setUrl(cmd->key(cmd->keys()-1));
+      if(!server_url.isValid()) {
+	Log(LOG_ERR,"invalid stream URL");
+	exit(256);
+      }
+    }
+  }
+
+  //
+  // Resource Enumerations
+  //
+  if(list_codecs) {
+    ListCodecs();
+    exit(0);
+  }
+  if(list_devices) {
+    ListDevices();
+    exit(0);
   }
 
   //
@@ -241,6 +273,35 @@ void MainObject::exitData()
       sir_audio_device->stop();
     }
     exit(0);
+  }
+}
+
+
+void MainObject::ListCodecs()
+{
+  Codec *codec=NULL;
+  QString keyword;
+
+  for(int i=0;i<Codec::TypeLast;i++) {
+    if((codec=CodecFactory((Codec::Type)i,64,this))!=NULL) {
+      if(codec->isAvailable()) {
+	keyword=Codec::optionKeyword((Codec::Type)i);
+	if(!keyword.isEmpty()) {
+	  printf("%s\n",
+		 (const char *)Codec::optionKeyword((Codec::Type)i).toUtf8());
+	}
+      }
+    }
+  }
+}
+
+
+void MainObject::ListDevices()
+{
+  for(int i=0;i<AudioDevice::LastType;i++) {
+    if(AudioDeviceFactory((AudioDevice::Type)i,NULL,this)!=NULL) {
+      printf("%s\n",(const char *)AudioDevice::optionKeyword((AudioDevice::Type)i).toUtf8());
+    }
   }
 }
 

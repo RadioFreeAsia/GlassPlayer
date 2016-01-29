@@ -1,3 +1,4 @@
+
 // glassplayer.h
 //
 // glassplayer(1) Audio Player
@@ -49,6 +50,8 @@ class MainObject : public QObject
   void exitData();
 
  private:
+  void ListCodecs();
+  void ListDevices();
   Connector::ServerType server_type;
   AudioDevice::Type audio_device_type;
   QUrl server_url;
@@ -56,6 +59,8 @@ class MainObject : public QObject
   bool dump_bitstream;
   QStringList device_keys;
   QStringList device_values;
+  bool list_codecs;
+  bool list_devices;
   Ringbuffer *sir_ring;
   Codec *sir_codec;
   Connector *sir_connector;

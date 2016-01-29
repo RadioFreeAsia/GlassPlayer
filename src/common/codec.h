@@ -60,6 +60,7 @@ class Codec : public QObject
   static bool acceptsContentType(Type type,const QString &mimetype);
   static bool acceptsFormatIdentifier(Type type,const QString &fmt_id);
   static QString typeText(Codec::Type type);
+  static QString optionKeyword(Codec::Type type);
 
  signals:
   void framed(unsigned chans,unsigned samprate,unsigned bitrate,

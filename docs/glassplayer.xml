@@ -232,10 +232,10 @@
 	</para>
       </listitem>
     </varlistentry>
-<!--
+
     <varlistentry>
       <term>
-	<option>- -list-codecs</option>
+	<option>--list-codecs</option>
       </term>
       <listitem>
 	<para>
@@ -246,15 +246,15 @@
 
     <varlistentry>
       <term>
-	<option>- -list-devices</option>
+	<option>--list-devices</option>
       </term>
       <listitem>
 	<para>
-	  Print a list of available source devices and then exit.
+	  Print a list of available output device types and then exit.
 	</para>
       </listitem>
     </varlistentry>
-
+<!--
     <varlistentry>
       <term>
 	<option>- -meter-data</option>

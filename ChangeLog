@@ -110,3 +110,7 @@
 	* Incremented the package version to 0.6.2.
 2016-01-29 Fred Gleason <fredg@paravelsystems.com>
 	* Updated 'README'.
+2016-01-29 Fred Gleason <fredg@paravelsystems.com>
+	* Implemented '--list-codecs' and '--list-devices' options for
+	glassplayer(1) in 'src/glassplayer/glassplayer.cpp' and
+	'src/glassplayer/glassplayer.h'.
