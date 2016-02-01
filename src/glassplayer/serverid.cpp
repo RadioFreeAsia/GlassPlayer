@@ -123,6 +123,11 @@ void ServerId::errorData(QAbstractSocket::SocketError err)
       id_kill_timer->start(0);
       return;
     }
+    if(id_content_type.toLower()=="application/vnd.apple.mpegurl") {
+      emit typeFound(Connector::HlsServer,id_url);
+      id_kill_timer->start(0);
+      return;
+    }
     Log(LOG_ERR,tr("unsupported stream type")+" ["+id_content_type+"]");
     exit(256);
     break;

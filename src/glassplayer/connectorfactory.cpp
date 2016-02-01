@@ -18,6 +18,7 @@
 //   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 //
 
+#include "conn_hls.h"
 #include "conn_xcast.h"
 #include "connectorfactory.h"
 
@@ -26,6 +27,10 @@ Connector *ConnectorFactory(Connector::ServerType type,QObject *parent)
   Connector *conn=NULL;
 
   switch(type) {
+  case Connector::HlsServer:
+    conn=new Hls(parent);
+    break;
+
   case Connector::XCastServer:
     conn=new XCast(parent);
     break;

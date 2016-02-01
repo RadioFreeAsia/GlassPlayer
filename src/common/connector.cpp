@@ -20,6 +20,7 @@
 
 #include <time.h>
 
+#include <QDateTime>
 #include <QStringList>
 
 #include "connector.h"
@@ -331,6 +332,10 @@ QString Connector::serverTypeText(Connector::ServerType type)
   QString ret=tr("Unknown");
 
   switch(type) {
+  case Connector::HlsServer:
+    ret=tr("HTTP Live Stream (HLS)");
+    break;
+
   case Connector::XCastServer:
     ret=tr("IceCast or Shoutcast");
     break;
@@ -348,10 +353,13 @@ QString Connector::optionKeyword(Connector::ServerType type)
   QString ret;
 
   switch(type) {
+  case Connector::HlsServer:
+    ret="hls";
+    break;
+
   case Connector::XCastServer:
     ret="xcast";
     break;
-
 
   case Connector::LastServer:
     break;
@@ -384,6 +392,10 @@ bool Connector:: acceptsContentType(Connector::ServerType type,
   case Connector::XCastServer:
     ret=(mimetype.toLower()=="audio/mpeg")||
       (mimetype.toLower()=="audio/aacp");
+    break;
+
+  case Connector::HlsServer:
+    ret=mimetype.toLower()=="application/vnd.apple.mpegurl";
     break;
 
   case Connector::LastServer:
@@ -419,6 +431,111 @@ QString Connector::basePart(const QString &fullpath)
 {
   QStringList f0=fullpath.split("/");
   return f0[f0.size()-1];
+}
+
+
+QDateTime Connector::xmlTimestamp(const QString &str)
+{
+  QDate date;
+  QTime time;
+  QDateTime ret;
+  QString time_str;
+  QString tz_str;
+  int tz_offset=0;
+
+  QStringList f0=str.split("T");
+  if(f0.size()==2) {
+    //
+    // Extract Date
+    //
+    QStringList f1=f0[0].split("-");
+    if(f1.size()==3) {
+      date=QDate(f1[0].toInt(),f1[1].toInt(),f1[2].toInt());
+    }
+
+    //
+    // Extract Time
+    //
+    f1=f0[1].split("+");
+    if(f1.size()==2)  {
+      time_str=f1[0];
+      tz_str="+"+f1[1];
+    }
+    else {
+      f1=f0[1].split("-");
+      if(f1.size()==2)  {
+	time_str=f1[0];
+	tz_str="-"+f1[1];
+      }
+      else {
+	if(f0[1].right(1).toLower()=="z") {  // UTC
+	  time_str=f0[1].left(f0[1].length()-1);
+	  tz_str="+00:00";
+	}
+	else {   // No TZ info, assume local time
+	  time_str=f0[1];
+	  tz_str="+00:00";
+	}
+      }
+    }
+    QStringList f2=time_str.split(":");
+    if(f2.size()==3) {
+      QStringList f3=f2[2].split(".");
+      if(f3.size()==2) {
+	time=QTime(f2[0].toInt(),f2[1].toInt(),f3[0].toInt(),f3[1].toInt());
+      }
+      else {
+	time=QTime(f2[0].toInt(),f2[1].toInt(),f2[2].toInt());
+      }
+      f2=tz_str.right(tz_str.length()-1).split(":");
+      if(f2.size()==2) {
+	tz_offset=60*f2[0].toInt()+f2[1].toInt();
+	if(tz_str.left(1)=="-") {
+	  tz_offset=-tz_offset;
+	}
+      }
+    }
+  }
+  if(date.isValid()&&time.isValid()) {
+    ret=QDateTime(date,time);
+    ret.addSecs(Connector::timezoneOffset()-tz_offset);
+  }
+
+  return ret;
+}
+
+
+QString Connector::timezoneOffsetString()
+{
+  QString ret="Z";
+  time_t t=time(NULL);
+  time_t gmt;
+  time_t lt;
+  
+  gmt=mktime(gmtime(&t));
+  lt=mktime(localtime(&t));
+
+  if(gmt<lt) {
+    ret=QString().sprintf("-%02ld:%02ld",(lt-gmt)/3600,((lt-gmt)%3600)/60);
+  }
+  if(gmt>lt) {
+    ret=QString().sprintf("+%02ld:%02ld",(gmt-lt)/3600,((gmt-lt)%3600)/60);
+  }
+
+  return ret;
+}
+
+
+int Connector::timezoneOffset()
+{
+  time_t gmt;
+  time_t lt;
+  time_t t=time(NULL);
+  
+  gmt=mktime(gmtime(&t));
+  lt=mktime(localtime(&t));
+
+  return (gmt-lt)/60;
 }
 
 
@@ -1209,27 +1326,6 @@ QString Connector::httpStrError(int status_code)
 }
 
 
-QString Connector::timezoneOffset()
-{
-  QString ret="Z";
-  time_t t=time(NULL);
-  time_t gmt;
-  time_t lt;
-  
-  gmt=mktime(gmtime(&t));
-  lt=mktime(localtime(&t));
-
-  if(gmt<lt) {
-    ret=QString().sprintf("-%02ld:%02ld",(lt-gmt)/3600,((lt-gmt)%3600)/60);
-  }
-  if(gmt>lt) {
-    ret=QString().sprintf("+%02ld:%02ld",(gmt-lt)/3600,((gmt-lt)%3600)/60);
-  }
-
-  return ret;
-}
-
-
 QString Connector::socketErrorText(QAbstractSocket::SocketError err)
 {
   QString ret=tr("Unknown socket error")+QString().sprintf(" [%u]",err);
@@ -1276,6 +1372,40 @@ QString Connector::socketErrorText(QAbstractSocket::SocketError err)
     break;
 
   default:
+    break;
+  }
+
+  return ret;
+}
+
+
+QString Connector::processErrorText(QProcess::ProcessError err)
+{
+  QString ret=tr("Unknown process error")+QString().sprintf("[%u]",err);
+
+  switch(err) {
+  case QProcess::FailedToStart:
+    ret=tr("failed to start");
+    break;
+
+  case QProcess::Crashed:
+    ret=tr("crashed");
+    break;
+
+  case QProcess::Timedout:
+    ret=tr("timed out");
+    break;
+
+  case QProcess::WriteError:
+    ret=tr("write error");
+    break;
+
+  case QProcess::ReadError:
+    ret=tr("read error");
+    break;
+
+  case QProcess::UnknownError:
+    ret=tr("unknown error");
     break;
   }
 

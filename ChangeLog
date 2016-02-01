@@ -114,3 +114,8 @@
 	* Implemented '--list-codecs' and '--list-devices' options for
 	glassplayer(1) in 'src/glassplayer/glassplayer.cpp' and
 	'src/glassplayer/glassplayer.h'.
+2016-02-01 Fred Gleason <fredg@paravelsystems.com>
+	* Stubbed out an HLS connector in 'src/glassplayer/conn_hls.cpp'
+	and 'src/glassplayer/conn_hls.h'.
+	* Added an 'M3uPlaylist' class in 'src/glassplayer/m3uplaylist.cpp'
+	and 'src/glassplayer/m3uplaylist.h'.

@@ -37,7 +37,7 @@ class Connector : public QObject
 {
   Q_OBJECT;
  public:
-  enum ServerType {XCastServer=1,LastServer=2};
+  enum ServerType {XCastServer=1,HlsServer=2,LastServer=3};
   Connector(QObject *parent=0);
   ~Connector();
   virtual Connector::ServerType serverType() const=0;
@@ -98,8 +98,11 @@ class Connector : public QObject
   static QString base64Decode(const QString &str,bool *ok=NULL);
   static QString curlStrError(int exit_code);
   static QString httpStrError(int status_code);
-  static QString timezoneOffset();
   static QString socketErrorText(QAbstractSocket::SocketError err);
+  static QString processErrorText(QProcess::ProcessError err);
+  static QDateTime xmlTimestamp(const QString &str);
+  static int timezoneOffset();
+  static QString timezoneOffsetString();
 
  signals:
   void connected(bool state);
