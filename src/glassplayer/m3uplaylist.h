@@ -46,6 +46,7 @@ class M3uPlaylist
   bool parse(const QByteArray &data);
   QString dump() const;
   void clear();
+  bool operator!=(const M3uPlaylist &plist);
 
  private:
   bool m3u_extended;

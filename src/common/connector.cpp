@@ -394,9 +394,8 @@ bool Connector:: acceptsContentType(Connector::ServerType type,
       (mimetype.toLower()=="audio/aacp");
     break;
 
-  case Connector::HlsServer:
-    ret=mimetype.toLower()=="application/vnd.apple.mpegurl";
-    break;
+  case Connector::HlsServer:  // We don't list the mimetype here because
+    break;                    // ServerId handles it.
 
   case Connector::LastServer:
     break;

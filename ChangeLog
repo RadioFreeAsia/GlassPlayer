@@ -119,3 +119,6 @@
 	and 'src/glassplayer/conn_hls.h'.
 	* Added an 'M3uPlaylist' class in 'src/glassplayer/m3uplaylist.cpp'
 	and 'src/glassplayer/m3uplaylist.h'.
+2016-02-01 Fred Gleason <fredg@paravelsystems.com>
+	* Added code in 'src/glassplayer/conn_hls.cpp' and
+	'src/glassplayer/conn_hls.h' to update the index file automatically.

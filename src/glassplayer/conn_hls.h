@@ -42,13 +42,14 @@ class Hls : public Connector
   void disconnectFromHostConnector();
 
  private slots:
+  void indexProcessStartData();
   void indexProcessFinishedData(int exit_code,QProcess::ExitStatus status);
   void indexProcessErrorData(QProcess::ProcessError err);
 
  private:
-  void LoadIndex(const QUrl &url);
   QProcess *hls_index_process;
   M3uPlaylist *hls_index_playlist;
+  QTimer *hls_index_timer;
 };
 
 

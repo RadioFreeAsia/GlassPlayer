@@ -29,7 +29,13 @@ Hls::Hls(QObject *parent)
 {
   hls_index_process=NULL;
 
+  //
+  // Index Processor
+  //
   hls_index_playlist=new M3uPlaylist();
+  hls_index_timer=new QTimer(this);
+  hls_index_timer->setSingleShot(true);
+  connect(hls_index_timer,SIGNAL(timeout()),this,SLOT(indexProcessStartData()));
 }
 
 
@@ -55,12 +61,29 @@ void Hls::reset()
 
 void Hls::connectToHostConnector(const QString &hostname,uint16_t port)
 {
-  LoadIndex(serverUrl());
+  hls_index_timer->start(0);
 }
 
 
 void Hls::disconnectFromHostConnector()
 {
+}
+
+
+void Hls::indexProcessStartData()
+{
+  QStringList args;
+
+  args.push_back(serverUrl().toString());
+  if(hls_index_process!=NULL) {
+    delete hls_index_process;
+  }
+  hls_index_process=new QProcess(this);
+  connect(hls_index_process,SIGNAL(error(QProcess::ProcessError)),
+	  this,SLOT(indexProcessErrorData(QProcess::ProcessError)));
+  connect(hls_index_process,SIGNAL(finished(int,QProcess::ExitStatus)),
+	  this,SLOT(indexProcessFinishedData(int,QProcess::ExitStatus)));
+  hls_index_process->start("curl",args);
 }
 
 
@@ -75,9 +98,18 @@ void Hls::indexProcessFinishedData(int exit_code,QProcess::ExitStatus status)
 	  QString().sprintf(" [%d]",exit_code));
     }
     else {
-      if(hls_index_playlist->parse(hls_index_process->readAllStandardOutput())) {
-	fprintf(stderr,"PLAYLIST:\n%s\n",
-		(const char *)hls_index_playlist->dump().toUtf8());
+      M3uPlaylist *playlist=new M3uPlaylist();
+      if(playlist->parse(hls_index_process->readAllStandardOutput())) {
+	if(*playlist!=*hls_index_playlist) {
+	  *hls_index_playlist=*playlist;
+	  fprintf(stderr,"PLAYLIST:\n%s\n",
+		  (const char *)hls_index_playlist->dump().toUtf8());
+	  hls_index_timer->start(1000*hls_index_playlist->targetDuration());
+	}
+	else {
+	  hls_index_timer->start(1000);
+	}
+	delete playlist;
       }
       else {
 	Log(LOG_WARNING,"error parsing playlist");
@@ -91,21 +123,4 @@ void Hls::indexProcessErrorData(QProcess::ProcessError err)
 {
   Log(LOG_WARNING,tr("index process returned error")+
       " ["+Connector::processErrorText(err)+"]");
-}
-
-
-void Hls::LoadIndex(const QUrl &url)
-{
-  QStringList args;
-
-  args.push_back(url.toString());
-  if(hls_index_process!=NULL) {
-    delete hls_index_process;
-  }
-  hls_index_process=new QProcess(this);
-  connect(hls_index_process,SIGNAL(error(QProcess::ProcessError)),
-	  this,SLOT(indexProcessErrorData(QProcess::ProcessError)));
-  connect(hls_index_process,SIGNAL(finished(int,QProcess::ExitStatus)),
-	  this,SLOT(indexProcessFinishedData(int,QProcess::ExitStatus)));
-  hls_index_process->start("curl",args);
 }

@@ -244,3 +244,18 @@ void M3uPlaylist::clear()
   m3u_segment_datetimes.clear();
   m3u_segment_urls.clear();
 }
+
+
+bool M3uPlaylist::operator!=(const M3uPlaylist &plist)
+{
+  return (m3u_extended!=plist.m3u_extended)||
+    (m3u_version!=plist.m3u_version)||
+    (m3u_target_duration!=plist.m3u_target_duration)||
+    (m3u_ended!=plist.m3u_ended)||
+    (m3u_independent!=plist.m3u_independent)||
+    (m3u_media_sequence!=plist.m3u_media_sequence)||
+    (m3u_segment_durations!=plist.m3u_segment_durations)||
+    (m3u_segment_titles!=plist.m3u_segment_titles)||
+    (m3u_segment_datetimes!=plist.m3u_segment_datetimes)||
+    (m3u_segment_urls!=plist.m3u_segment_urls);
+}
