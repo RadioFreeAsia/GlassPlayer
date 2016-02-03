@@ -162,6 +162,34 @@ bool Codec::acceptsFormatIdentifier(Type type,const QString &fmt_id)
 }
 
 
+bool Codec::acceptsExtension(Type type,const QString &ext)
+{
+  bool ret=false;
+
+  switch(type) {
+  case Codec::TypeNull:
+    ret=true;
+    break;
+
+  case Codec::TypeMpeg1:
+    ret=(ext.toLower()=="mp2")||(ext.toLower()=="mp3");
+    break;
+ 
+  case Codec::TypeVorbis:
+    break;
+
+  case Codec::TypeAac:
+    ret=ext.toLower()=="aac";
+    break;
+
+  case Codec::TypeLast:
+    break;
+  }
+
+  return ret;
+}
+
+
 QString Codec::typeText(Codec::Type type)
 {
   QString ret=tr("Unknown");

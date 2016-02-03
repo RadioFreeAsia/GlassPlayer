@@ -21,6 +21,8 @@
 #ifndef CODEC_FDK_H
 #define CODEC_FDK_H
 
+#include <stdint.h>
+
 #ifdef HAVE_FDKAAC
 #include <fdk-aac/aacdecoder_lib.h>
 #endif  // HAVE_FDKAAC

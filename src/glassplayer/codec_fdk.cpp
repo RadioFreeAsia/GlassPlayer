@@ -18,6 +18,8 @@
 //   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 //
 
+#include <stdio.h>
+
 #include "codec_fdk.h"
 
 CodecFdk::CodecFdk(unsigned bitrate,QObject *parent)

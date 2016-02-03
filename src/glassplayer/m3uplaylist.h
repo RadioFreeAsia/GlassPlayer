@@ -32,6 +32,8 @@ class M3uPlaylist
 {
  public:
   M3uPlaylist();
+  QUrl source();
+  QUrl root();
   bool isExtended() const;
   int version() const;
   int targetDuration() const;
@@ -43,7 +45,7 @@ class M3uPlaylist
   double segmentDuration(unsigned n) const;
   QString segmentTitle(unsigned n) const;
   QUrl segmentUrl(unsigned n) const;
-  bool parse(const QByteArray &data);
+  bool parse(const QByteArray &data,const QUrl &src);
   QString dump() const;
   void clear();
   bool operator!=(const M3uPlaylist &plist);
@@ -62,6 +64,8 @@ class M3uPlaylist
   QDateTime m3u_current_segment_datetime;
   std::vector<QDateTime> m3u_segment_datetimes;
   std::vector<QUrl> m3u_segment_urls;
+  QUrl m3u_source;
+  QUrl m3u_root;
 };
 
 

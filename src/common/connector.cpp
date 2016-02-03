@@ -32,8 +32,7 @@ Connector::Connector(QObject *parent)
 {
   conn_server_username="source";
   conn_server_password="";
-  conn_content_type="";
-  conn_audio_bitrates.push_back(128);
+  conn_audio_bitrates.push_back(0);
   conn_stream_name="no name";
   conn_stream_description="unknown";
   conn_stream_url="";
@@ -101,18 +100,6 @@ void Connector::setServerUrl(const QUrl &url)
 QString Connector::serverMountpoint() const
 {
   return conn_server_url.path();
-}
-
-
-QString Connector::contentType() const
-{
-  return conn_content_type;
-}
-
-
-void Connector::setContentType(const QString &str)
-{
-  conn_content_type=str;
 }
 
 
@@ -267,6 +254,12 @@ void Connector::setStreamPublic(bool state)
 }
 
 
+Codec::Type Connector::codecType() const
+{
+  return conn_codec_type;
+}
+
+/*
 QString Connector::extension() const
 {
   return conn_extension;
@@ -288,6 +281,12 @@ QString Connector::formatIdentifier() const
 void Connector::setFormatIdentifier(const QString &str)
 {
   conn_format_identifier=str;
+}
+*/
+
+bool Connector::isConnected() const
+{
+  return conn_connected;
 }
 
 
@@ -538,82 +537,18 @@ int Connector::timezoneOffset()
 }
 
 
+void Connector::setCodecType(Codec::Type type)
+{
+  conn_codec_type=type;
+}
+
+
 void Connector::setConnected(bool state)
 {
-  /*
-  QStringList args;
-  QString cmd;
-
-  if(conn_connected!=state) {
-    if(state) {
-      if(conn_script_up_process==NULL) {
-	if(!conn_script_up.isEmpty()) {
-	  args=conn_script_up.split(" ");
-	  cmd=args[0];
-	  args.erase(args.begin());
-	  conn_script_up_process=new QProcess(this);
-	  connect(conn_script_up_process,SIGNAL(error(QProcess::ProcessError)),
-		  this,SLOT(scriptErrorData(QProcess::ProcessError)));
-	  connect(conn_script_up_process,
-		  SIGNAL(finished(int,QProcess::ExitStatus)),
-		  this,SLOT(scriptUpFinishedData(int,QProcess::ExitStatus)));
-	  conn_script_up_process->start(cmd,args);
-	}
-      }
-      else {
-	if(global_log_verbose) {
-	  Log(LOG_WARNING,"curl(1) script-up command overrun, cmd: \""+
-	      args.join(" ")+"\"");
-	}
-	else {
-	  Log(LOG_WARNING,"curl(1) command overrun");
-	}
-      }
-    }
-    else {
-      if(conn_script_down_process==NULL) {
-	if(!conn_script_down.isEmpty()) {
-	  args=conn_script_down.split(" ");
-	  cmd=args[0];
-	  args.erase(args.begin());
-	  conn_script_down_process=new QProcess(this);
-	  connect(conn_script_down_process,SIGNAL(error(QProcess::ProcessError)),
-		  this,SLOT(scriptErrorData(QProcess::ProcessError)));
-	  connect(conn_script_down_process,
-		  SIGNAL(finished(int,QProcess::ExitStatus)),
-		  this,SLOT(scriptDownFinishedData(int,QProcess::ExitStatus)));
-	  conn_script_down_process->start(cmd,args);
-	}
-      }
-      else {
-	if(global_log_verbose) {
-	  Log(LOG_WARNING,"curl(1) script-down command overrun, cmd: \""+
-	      args.join(" ")+"\"");
-	}
-	else {
-	  Log(LOG_WARNING,"curl(1) command overrun");
-	}
-      }
-    }
+  if(state!=conn_connected) {
+    conn_connected=state;
+    emit connected(conn_connected);
   }
-  if(state&&conn_watchdog_active) {
-    if(conn_server_mountpoint.isEmpty()) {
-      Log(LOG_WARNING,
-	  QString().sprintf("connection to \"%s:%u\" restored",
-			    (const char *)conn_host_hostname.toUtf8(),
-			    0xFFFF&conn_host_port));
-    }
-    else {
-      Log(LOG_WARNING,
-	  QString().sprintf("connection to \"%s:%u/%s\" restored",
-	       (const char *)conn_host_hostname.toUtf8(),0xFFFF&conn_host_port,
-			    (const char *)conn_server_mountpoint.toUtf8()));
-    }
-    conn_watchdog_active=false;
-  }
-  conn_connected=state;
-  emit connected(state);
-  */
 }
 
 

@@ -31,7 +31,7 @@
 
 #include <QObject>
 
-#include "connector.h"
+//#include "connector.h"
 #include "glasslimits.h"
 #include "ringbuffer.h"
 
@@ -59,6 +59,7 @@ class Codec : public QObject
   virtual QString defaultExtension() const=0;
   static bool acceptsContentType(Type type,const QString &mimetype);
   static bool acceptsFormatIdentifier(Type type,const QString &fmt_id);
+  static bool acceptsExtension(Type type,const QString &ext);
   static QString typeText(Codec::Type type);
   static QString optionKeyword(Codec::Type type);
 

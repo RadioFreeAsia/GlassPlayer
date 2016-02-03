@@ -45,11 +45,20 @@ class Hls : public Connector
   void indexProcessStartData();
   void indexProcessFinishedData(int exit_code,QProcess::ExitStatus status);
   void indexProcessErrorData(QProcess::ProcessError err);
+  void mediaProcessStartData();
+  void mediaReadyReadData();
+  void mediaProcessFinishedData(int exit_code,QProcess::ExitStatus status);
+  void mediaProcessErrorData(QProcess::ProcessError err);
 
  private:
   QProcess *hls_index_process;
   M3uPlaylist *hls_index_playlist;
   QTimer *hls_index_timer;
+  QProcess *hls_media_process;
+  QUrl hls_current_media_segment;
+  QUrl hls_last_media_segment;
+  QTimer *hls_media_timer;
+  bool hls_new_segment;
 };
 
 

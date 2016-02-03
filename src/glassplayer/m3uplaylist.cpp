@@ -32,6 +32,18 @@ M3uPlaylist::M3uPlaylist()
 }
 
 
+QUrl M3uPlaylist::source()
+{
+  return m3u_source;
+}
+
+
+QUrl M3uPlaylist::root()
+{
+  return m3u_root;
+}
+
+
 bool M3uPlaylist::isExtended() const
 {
   return m3u_extended;
@@ -94,19 +106,32 @@ QString M3uPlaylist::segmentTitle(unsigned n) const
 
 QUrl M3uPlaylist::segmentUrl(unsigned n) const
 {
+  if(m3u_segment_urls[n].isRelative()) {
+    return QUrl(m3u_root.toString()+"/"+m3u_segment_urls[n].toString());
+  }
   return m3u_segment_urls[n];
 }
 
 
-bool M3uPlaylist::parse(const QByteArray &data)
+bool M3uPlaylist::parse(const QByteArray &data,const QUrl &src)
 {
+  QStringList f0;
   bool ok=false;
-  QStringList f0=QString(data).split("\n");
+
+  clear();
+
+  //
+  // Get Root URL
+  //
+  m3u_source=src;
+  f0=src.toString().split("/",QString::KeepEmptyParts);
+  f0.erase(f0.begin()+f0.size()-1);
+  m3u_root=f0.join("/");
+
+  f0=QString(data).split("\n");
   for(int i=0;i<f0.size();i++) {
     f0[i]=f0[i].trimmed();
   }
-
-  clear();
 
   for(int i=0;i<f0.size();i++) {
     if(f0[i].left(1)=="#") {  // Tag
@@ -230,6 +255,8 @@ QString M3uPlaylist::dump() const
 
 void M3uPlaylist::clear()
 {
+  m3u_source=QUrl();
+  m3u_root=QUrl();
   m3u_extended=false;
   m3u_version=-1;
   m3u_target_duration=10;

@@ -209,7 +209,11 @@ void XCast::ProcessHeader(const QString &str)
       QString hdr=f0[0].trimmed().toLower();
       QString value=f0[1].trimmed();
       if(hdr=="content-type") {
-	setContentType(value);
+	for(int i=0;i<Codec::TypeLast;i++) {
+	  if(Codec::acceptsContentType((Codec::Type)i,value)) {
+	    setCodecType((Codec::Type)i);
+	  }
+	}
       }
       if(hdr=="icy-br") {
 	setAudioBitrate(value.toInt());

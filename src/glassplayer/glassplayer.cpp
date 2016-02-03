@@ -184,16 +184,12 @@ void MainObject::serverConnectedData(bool state)
 	CodecFactory(Codec::TypeNull,sir_connector->audioBitrate(),this);
     }
     else {   // Normal codec initialization here
-      for(int i=1;i<Codec::TypeLast;i++) {
-	if(Codec::acceptsContentType((Codec::Type)i,
-				     sir_connector->contentType())) {
-	  sir_codec=
-	    CodecFactory((Codec::Type)i,sir_connector->audioBitrate(),this);
-	}
-      }
+      sir_codec=CodecFactory(sir_connector->codecType(),
+			     sir_connector->audioBitrate(),this);
     }
     if((sir_codec==NULL)||(!sir_codec->isAvailable())) {
-      Log(LOG_ERR,"unknown codec ["+sir_connector->contentType()+"]");
+      Log(LOG_ERR,tr("codec unavailable")+
+	  "["+Codec::typeText(sir_connector->codecType())+"]");
       exit(256);
     }
     if(global_log_verbose) {
@@ -201,7 +197,7 @@ void MainObject::serverConnectedData(bool state)
 	  Connector::serverTypeText(sir_connector->serverType())+" server");
     }
     connect(sir_connector,SIGNAL(dataReceived(const QByteArray &)),
-	    sir_codec,SLOT(process(const QByteArray &)));
+    	    sir_codec,SLOT(process(const QByteArray &)));
     connect(sir_codec,SIGNAL(framed(unsigned,unsigned,unsigned,Ringbuffer *)),
 	    this,
 	    SLOT(codecFramedData(unsigned,unsigned,unsigned,Ringbuffer *)));
@@ -226,9 +222,16 @@ void MainObject::codecFramedData(unsigned chans,unsigned samprate,
   QString err;
 
   if(global_log_verbose) {
-    Log(LOG_INFO,"Using "+Codec::typeText(sir_codec->type())+
-	QString().sprintf(" decoder, %u channels, %u samples/sec, %u kbps",
-			  chans,samprate,bitrate));
+    if(bitrate==0) {
+      Log(LOG_INFO,"Using "+Codec::typeText(sir_codec->type())+
+	  QString().sprintf(" decoder, %u channels, %u samples/sec",
+			    chans,samprate));
+    }
+    else {
+      Log(LOG_INFO,"Using "+Codec::typeText(sir_codec->type())+
+	  QString().sprintf(" decoder, %u channels, %u samples/sec, %u kbps",
+			    chans,samprate,bitrate));
+    }
   }
   if((sir_audio_device=
       AudioDeviceFactory(audio_device_type,sir_codec,this))==NULL) {

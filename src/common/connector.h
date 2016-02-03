@@ -33,6 +33,8 @@
 #include <QTimer>
 #include <QUrl>
 
+#include "codec.h"
+
 class Connector : public QObject
 {
   Q_OBJECT;
@@ -48,8 +50,8 @@ class Connector : public QObject
   QUrl serverUrl() const;
   void setServerUrl(const QUrl &url);
   QString serverMountpoint() const;
-  QString contentType() const;
-  void setContentType(const QString &str);
+  //  QString contentType() const;
+  //  void setContentType(const QString &str);
   unsigned audioBitrate() const;
   void setAudioBitrate(unsigned rate);
   std::vector<unsigned> *audioBitrates();
@@ -74,10 +76,12 @@ class Connector : public QObject
   void setStreamMetadata(const QString &str);
   bool streamPublic() const;
   void setStreamPublic(bool state);
-  QString extension() const;
-  void setExtension(const QString &str);
-  QString formatIdentifier() const;
-  void setFormatIdentifier(const QString &str);
+  Codec::Type codecType() const;
+  //  QString extension() const;
+  //void setExtension(const QString &str);
+  //  QString formatIdentifier() const;
+  //  void setFormatIdentifier(const QString &str);
+  bool isConnected() const;
   virtual void connectToServer();
   void stop();
   virtual void reset()=0;
@@ -111,6 +115,7 @@ class Connector : public QObject
   void streamMetadataChanged(const QString &str);
 
  protected:
+  void setCodecType(Codec::Type type);
   void setConnected(bool state);
   void setError(QAbstractSocket::SocketError err);
   virtual void connectToHostConnector(const QString &hostname,uint16_t port)=0;
@@ -123,7 +128,7 @@ class Connector : public QObject
   QString conn_server_username;
   QString conn_server_password;
   QUrl conn_server_url;
-  QString conn_content_type;
+  //  QString conn_content_type;
   std::vector<unsigned> conn_audio_bitrates;
   QString conn_stream_name;
   QString conn_stream_description;
@@ -135,8 +140,9 @@ class Connector : public QObject
   bool conn_stream_metadata_enabled;
   QString conn_stream_metadata;
   bool conn_stream_public;
-  QString conn_extension;
-  QString conn_format_identifier;
+  //  QString conn_extension;
+  Codec::Type conn_codec_type;
+  //  QString conn_format_identifier;
   QString conn_host_hostname;
   uint16_t conn_host_port;
   QString conn_script_up;
