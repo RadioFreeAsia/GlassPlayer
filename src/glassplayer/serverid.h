@@ -44,18 +44,25 @@ class ServerId : public QObject
   void readyReadData();
   void errorData(QAbstractSocket::SocketError err);
   void killData();
+  void restartData();
 
  private:
+  void ProcessResult();
   void SendHeader(const QString &str);
   void ProcessHeader(const QString &str);
+  QTcpSocket *CreateSocket();
   QTcpSocket *id_socket;
   QTimer *id_kill_timer;
   QUrl id_url;
   QString id_header;
   QString id_content_type;
+  QString id_location;
   bool id_header_active;
   unsigned id_result_code;
+  QString id_result_text;
   QString id_body;
+  QTimer *id_restart_timer;
+  bool id_restarting;
 };
 
 

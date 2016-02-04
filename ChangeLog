@@ -124,3 +124,6 @@
 	'src/glassplayer/conn_hls.h' to update the index file automatically.
 2016-02-03 Fred Gleason <fredg@paravelsystems.com>
 	* Implemented audio playout from HLS streams.
+2016-02-04 Fred Gleason <fredg@paravelsystems.com>
+	* Implemented support for HTTP redirection in
+	'src/glassplayer/serverid.cpp' and 'src/glassplayer/serverid.h'.

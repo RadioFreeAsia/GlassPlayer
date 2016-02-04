@@ -24,11 +24,12 @@
 ServerId::ServerId(QObject *parent)
   : QObject(parent)
 {
-  id_socket=new QTcpSocket(this);
-  connect(id_socket,SIGNAL(connected()),this,SLOT(connectedData()));
-  connect(id_socket,SIGNAL(readyRead()),this,SLOT(readyReadData()));
-  connect(id_socket,SIGNAL(error(QAbstractSocket::SocketError)),
-	  this,SLOT(errorData(QAbstractSocket::SocketError)));
+  id_socket=CreateSocket();
+  id_restarting=false;
+
+  id_restart_timer=new QTimer(this);
+  id_restart_timer->setSingleShot(true);
+  connect(id_restart_timer,SIGNAL(timeout()),this,SLOT(restartData()));
 
   id_kill_timer=new QTimer(this);
   id_kill_timer->setSingleShot(true);
@@ -41,12 +42,17 @@ ServerId::~ServerId()
   if(id_socket!=NULL) {
     delete id_socket;
   }
+  delete id_restart_timer;
+  delete id_kill_timer;
 }
 
 
 void ServerId::connectToServer(const QUrl &url)
 {
   id_url=url;
+  if(id_url.path().isEmpty()) {
+    id_url.setPath("/");
+  }
   id_socket->connectToHost(url.host(),url.port(80));
 }
 
@@ -55,7 +61,11 @@ void ServerId::connectedData()
 {
   id_header_active=true;
   id_result_code=0;
+  id_result_text="";
+  id_body="";
   id_content_type="";
+  id_location="";
+  id_restarting=false;
   SendHeader("GET "+id_url.path()+" HTTP/1.1");
   SendHeader("Host: "+id_url.host()+":"+QString().sprintf("%u",id_url.port(80)));
   SendHeader("Accept: */*");
@@ -84,16 +94,7 @@ void ServerId::readyReadData()
 	case 10:
 	  if(id_header.isEmpty()) {
 	    id_header_active=false;
-	    if((id_result_code>=200)&&(id_result_code<300)) {
-	      for(unsigned i=0;i<Connector::LastServer;i++) {
-		if(Connector::acceptsContentType((Connector::ServerType)i,
-						 id_content_type)) {
-		  emit typeFound((Connector::ServerType)i,id_url);
-		  id_kill_timer->start(0);
-		  return;
-		}
-	      }
-	    }
+	    ProcessResult();
 	  }
 	  id_header="";
 	  break;
@@ -115,21 +116,23 @@ void ServerId::errorData(QAbstractSocket::SocketError err)
 {
   switch(err) {
   case QAbstractSocket::RemoteHostClosedError:
-    if(id_content_type.toLower()=="audio/x-mpegurl") {
-      if(global_log_verbose) {
-	Log(LOG_INFO,tr("using mountpoint")+": "+id_body.trimmed());
+    if(!id_restarting) {
+      if(id_content_type.toLower()=="audio/x-mpegurl") {
+	if(global_log_verbose) {
+	  Log(LOG_INFO,tr("using mountpoint")+": "+id_body.trimmed());
+	}
+	emit typeFound(Connector::XCastServer,QUrl(id_body.trimmed()));
+	id_kill_timer->start(0);
+	return;
       }
-      emit typeFound(Connector::XCastServer,QUrl(id_body.trimmed()));
-      id_kill_timer->start(0);
-      return;
+      if(id_content_type.toLower()=="application/vnd.apple.mpegurl") {
+	emit typeFound(Connector::HlsServer,id_url);
+	id_kill_timer->start(0);
+	return;
+      }
+      Log(LOG_ERR,tr("unsupported stream type")+" ["+id_content_type+"]");
+      exit(256);
     }
-    if(id_content_type.toLower()=="application/vnd.apple.mpegurl") {
-      emit typeFound(Connector::HlsServer,id_url);
-      id_kill_timer->start(0);
-      return;
-    }
-    Log(LOG_ERR,tr("unsupported stream type")+" ["+id_content_type+"]");
-    exit(256);
     break;
 
   default:
@@ -147,6 +150,61 @@ void ServerId::killData()
 }
 
 
+void ServerId::restartData()
+{
+  delete id_socket;
+  id_socket=CreateSocket();
+  
+  id_socket->connectToHost(id_url.host(),id_url.port(80));
+}
+
+
+void ServerId::ProcessResult()
+{
+  switch(id_result_code) {
+  case 100:   // Continue
+  case 200:   // OK
+  case 203:   // Non-Authoritative Information
+    for(unsigned i=0;i<Connector::LastServer;i++) {
+      if(Connector::acceptsContentType((Connector::ServerType)i,
+				       id_content_type)) {
+	emit typeFound((Connector::ServerType)i,id_url);
+	id_kill_timer->start(0);
+	return;
+      }
+    }
+    break;
+
+  case 301:   // Moved Permanently
+  case 302:   // Found
+  case 303:   // See Other
+  case 307:   // Temporary Redirect
+    if(!id_location.isEmpty()) {
+      id_url=QUrl(id_location);
+      if(id_url.path().isEmpty()) {
+	id_url.setPath("/");
+      }
+      if(global_log_verbose) {
+	Log(LOG_INFO,tr("redirecting to")+" "+id_url.toString());
+      }
+      id_restarting=true;
+      id_restart_timer->start(0);
+    }
+    else {
+      Log(LOG_ERR,
+	  tr("server returned")+" "+id_result_text+", "+
+	  tr("but redirected URI is empty."));
+      exit(256);
+    }
+    break;
+
+  default:
+    Log(LOG_ERR,"server returned error ["+id_result_text+"]");
+    exit(256);
+  }
+}
+
+
 void ServerId::SendHeader(const QString &str)
 {
   id_socket->write((str+"\r\n").toUtf8(),str.length()+2);
@@ -157,7 +215,7 @@ void ServerId::ProcessHeader(const QString &str)
 {
   QStringList f0;
 
-  //  fprintf(stderr,"%s\n",(const char *)str.toUtf8());
+  //    fprintf(stderr,"%s\n",(const char *)str.toUtf8());
 
   if(id_result_code==0) {
     f0=str.split(" ",QString::SkipEmptyParts);
@@ -166,20 +224,32 @@ void ServerId::ProcessHeader(const QString &str)
       exit(256);
     }
     id_result_code=f0[1].toInt();
-    if((id_result_code<200)||(id_result_code>=300)) {
-      f0.erase(f0.begin());
-      Log(LOG_ERR,"server returned error ["+f0.join(" ")+"]");
-      exit(256);
-    }
+    f0.erase(f0.begin());
+    id_result_text=f0.join(" ");
   }
   else {
     f0=str.split(":");
-    if(f0.size()==2) {
+    if(f0.size()>=2) {
       QString hdr=f0[0].trimmed().toLower();
-      QString value=f0[1].trimmed();
+      f0.erase(f0.begin());
+      QString value=f0.join(":").trimmed();
       if(hdr=="content-type") {
 	id_content_type=value;
       }
+      if(hdr=="location") {
+	id_location=value;
+      }
     }
   }
+}
+
+
+QTcpSocket *ServerId::CreateSocket()
+{
+  QTcpSocket *sock=new QTcpSocket(this);
+  connect(sock,SIGNAL(connected()),this,SLOT(connectedData()));
+  connect(sock,SIGNAL(readyRead()),this,SLOT(readyReadData()));
+  connect(sock,SIGNAL(error(QAbstractSocket::SocketError)),
+	  this,SLOT(errorData(QAbstractSocket::SocketError)));
+  return sock;
 }
