@@ -252,7 +252,7 @@ void MainObject::codecFramedData(unsigned chans,unsigned samprate,
 
 void MainObject::streamMetadataChangedData(const QString &str)
 {
-  Log(LOG_INFO,"Now Playing: "+str);
+  Log(LOG_INFO,"Metadata: "+str);
 }
 
 

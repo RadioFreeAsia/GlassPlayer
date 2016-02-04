@@ -127,3 +127,6 @@
 2016-02-04 Fred Gleason <fredg@paravelsystems.com>
 	* Implemented support for HTTP redirection in
 	'src/glassplayer/serverid.cpp' and 'src/glassplayer/serverid.h'.
+2016-02-04 Fred Gleason <fredg@paravelsystems.com>
+	* Fixed a bug in 'src/glassplayer/conn_xcast.cpp' that caused
+	glitching in Shoutcast streams containing live metadata updates.

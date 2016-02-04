@@ -100,11 +100,8 @@ void XCast::connectedData()
 void XCast::readyReadData()
 {
   QByteArray data;
-  int md_start=0;
-  int md_len=0;
 
   while(xcast_socket->bytesAvailable()>0) {
-    md_start=0;
     data=xcast_socket->read(1024);
     if(xcast_header_active) {   // Get headers
       for(int i=0;i<data.length();i++) {
@@ -120,6 +117,8 @@ void XCast::readyReadData()
 	    xcast_header_active=false;
 	    if((xcast_result_code>=200)&&(xcast_result_code<300)) {
 	      emit connected(true);
+	      data=data.right(data.length()-i-1);
+	      ProcessFrames(data);
 	    }
 	    else {
 	      reset();
@@ -135,20 +134,8 @@ void XCast::readyReadData()
 	}
       }
     }
-    else {   // Scan for metadata updates
-      if(xcast_metadata_interval>0) {
-	if(xcast_metadata_counter+data.length()>xcast_metadata_interval) {
-	  md_start=xcast_metadata_interval-xcast_metadata_counter;
-	  md_len=0xFF&data[md_start]*16;
-	  ProcessMetadata(data.mid(md_start+1,md_len));
-	  xcast_metadata_counter=data.size()-(md_start+md_len+1);
-	  data.remove(md_start,md_len+1);
-	}
-	else {
-	  xcast_metadata_counter+=data.length();
-	}
-      }
-      emit dataReceived(data);
+    else {
+      ProcessFrames(data);
     }
   }
 }
@@ -178,6 +165,27 @@ void XCast::watchdogRetryData()
 }
 
 
+void XCast::ProcessFrames(QByteArray &data)
+{
+  int md_start=0;
+  int md_len=0;
+
+  if(xcast_metadata_interval>0) {
+    if(xcast_metadata_counter+data.length()>xcast_metadata_interval) {
+      md_start=xcast_metadata_interval-xcast_metadata_counter;
+      md_len=0xFF&data[md_start]*16;
+      ProcessMetadata(data.mid(md_start+1,md_len));
+      xcast_metadata_counter=data.size()-(md_start+md_len+1);
+      data.remove(md_start,md_len+1);
+    }
+    else {
+      xcast_metadata_counter+=data.length();
+    }
+  }
+  emit dataReceived(data);
+}
+
+
 void XCast::SendHeader(const QString &str)
 {
   xcast_socket->write((str+"\r\n").toUtf8(),str.length()+2);
@@ -188,7 +196,7 @@ void XCast::ProcessHeader(const QString &str)
 {
   QStringList f0;
 
-  //  fprintf(stderr,"%s\n",(const char *)str.toUtf8());
+  //fprintf(stderr,"%s\n",(const char *)str.toUtf8());
 
   if(xcast_result_code==0) {
     f0=str.split(" ",QString::SkipEmptyParts);
@@ -243,11 +251,8 @@ void XCast::ProcessHeader(const QString &str)
 
 void XCast::ProcessMetadata(const QByteArray &mdata)
 {
-  QStringList f0=QString(mdata).split("=");
-  if(f0.size()>1) {
-    if(f0[0].toLower()=="streamtitle") {
-      setStreamMetadata(mdata.mid(13,mdata.lastIndexOf("';")-13));
-    }
+  if(mdata.length()>0) {
+    setStreamMetadata(mdata);
   }
 }
 

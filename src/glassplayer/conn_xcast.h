@@ -48,6 +48,7 @@ class XCast : public Connector
   void watchdogRetryData();
 
  private:
+  void ProcessFrames(QByteArray &data);
   void SendHeader(const QString &str);
   void ProcessHeader(const QString &str);
   void ProcessMetadata(const QByteArray &mdata);
