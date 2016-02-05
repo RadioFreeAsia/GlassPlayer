@@ -18,6 +18,8 @@
 //   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 //
 
+#include <stdio.h>
+
 #include "codec.h"
 #include "logging.h"
 
@@ -96,6 +98,18 @@ void Codec::setSamplerate(unsigned rate)
 bool Codec::isFramed() const
 {
   return codec_is_framed;
+}
+
+
+uint64_t Codec::bytesProcessed() const
+{
+  return codec_bytes_processed;
+}
+
+
+uint64_t Codec::framesGenerated() const
+{
+  return codec_frames_generated;
 }
 
 
@@ -245,14 +259,44 @@ QString Codec::optionKeyword(Codec::Type type)
 }
 
 
+void Codec::processBitstream(const QByteArray &data)
+{
+  codec_bytes_processed+=data.length();
+  process(data);
+  while((codec_metadata_bytes.size()>0)&&
+	(codec_metadata_bytes.front()<codec_bytes_processed)) {
+    emit metadataReceived(codec_frames_generated,codec_metadata_events.front());
+    codec_metadata_bytes.pop();
+    delete codec_metadata_events.front();
+    codec_metadata_events.pop();
+  }
+}
+
+
+void Codec::processMetadata(uint64_t bytes,MetaEvent *e)
+{
+  codec_metadata_bytes.push(bytes);
+  codec_metadata_events.push(new MetaEvent(*e));
+}
+
+
 void Codec::setFramed(unsigned chans,unsigned samprate,unsigned bitrate)
 {
   codec_channels=chans;
   codec_samplerate=samprate;
   codec_bitrate=bitrate;
   codec_is_framed=true;
+  codec_bytes_processed=0;
+  codec_frames_generated=0;
 
   codec_ring=new Ringbuffer(CODEC_RINGBUFFER_SIZE,chans);
 
   emit framed(chans,samprate,bitrate,codec_ring);
+}
+
+
+void Codec::signalAudioWritten(unsigned frames)
+{
+  codec_frames_generated+=frames;
+  emit audioWritten(frames);
 }

@@ -169,8 +169,6 @@ void MainObject::serverTypeFoundData(Connector::ServerType type,const QUrl &url)
   sir_connector->setStreamMetadataEnabled(!disable_stream_metadata);
   connect(sir_connector,SIGNAL(connected(bool)),
 	  this,SLOT(serverConnectedData(bool)));
-  connect(sir_connector,SIGNAL(streamMetadataChanged(const QString &)),
-	  this,SLOT(streamMetadataChangedData(const QString &)));
   sir_connector->setServerUrl(url);
   sir_connector->connectToServer();
 }
@@ -197,7 +195,9 @@ void MainObject::serverConnectedData(bool state)
 	  Connector::serverTypeText(sir_connector->serverType())+" server");
     }
     connect(sir_connector,SIGNAL(dataReceived(const QByteArray &)),
-    	    sir_codec,SLOT(process(const QByteArray &)));
+    	    sir_codec,SLOT(processBitstream(const QByteArray &)));
+    connect(sir_connector,SIGNAL(metadataReceived(uint64_t,MetaEvent *)),
+	    sir_codec,SLOT(processMetadata(uint64_t,MetaEvent *)));
     connect(sir_codec,SIGNAL(framed(unsigned,unsigned,unsigned,Ringbuffer *)),
 	    this,
 	    SLOT(codecFramedData(unsigned,unsigned,unsigned,Ringbuffer *)));
@@ -242,6 +242,10 @@ void MainObject::codecFramedData(unsigned chans,unsigned samprate,
     Log(LOG_ERR,err);
     exit(256);
   }
+  connect(sir_codec,SIGNAL(metadataReceived(uint64_t,MetaEvent *)),
+	  sir_audio_device,SLOT(processMetadata(uint64_t,MetaEvent *)));
+  connect(sir_audio_device,SIGNAL(metadataReceived(MetaEvent *)),
+	  this,SLOT(metadataReceivedData(MetaEvent *)));
   if(!sir_audio_device->start(&err)) {
     Log(LOG_ERR,err);
     exit(256);
@@ -250,9 +254,14 @@ void MainObject::codecFramedData(unsigned chans,unsigned samprate,
 }
 
 
-void MainObject::streamMetadataChangedData(const QString &str)
+void MainObject::metadataReceivedData(MetaEvent *e)
 {
-  Log(LOG_INFO,"Metadata: "+str);
+  if(!e->field(MetaEvent::Title).isNull()) {
+    Log(LOG_INFO,"Title Update: "+e->field(MetaEvent::Title).toString());
+  }
+  if(!e->field(MetaEvent::Url).isNull()) {
+    Log(LOG_INFO,"URL Update: "+e->field(MetaEvent::Url).toString());
+  }
 }
 
 

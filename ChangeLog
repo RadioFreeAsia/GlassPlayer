@@ -130,3 +130,6 @@
 2016-02-04 Fred Gleason <fredg@paravelsystems.com>
 	* Fixed a bug in 'src/glassplayer/conn_xcast.cpp' that caused
 	glitching in Shoutcast streams containing live metadata updates.
+2016-02-05 Fred Gleason <fredg@paravelsystems.com>
+	* Refactored metadata processing so as to emit updates in realtime
+	sync with audio playout.

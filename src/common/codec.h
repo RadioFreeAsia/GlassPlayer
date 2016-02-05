@@ -25,14 +25,15 @@
 #include <vector>
 
 #include <dlfcn.h>
+#include <stdint.h>
 #include <syslog.h>
 
 #include <samplerate.h>
 
 #include <QObject>
 
-//#include "connector.h"
 #include "glasslimits.h"
+#include "metaevent.h"
 #include "ringbuffer.h"
 
 #define MAX_AUDIO_BUFFER 4096
@@ -54,6 +55,8 @@ class Codec : public QObject
   unsigned samplerate() const;
   void setSamplerate(unsigned rate);
   bool isFramed() const;
+  uint64_t bytesProcessed() const;
+  uint64_t framesGenerated() const;
   Ringbuffer *ring();
   virtual bool isAvailable() const=0;
   virtual QString defaultExtension() const=0;
@@ -67,14 +70,22 @@ class Codec : public QObject
   void framed(unsigned chans,unsigned samprate,unsigned bitrate,
 	      Ringbuffer *ring);
   void audioWritten(unsigned frames);
+  void metadataReceived(uint64_t frames,MetaEvent *e);
 
  public slots:
-  virtual void process(const QByteArray &data)=0;
+  void processBitstream(const QByteArray &data);
+  void processMetadata(uint64_t bytes,MetaEvent *e);
 
  protected:
+  virtual void process(const QByteArray &data)=0;
   virtual void setFramed(unsigned chans,unsigned samprate,unsigned bitrate);
+  virtual void signalAudioWritten(unsigned frames);
 
  private:
+  uint64_t codec_bytes_processed;
+  uint64_t codec_frames_generated;
+  std::queue<uint64_t> codec_metadata_bytes;
+  std::queue<MetaEvent *> codec_metadata_events;
   Ringbuffer *codec_ring;
   unsigned codec_bitrate;
   unsigned codec_channels;

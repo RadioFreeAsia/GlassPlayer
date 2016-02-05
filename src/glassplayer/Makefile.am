@@ -51,6 +51,7 @@ nodist_glassplayer_SOURCES = audiodevice.cpp audiodevice.h\
                              connector.cpp connector.h\
                              glasslimits.h\
                              logging.cpp logging.h\
+                             metaevent.cpp metaevent.h\
                              moc_audiodevice.cpp\
                              moc_codec.cpp\
                              moc_codec_fdk.cpp\
@@ -82,6 +83,7 @@ DISTCLEANFILES = audiodevice.cpp audiodevice.h\
                  connector.cpp connector.h\
                  glasslimits.h\
                  logging.cpp logging.h\
+                 metaevent.cpp metaevent.h\
                  ringbuffer.cpp ringbuffer.h
 
 MAINTAINERCLEANFILES = *~\

@@ -86,6 +86,7 @@ void XCast::connectedData()
   xcast_metadata_istate=0;
   xcast_metadata_string="";
   xcast_metadata_counter=0;
+  xcast_byte_counter=0;
   SendHeader("GET "+serverMountpoint()+" HTTP/1.1");
   SendHeader("Host: "+hostHostname()+":"+QString().sprintf("%u",hostPort()));
   SendHeader(QString().sprintf("icy-metadata: %d",streamMetadataEnabled()));
@@ -182,6 +183,7 @@ void XCast::ProcessFrames(QByteArray &data)
       xcast_metadata_counter+=data.length();
     }
   }
+  xcast_byte_counter+=data.length();
   emit dataReceived(data);
 }
 
@@ -252,7 +254,26 @@ void XCast::ProcessHeader(const QString &str)
 void XCast::ProcessMetadata(const QByteArray &mdata)
 {
   if(mdata.length()>0) {
-    setStreamMetadata(mdata);
+    //fprintf(stderr,"METADATA: %s\n",(const char *)f0[i].toUtf8());
+    MetaEvent *e=new MetaEvent();
+    QStringList f0=QString(mdata).split(";",QString::SkipEmptyParts);
+    for(int i=0;i<f0.size();i++) {
+      QStringList f1=f0[i].split("=");
+      if(f1[0]=="StreamTitle") {
+	f1.erase(f1.begin());
+	QString title=f1.join("=");
+	e->setField(MetaEvent::Title,title.mid(1,title.length()-2));
+	continue;
+      }
+      if(f1[0]=="StreamUrl") {
+	f1.erase(f1.begin());
+	QString url=f1.join("=");
+	e->setField(MetaEvent::Url,url.mid(1,url.length()-2));
+	continue;
+      }
+    }
+    emit metadataReceived(xcast_byte_counter,e);
+    delete e;
   }
 }
 

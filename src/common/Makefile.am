@@ -26,6 +26,7 @@ EXTRA_DIST = audiodevice.cpp audiodevice.h\
              connector.cpp connector.h\
              glasslimits.h\
              logging.cpp logging.h\
+             metaevent.cpp metaevent.h\
              ringbuffer.cpp ringbuffer.h
 
 CLEANFILES = *~\

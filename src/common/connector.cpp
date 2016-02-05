@@ -233,15 +233,6 @@ QString Connector::streamMetadata() const
 }
 
 
-void Connector::setStreamMetadata(const QString &str)
-{
-  if(str!=conn_stream_metadata) {
-    conn_stream_metadata=str;
-    emit streamMetadataChanged(str);
-  }
-}
-
-
 bool Connector::streamPublic() const
 {
   return conn_stream_public;
@@ -259,30 +250,6 @@ Codec::Type Connector::codecType() const
   return conn_codec_type;
 }
 
-/*
-QString Connector::extension() const
-{
-  return conn_extension;
-}
-
-
-void Connector::setExtension(const QString &str)
-{
-  conn_extension=str;
-}
-
-
-QString Connector::formatIdentifier() const
-{
-  return conn_format_identifier;
-}
-
-
-void Connector::setFormatIdentifier(const QString &str)
-{
-  conn_format_identifier=str;
-}
-*/
 
 bool Connector::isConnected() const
 {
@@ -393,7 +360,7 @@ bool Connector:: acceptsContentType(Connector::ServerType type,
       (mimetype.toLower()=="audio/aacp");
     break;
 
-  case Connector::HlsServer:  // We don't list the mimetype here because
+  case Connector::HlsServer:  // We don't list any mimetypes here because
     break;                    // ServerId handles it.
 
   case Connector::LastServer:

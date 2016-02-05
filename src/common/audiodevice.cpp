@@ -175,6 +175,13 @@ void AudioDevice::synchronousWrite(unsigned frames)
 }
 
 
+void AudioDevice::processMetadata(uint64_t frames,MetaEvent *e)
+{
+  audio_metadata_frames.push(frames);
+  audio_metadata_events.push(new MetaEvent(*e));
+}
+
+
 void AudioDevice::setMeterLevels(float *lvls)
 {
   for(unsigned i=0;i<MAX_AUDIO_CHANNELS;i++) {
@@ -202,6 +209,19 @@ void AudioDevice::updateMeterLevels(int *lvls)
     if(lvls[i]>audio_meter_levels[i]) {
       audio_meter_levels[i]=lvls[i];
     }
+  }
+}
+
+
+void AudioDevice::updatePlayPosition(uint64_t frames)
+{
+  audio_play_position=frames;
+  while((audio_metadata_frames.size()>0)&&
+	(audio_metadata_frames.front()<audio_play_position)) {
+    emit metadataReceived(audio_metadata_events.front());
+    audio_metadata_frames.pop();
+    delete audio_metadata_events.front();
+    audio_metadata_events.pop();
   }
 }
 

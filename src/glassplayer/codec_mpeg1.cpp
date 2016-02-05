@@ -103,7 +103,7 @@ void CodecMpeg1::process(const QByteArray &data)
       }
       else {
 	ring()->write(pcm,frame_offset/channels());
-	emit audioWritten(frame_offset/channels());
+	signalAudioWritten(frame_offset/channels());
       }
     }
     mpeg1_mpeg=

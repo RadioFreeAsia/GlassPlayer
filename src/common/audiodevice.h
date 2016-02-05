@@ -21,6 +21,9 @@
 #ifndef AUDIODEVICE_H
 #define AUDIODEVICE_H
 
+#include <stdint.h>
+
+#include <queue>
 #include <vector>
 
 #include <QObject>
@@ -28,6 +31,7 @@
 
 #include "codec.h"
 #include "glasslimits.h"
+#include "metaevent.h"
 
 #define AUDIO_METER_INTERVAL 50
 
@@ -52,14 +56,17 @@ class AudioDevice : public QObject
 
  public slots:
   virtual void synchronousWrite(unsigned frames);
+  void processMetadata(uint64_t frames,MetaEvent *e);
 
  signals:
   void hasStopped();
+  void metadataReceived(MetaEvent *e);
 
  protected:
   void setMeterLevels(float *lvls);
   void setMeterLevels(int *lvls);
   void updateMeterLevels(int *lvls);
+  void updatePlayPosition(uint64_t frames);
   Codec *codec();
   void remixChannels(float *pcm_out,unsigned chans_out,
 		     float *pcm_in,unsigned chans_in,unsigned nframes); 
@@ -73,6 +80,9 @@ class AudioDevice : public QObject
  private:
   Codec *audio_codec;
   int audio_meter_levels[MAX_AUDIO_CHANNELS];
+  uint64_t audio_play_position;
+  std::queue<uint64_t> audio_metadata_frames;
+  std::queue<MetaEvent *> audio_metadata_events;
 };
 
 

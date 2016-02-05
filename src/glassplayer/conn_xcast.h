@@ -63,6 +63,7 @@ class XCast : public Connector
   QString xcast_metadata_string;
   int xcast_metadata_counter;
   QTimer *xcast_watchdog_retry_timer;
+  uint64_t xcast_byte_counter;
 };
 
 

@@ -26,6 +26,8 @@
 #include <pthread.h>
 #endif  // ALSA
 
+#include <QTimer>
+
 #include "audiodevice.h"
 
 #define ALSA_DEFAULT_DEVICE "hw:0"
@@ -42,6 +44,9 @@ class DevAlsa : public AudioDevice
   bool start(QString *err);
   void stop();
 
+ private slots:
+  void playPositionData();
+
  private:
 #ifdef ALSA
   QString alsa_device;
@@ -56,7 +61,9 @@ class DevAlsa : public AudioDevice
   bool alsa_stopping;
   //  MeterAverage *alsa_meter_avg[MAX_AUDIO_CHANNELS];
   //  QTimer *alsa_meter_timer;
+  QTimer *alsa_play_position_timer;
   friend void *AlsaCallback(void *ptr);
+  uint64_t alsa_play_position;
 #endif  // ALSA
 };
 

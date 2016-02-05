@@ -26,5 +26,7 @@ src/glassplayer/glasslimits.h
 src/glassplayer/glassplayer
 src/glassplayer/logging.cpp
 src/glassplayer/logging.h
+src/glassplayer/metaevent.cpp
+src/glassplayer/metaevent.h
 src/glassplayer/ringbuffer.cpp
 src/glassplayer/ringbuffer.h

@@ -55,6 +55,7 @@ void *AlsaCallback(void *ptr)
   ring_frames=0;
   count=0;
   show_xrun=false;
+  dev->alsa_play_position=0;
 
   //
   // Initialize sample rate converter
@@ -126,6 +127,7 @@ void *AlsaCallback(void *ptr)
 	read(pcm_s1,dev->alsa_buffer_size/(dev->alsa_period_quantity*2)))>0) {
       if(src!=NULL) {
 	data.input_frames=n;
+	dev->alsa_play_position+=n;
 	if((err=src_process(src,&data))<0) {
 	  fprintf(stderr,"SRC processing error [%s]\n",src_strerror(err));
 	  exit(256);
@@ -182,6 +184,10 @@ DevAlsa::DevAlsa(Codec *codec,QObject *parent)
   alsa_device=ALSA_DEFAULT_DEVICE;
   alsa_pcm_buffer=NULL;
   alsa_stopping=false;
+
+  alsa_play_position_timer=new QTimer(this);
+  connect(alsa_play_position_timer,SIGNAL(timeout()),
+	  this,SLOT(playPositionData()));
 #endif  // ALSA
 }
 
@@ -192,6 +198,7 @@ DevAlsa::~DevAlsa()
   if(alsa_pcm_buffer!=NULL) {
     delete alsa_pcm_buffer;
   }
+  delete alsa_play_position_timer;
 }
 
 
@@ -348,6 +355,8 @@ bool DevAlsa::start(QString *err)
 
   //  alsa_meter_timer->start(AUDIO_METER_INTERVAL);
 
+  alsa_play_position_timer->start(50);
+
   return true;
 #else
   return false;
@@ -359,4 +368,10 @@ void DevAlsa::stop()
 {
   alsa_stopping=true;
   pthread_join(alsa_pthread,NULL);
+}
+
+
+void DevAlsa::playPositionData()
+{
+  updatePlayPosition(alsa_play_position);
 }

@@ -45,7 +45,7 @@ class MainObject : public QObject
   void serverConnectedData(bool state);
   void codecFramedData(unsigned chans,unsigned samprate,unsigned bitrate,
 		       Ringbuffer *ring);
-  void streamMetadataChangedData(const QString &str);
+  void metadataReceivedData(MetaEvent *e);
   void starvationData();
   void exitData();
 

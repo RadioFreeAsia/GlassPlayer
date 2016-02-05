@@ -259,6 +259,11 @@ ln -s ../../src/common/logging.cpp src/glassplayer/logging.cpp
 rm -f src/glassplayer/logging.h
 ln -s ../../src/common/logging.h src/glassplayer/logging.h
 
+rm -f src/glassplayer/metaevent.cpp
+ln -s ../../src/common/metaevent.cpp src/glassplayer/metaevent.cpp
+rm -f src/glassplayer/metaevent.h
+ln -s ../../src/common/metaevent.h src/glassplayer/metaevent.h
+
 rm -f src/glassplayer/ringbuffer.cpp
 ln -s ../../src/common/ringbuffer.cpp src/glassplayer/ringbuffer.cpp
 rm -f src/glassplayer/ringbuffer.h
