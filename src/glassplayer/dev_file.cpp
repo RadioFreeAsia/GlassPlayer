@@ -130,3 +130,8 @@ void DevFile::synchronousWrite(unsigned frames)
   n=codec()->ring()->read(pcm,frames);
   sf_writef_float(file_sndfile,pcm,n);
 }
+
+
+void DevFile::loadStats(QStringList *hdrs,QStringList *values)
+{
+}

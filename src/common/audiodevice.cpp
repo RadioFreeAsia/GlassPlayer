@@ -57,6 +57,18 @@ void AudioDevice::stop()
 }
 
 
+void AudioDevice::getStats(QStringList *hdrs,QStringList *values)
+{
+  hdrs->push_back("DeviceFramesPlayed");
+  values->push_back(QString().sprintf("%lu",audio_play_position));
+
+  loadStats(hdrs,values);
+
+  hdrs->push_back("DevicePLLCurrentFrames");
+  values->push_back(QString().sprintf("%u",codec()->ring()->readSpace()));
+}
+
+
 void AudioDevice::meterLevels(int *lvls) const
 {
   for(unsigned i=0;i<MAX_AUDIO_CHANNELS;i++) {

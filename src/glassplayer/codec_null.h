@@ -34,6 +34,9 @@ class CodecNull : public Codec
   QString defaultExtension() const;
   bool acceptsFormatIdentifier(const QString &str) const;
   void process(const QByteArray &data);
+
+ protected:
+  void loadStats(QStringList *hdrs,QStringList *values);
 };
 
 

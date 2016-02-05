@@ -40,18 +40,16 @@ void *AlsaCallback(void *ptr)
   static SRC_STATE *src=NULL;
   static SRC_DATA data;
   static int err;
-  static double pll_setpoint_ratio=1.0;
-  static unsigned pll_setpoint_frames=0;
-  static double pll_offset=0.0;
   static unsigned ring_frames=0;
   static unsigned count=0;
   static bool show_xrun=false;
+  static double pll_setpoint_ratio;
 
   dev=(DevAlsa *)ptr;
   src=NULL;
   pll_setpoint_ratio=1.0;
-  pll_setpoint_frames=0;
-  pll_offset=0.0;
+  dev->alsa_pll_setpoint_frames=0;
+  dev->alsa_pll_offset=0.0;
   ring_frames=0;
   count=0;
   show_xrun=false;
@@ -92,25 +90,25 @@ void *AlsaCallback(void *ptr)
   }
 
   while(count<PLL_SETTLE_INTERVAL) {  // Allow ringbuffer to stabilize
-    if((ring_frames=dev->codec()->ring()->readSpace())>pll_setpoint_frames) {
-      pll_setpoint_frames=ring_frames;
+    if((ring_frames=dev->codec()->ring()->readSpace())>dev->alsa_pll_setpoint_frames) {
+      dev->alsa_pll_setpoint_frames=ring_frames;
     }
-    pll_setpoint_frames=ring_frames;
+    dev->alsa_pll_setpoint_frames=ring_frames;
     count++;
   }
   while(!dev->alsa_stopping) {
     ring_frames=dev->codec()->ring()->readSpace();
-    if(ring_frames>pll_setpoint_frames) {
-      if(pll_offset>(-PLL_CORRECTION_LIMIT)) {
-	pll_offset-=PLL_CORRECTION;
+    if(ring_frames>dev->alsa_pll_setpoint_frames) {
+      if(dev->alsa_pll_offset>(-PLL_CORRECTION_LIMIT)) {
+	dev->alsa_pll_offset-=PLL_CORRECTION;
       }
     }
     else {
-      if(pll_offset<(PLL_CORRECTION_LIMIT)) {
-	pll_offset+=PLL_CORRECTION;
+      if(dev->alsa_pll_offset<(PLL_CORRECTION_LIMIT)) {
+	dev->alsa_pll_offset+=PLL_CORRECTION;
       }
     }
-    data.src_ratio=pll_setpoint_ratio+pll_offset;
+    data.src_ratio=pll_setpoint_ratio+dev->alsa_pll_offset;
     src_set_ratio(src,data.src_ratio);
     if(snd_pcm_state(dev->alsa_pcm)!=SND_PCM_STATE_RUNNING) {
       if(show_xrun) {
@@ -374,4 +372,29 @@ void DevAlsa::stop()
 void DevAlsa::playPositionData()
 {
   updatePlayPosition(alsa_play_position);
+}
+
+
+void DevAlsa::loadStats(QStringList *hdrs,QStringList *values)
+{
+  hdrs->push_back("DeviceName");
+  values->push_back(alsa_device);
+
+  hdrs->push_back("DeviceChannels");
+  values->push_back(QString().sprintf("%u",alsa_channels));
+
+  hdrs->push_back("DeviceSampleRate");
+  values->push_back(QString().sprintf("%u",alsa_samplerate));
+
+  hdrs->push_back("DeviceBufferSize");
+  values->push_back(QString().sprintf("%lu",alsa_buffer_size));
+
+  hdrs->push_back("DevicePeriodQuantity");
+  values->push_back(QString().sprintf("%u",alsa_period_quantity));
+
+  hdrs->push_back("DevicePllOffset");
+  values->push_back(QString().sprintf("%8.6lf",alsa_pll_offset));
+
+  hdrs->push_back("DevicePllSetpointFrames");
+  values->push_back(QString().sprintf("%u",alsa_pll_setpoint_frames));
 }

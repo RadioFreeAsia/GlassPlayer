@@ -24,6 +24,8 @@
 #include <fcntl.h>
 #include <unistd.h>
 
+#include <QStringList>
+
 #include "codec_mpeg1.h"
 #include "logging.h"
 
@@ -93,6 +95,7 @@ void CodecMpeg1::process(const QByteArray &data)
       }
     }
     if(frame_offset>0) {
+      mpeg1_mad_header=mpeg1_mad_frame.header;
       if(!isFramed()) {
 	int channels=2;
 	if(mpeg1_mad_frame.header.mode==MAD_MODE_SINGLE_CHANNEL) {
@@ -108,6 +111,69 @@ void CodecMpeg1::process(const QByteArray &data)
     }
     mpeg1_mpeg=
       mpeg1_mpeg.right(mpeg1_mad_stream.bufend-mpeg1_mad_stream.next_frame);
+  }
+#endif  // HAVE_LIBMAD
+}
+
+
+void CodecMpeg1::loadStats(QStringList *hdrs,QStringList *values)
+{
+#ifdef HAVE_LIBMAD
+  hdrs->push_back("CodecAlgorithm");
+  values->push_back("MPEG-1");
+
+  hdrs->push_back("CodecLayer");
+  values->push_back(QString().sprintf("%u",mpeg1_mad_header.layer));
+
+  switch(mpeg1_mad_header.mode) {
+  case MAD_MODE_STEREO:
+    hdrs->push_back("CodecMode");
+    values->push_back("Stereo");
+    break;
+
+  case MAD_MODE_JOINT_STEREO:
+    hdrs->push_back("CodecMode");
+    values->push_back("JointStereo");
+    break;
+
+  case MAD_MODE_DUAL_CHANNEL:
+    hdrs->push_back("CodecMode");
+    values->push_back("DualChannel");
+    break;
+
+  case MAD_MODE_SINGLE_CHANNEL:
+    hdrs->push_back("CodecMode");
+    values->push_back("SingleChannel");
+    break;
+  }
+
+  hdrs->push_back("CodecChannels");
+  values->push_back(QString().sprintf("%u",channels()));
+
+  hdrs->push_back("CodecBitrate");
+  values->push_back(QString().sprintf("%lu",mpeg1_mad_header.bitrate));
+
+  switch(mpeg1_mad_header.emphasis) {
+  case MAD_EMPHASIS_NONE:
+    hdrs->push_back("CodecEmphasis");
+    values->push_back("None");
+    break;
+
+  case MAD_EMPHASIS_50_15_US:
+    hdrs->push_back("CodecEmphasis");
+    values->push_back("50/15 uS");
+    break;
+
+  case MAD_EMPHASIS_CCITT_J_17:
+    hdrs->push_back("CodecEmphasis");
+    values->push_back("CCITT J.17");
+    break;
+
+  case MAD_EMPHASIS_RESERVED:
+  default:
+    hdrs->push_back("CodecEmphasis");
+    values->push_back("Unknown");
+    break;
   }
 #endif  // HAVE_LIBMAD
 }
@@ -148,6 +214,8 @@ bool CodecMpeg1::LoadLibmad()
     mad_stream_init(&mpeg1_mad_stream);
     mad_synth_init(&mpeg1_mad_synth);
     mad_frame_init(&mpeg1_mad_frame);
+    memset(&mpeg1_mad_header,0,sizeof(mpeg1_mad_header));
+
     return true;
   }
 #endif  // HAVE_LIBMAD

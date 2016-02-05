@@ -20,6 +20,8 @@
 
 #include <stdio.h>
 
+#include <QStringList>
+
 #include "codec.h"
 #include "logging.h"
 
@@ -116,6 +118,29 @@ uint64_t Codec::framesGenerated() const
 Ringbuffer *Codec::ring()
 {
   return codec_ring;
+}
+
+
+void Codec::getStats(QStringList *hdrs,QStringList *values)
+{
+  hdrs->push_back("CodecFramed");
+  if(isFramed()) {
+    values->push_back("Yes");
+  }
+  else {
+    values->push_back("No");
+  }
+
+  hdrs->push_back("CodecChannels");
+  values->push_back(QString().sprintf("%u",codec_channels));
+
+  hdrs->push_back("CodecSampleRate");
+  values->push_back(QString().sprintf("%u",codec_samplerate));
+
+  hdrs->push_back("CodecBytesProcessed");
+  values->push_back(QString().sprintf("%lu",codec_bytes_processed));
+
+  loadStats(hdrs,values);
 }
 
 

@@ -48,6 +48,7 @@ class AudioDevice : public QObject
 			      const QStringList &values)=0;
   virtual bool start(QString *err)=0;
   virtual void stop();
+  virtual void getStats(QStringList *hdrs,QStringList *values);
   void meterLevels(int *lvls) const;
   static QString typeText(AudioDevice::Type type);
   static QString optionKeyword(AudioDevice::Type type);
@@ -76,6 +77,7 @@ class AudioDevice : public QObject
 			unsigned nframes,unsigned chans);
   void peakLevels(float *lvls,const float *pcm,unsigned nframes,unsigned chans);
   void peakLevels(int *lvls,const float *pcm,unsigned nframes,unsigned chans);
+  virtual void loadStats(QStringList *hdrs,QStringList *values)=0;
 
  private:
   Codec *audio_codec;

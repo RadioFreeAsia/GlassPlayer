@@ -37,6 +37,9 @@ class CodecMpeg1 : public Codec
   QString defaultExtension() const;
   void process(const QByteArray &data);
 
+ protected:
+  void loadStats(QStringList *hdrs,QStringList *values);
+
  private:
   void Reset();
   bool LoadLibmad();
@@ -61,6 +64,8 @@ class CodecMpeg1 : public Codec
   struct mad_stream mpeg1_mad_stream;
   struct mad_frame mpeg1_mad_frame;
   struct mad_synth mpeg1_mad_synth;
+  struct mad_header mpeg1_mad_header;
+
 #endif  // HAVE_LIBMAD
 };
 

@@ -61,3 +61,8 @@ void CodecNull::process(const QByteArray &data)
 {
   write(1,data.data(),data.length());
 }
+
+
+void CodecNull::loadStats(QStringList *hdrs,QStringList *values)
+{
+}

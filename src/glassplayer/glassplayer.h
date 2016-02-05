@@ -47,6 +47,7 @@ class MainObject : public QObject
 		       Ringbuffer *ring);
   void metadataReceivedData(MetaEvent *e);
   void starvationData();
+  void statsData();
   void exitData();
 
  private:
@@ -57,6 +58,7 @@ class MainObject : public QObject
   QUrl server_url;
   bool disable_stream_metadata;
   bool dump_bitstream;
+  bool sir_stats_out;
   QStringList device_keys;
   QStringList device_values;
   bool list_codecs;
@@ -67,6 +69,8 @@ class MainObject : public QObject
   AudioDevice *sir_audio_device;
   QTimer *sir_starvation_timer;
   ServerId *sir_server_id;
+  QTimer *sir_stats_timer;
+  MetaEvent sir_meta_event;
 };
 
 

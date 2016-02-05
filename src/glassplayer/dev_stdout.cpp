@@ -102,3 +102,8 @@ void DevStdout::synchronousWrite(unsigned frames)
     break;
   }
 }
+
+
+void DevStdout::loadStats(QStringList *hdrs,QStringList *values)
+{
+}

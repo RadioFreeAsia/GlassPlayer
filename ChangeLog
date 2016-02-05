@@ -133,3 +133,5 @@
 2016-02-05 Fred Gleason <fredg@paravelsystems.com>
 	* Refactored metadata processing so as to emit updates in realtime
 	sync with audio playout.
+2016-02-05 Fred Gleason <fredg@paravelsystems.com>
+	* Implemented a '--stats-out' option.

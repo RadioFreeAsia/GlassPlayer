@@ -59,6 +59,7 @@ MainObject::MainObject(QObject *parent)
   dump_bitstream=false;
   list_codecs=false;
   list_devices=false;
+  sir_stats_out=false;
   server_type=Connector::XCastServer;
 
   CmdSwitch *cmd=
@@ -91,6 +92,10 @@ MainObject::MainObject(QObject *parent)
     }
     if(cmd->key(i)=="--list-devices") {
       list_devices=true;
+      cmd->setProcessed(i,true);
+    }
+    if(cmd->key(i)=="--stats-out") {
+      sir_stats_out=true;
       cmd->setProcessed(i,true);
     }
    if(cmd->key(i)=="--verbose") {
@@ -143,6 +148,23 @@ MainObject::MainObject(QObject *parent)
     Log(LOG_ERR,"you must specify a stream URL");
     exit(256);
   }
+  int stdout_count=0;
+  if(sir_stats_out) {
+    stdout_count++;
+  }
+  if(dump_bitstream) {
+    stdout_count++;
+  }
+  if(audio_device_type==AudioDevice::Stdout) {
+    stdout_count++;
+  }
+  if(stdout_count>1) {
+    Log(LOG_ERR,"only one option using STDOUT may be specified at a time");
+    exit(256);
+  }
+
+  sir_stats_timer=new QTimer(this);
+  connect(sir_stats_timer,SIGNAL(timeout()),this,SLOT(statsData()));
 
   //
   // Set Signals
@@ -250,12 +272,16 @@ void MainObject::codecFramedData(unsigned chans,unsigned samprate,
     Log(LOG_ERR,err);
     exit(256);
   }
+  if(sir_stats_out) {
+    sir_stats_timer->start(2000);
+  }
   sir_starvation_timer->start(1000);
 }
 
 
 void MainObject::metadataReceivedData(MetaEvent *e)
 {
+  sir_meta_event=*e;
   if(!e->field(MetaEvent::Title).isNull()) {
     Log(LOG_INFO,"Title Update: "+e->field(MetaEvent::Title).toString());
   }
@@ -274,6 +300,28 @@ void MainObject::starvationData()
 	Log(LOG_WARNING,"stream data starvation detected, connection reset");
       }
     }
+  }
+}
+
+
+void MainObject::statsData()
+{
+  QStringList hdrs;
+  QStringList values;
+
+  if(!sir_meta_event.field(MetaEvent::Title).isNull()) {
+    hdrs.push_back("MetadataTitle");
+    values.push_back(sir_meta_event.field(MetaEvent::Title).toString());
+  }
+  if(!sir_meta_event.field(MetaEvent::Url).isNull()) {
+    hdrs.push_back("MetadataUrl");
+    values.push_back(sir_meta_event.field(MetaEvent::Url).toString());
+  }
+  sir_codec->getStats(&hdrs,&values);
+  sir_audio_device->getStats(&hdrs,&values);
+ for(int i=0;i<hdrs.size();i++) {
+    printf("%s: %s\n",(const char *)hdrs[i].toUtf8(),
+	   (const char *)values[i].toUtf8());
   }
 }
 

@@ -39,6 +39,9 @@ class DevFile : public AudioDevice
  public slots:
    void synchronousWrite(unsigned frames);
 
+ protected:
+  void loadStats(QStringList *hdrs,QStringList *values);
+
  private:
   AudioDevice::Format file_format;
   QString file_file_name;

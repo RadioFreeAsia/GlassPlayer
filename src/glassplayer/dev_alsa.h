@@ -47,6 +47,9 @@ class DevAlsa : public AudioDevice
  private slots:
   void playPositionData();
 
+ protected:
+  void loadStats(QStringList *hdrs,QStringList *values);
+
  private:
 #ifdef ALSA
   QString alsa_device;
@@ -63,6 +66,8 @@ class DevAlsa : public AudioDevice
   //  QTimer *alsa_meter_timer;
   QTimer *alsa_play_position_timer;
   friend void *AlsaCallback(void *ptr);
+  double alsa_pll_offset;
+  unsigned alsa_pll_setpoint_frames;
   uint64_t alsa_play_position;
 #endif  // ALSA
 };

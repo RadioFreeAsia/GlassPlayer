@@ -36,6 +36,9 @@ class DevStdout : public AudioDevice
  public slots:
   void synchronousWrite(unsigned frames);
 
+ protected:
+  void loadStats(QStringList *hdrs,QStringList *values);
+
  private:
   AudioDevice::Format stdout_format;
 };

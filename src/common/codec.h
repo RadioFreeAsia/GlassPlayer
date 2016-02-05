@@ -58,6 +58,7 @@ class Codec : public QObject
   uint64_t bytesProcessed() const;
   uint64_t framesGenerated() const;
   Ringbuffer *ring();
+  virtual void getStats(QStringList *hdrs,QStringList *values);
   virtual bool isAvailable() const=0;
   virtual QString defaultExtension() const=0;
   static bool acceptsContentType(Type type,const QString &mimetype);
@@ -80,6 +81,7 @@ class Codec : public QObject
   virtual void process(const QByteArray &data)=0;
   virtual void setFramed(unsigned chans,unsigned samprate,unsigned bitrate);
   virtual void signalAudioWritten(unsigned frames);
+  virtual void loadStats(QStringList *hdrs,QStringList *values)=0;
 
  private:
   uint64_t codec_bytes_processed;

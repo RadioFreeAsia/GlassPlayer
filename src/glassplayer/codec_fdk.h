@@ -39,6 +39,9 @@ class CodecFdk : public Codec
   QString defaultExtension() const;
   void process(const QByteArray &data);
 
+ protected:
+  void loadStats(QStringList *hdrs,QStringList *values);
+
  private:
   void *fdk_fdkaac_handle;
   uint64_t fdk_frame_count;
@@ -61,6 +64,7 @@ class CodecFdk : public Codec
   CStreamInfo* (*aacDecoder_GetStreamInfo)(HANDLE_AACDECODER);
   INT (*aacDecoder_GetLibInfo)(LIB_INFO *);
   HANDLE_AACDECODER fdk_decoder;
+  CStreamInfo *fdk_cinfo=NULL;
 #endif  // HAVE_FDKAAC
 };
 
