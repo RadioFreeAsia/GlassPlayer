@@ -43,6 +43,7 @@ class CodecFdk : public Codec
   void loadStats(QStringList *hdrs,QStringList *values);
 
  private:
+  QString GetAotText(int aot);
   void *fdk_fdkaac_handle;
   uint64_t fdk_frame_count;
 #ifdef HAVE_FDKAAC

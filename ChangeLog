@@ -135,3 +135,6 @@
 	sync with audio playout.
 2016-02-05 Fred Gleason <fredg@paravelsystems.com>
 	* Implemented a '--stats-out' option.
+2016-02-08 Fred Gleason <fredg@paravelsystems.com>
+	* Tweaked the --stats-out parameters for the AAC codec in
+	'src/glassplayer/codec_fdk.cpp' and 'src/glassplayer/codec_fdk.h'.

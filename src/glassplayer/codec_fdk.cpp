@@ -98,7 +98,6 @@ void CodecFdk::process(const QByteArray &data)
   float pcm[4096];
   unsigned char *bitstream[1];
   unsigned bitstream_length[1];
-  //  CStreamInfo *cinfo=NULL;
 
   bitstream[0]=new unsigned char[data.length()];
   memcpy(bitstream[0],data.constData(),data.length());
@@ -132,265 +131,227 @@ void CodecFdk::process(const QByteArray &data)
 void CodecFdk::loadStats(QStringList *hdrs,QStringList *values)
 {
 #ifdef HAVE_FDKAAC
+  hdrs->push_back("CodecAlgorithm");
+  values->push_back(GetAotText(fdk_cinfo->aot));
+
+  hdrs->push_back("CodecChannels");
+  values->push_back(QString().sprintf("%u",fdk_cinfo->numChannels));
+#endif  // HAVE_FDKAAC
+}
+
+
+QString CodecFdk::GetAotText(int aot)
+{
+  QString ret=tr("Unknown");
+
+#ifdef HAVE_FDKAAC
   switch(fdk_cinfo->aot) {
   case AOT_AAC_MAIN:
-    hdrs->push_back("CodecAlgorithm");
-    values->push_back("AAC");
+    ret="AAC";
     break;
 
   case AOT_AAC_SSR:
-    hdrs->push_back("CodecAlgorithm");
-    values->push_back("AAC-SSR");
+    ret="AAC-SSR";
     break;
 
   case AOT_AAC_LC:
-    hdrs->push_back("CodecAlgorithm");
-    values->push_back("AAC-LC");
+    ret="AAC-LC";
     break;
 
   case AOT_AAC_LTP:
-    hdrs->push_back("CodecAlgorithm");
-    values->push_back("AAC-LTP");
+    ret="AAC-LTP";
     break;
 
   case AOT_SBR:
-    hdrs->push_back("CodecAlgorithm");
-    values->push_back("AAC-SBR");
+    ret="AAC-SBR";
     break;
 
   case AOT_AAC_SCAL:
-    hdrs->push_back("CodecAlgorithm");
-    values->push_back("AAC-SCAL");
+    ret="AAC-SCAL";
     break;
 
   case AOT_TWIN_VQ:
-    hdrs->push_back("CodecAlgorithm");
-    values->push_back("TwinVQ");
+    ret="TwinVQ";
     break;
 
   case AOT_CELP:
-    hdrs->push_back("CodecAlgorithm");
-    values->push_back("CELP");
+    ret="CELP";
     break;
 
   case AOT_HVXC:
-    hdrs->push_back("CodecAlgorithm");
-    values->push_back("HVXC");
+    ret="HVXC";
     break;
 
   case AOT_TTSI:
-    hdrs->push_back("CodecAlgorithm");
-    values->push_back("TTSI");
+    ret="TTSI";
     break;
 
   case AOT_MAIN_SYNTH:
-    hdrs->push_back("CodecAlgorithm");
-    values->push_back("MainSynth");
+    ret="MainSynth";
     break;
 
   case AOT_WAV_TAB_SYNTH:
-    hdrs->push_back("CodecAlgorithm");
-    values->push_back("WaveTableSynth");
+    ret="WaveTableSynth";
     break;
 
   case AOT_GEN_MIDI:
-    hdrs->push_back("CodecAlgorithm");
-    values->push_back("GeneralMIDI");
+    ret="GeneralMIDI";
     break;
 
   case AOT_ALG_SYNTH_AUD_FX:
-    hdrs->push_back("CodecAlgorithm");
-    values->push_back("AltSynth/FX");
+    ret="AltSynth/FX";
     break;
 
   case AOT_ER_AAC_LC:
-    hdrs->push_back("CodecAlgorithm");
-    values->push_back("AAC-ER/LC");
+    ret="AAC-ER/LC";
     break;
 
   case AOT_ER_AAC_LTP:
-    hdrs->push_back("CodecAlgorithm");
-    values->push_back("AAC-ER/LTP");
+    ret="AAC-ER/LTP";
     break;
 
   case AOT_ER_AAC_SCAL:
-    hdrs->push_back("CodecAlgorithm");
-    values->push_back("AAC-ER/SCALE");
+    ret="AAC-ER/SCALE";
     break;
 
   case AOT_ER_TWIN_VQ:
-    hdrs->push_back("CodecAlgorithm");
-    values->push_back("TwinVQ-ER");
+    ret="TwinVQ-ER";
     break;
 
   case AOT_ER_BSAC:
-    hdrs->push_back("CodecAlgorithm");
-    values->push_back("BSAC-ER");
+    ret="BSAC-ER";
     break;
 
   case AOT_ER_AAC_LD:
-    hdrs->push_back("CodecAlgorithm");
-    values->push_back("AAC-LD/ER");
+    ret="AAC-LD/ER";
     break;
 
   case AOT_ER_CELP:
-    hdrs->push_back("CodecAlgorithm");
-    values->push_back("CELP-ER");
+    ret="CELP-ER";
     break;
 
   case AOT_ER_HVXC:
-    hdrs->push_back("CodecAlgorithm");
-    values->push_back("HVXC-ER");
+    ret="HVXC-ER";
     break;
 
   case AOT_ER_HILN:
-    hdrs->push_back("CodecAlgorithm");
-    values->push_back("HILN-ER");
+    ret="HILN-ER";
     break;
 
   case AOT_ER_PARA:
-    hdrs->push_back("CodecAlgorithm");
-    values->push_back("PARA-ER");
+    ret="PARA-ER";
     break;
 
   case AOT_PS:
-    hdrs->push_back("CodecAlgorithm");
-    values->push_back("AAC-PS");
+    ret="AAC-PS";
     break;
 
   case AOT_MPEGS:
-    hdrs->push_back("CodecAlgorithm");
-    values->push_back("MPEG Surround");
+    ret="MPEG Surround";
     break;
 
   case AOT_MP3ONMP4_L1:
-    hdrs->push_back("CodecAlgorithm");
-    values->push_back("MPEG Layer 1 in MP4");
+    ret="MPEG Layer 1 in MP4";
     break;
 
   case AOT_MP3ONMP4_L2:
-    hdrs->push_back("CodecAlgorithm");
-    values->push_back("MPEG Layer 2 in MP4");
+    ret="MPEG Layer 2 in MP4";
     break;
 
   case AOT_MP3ONMP4_L3:
-    hdrs->push_back("CodecAlgorithm");
-    values->push_back("MPEG Layer 3 in MP4");
+    ret="MPEG Layer 3 in MP4";
     break;
 
   case AOT_AAC_SLS:
-    hdrs->push_back("CodecAlgorithm");
-    values->push_back("AAC-SLS");
+    ret="AAC-SLS";
     break;
 
   case AOT_SLS:
-    hdrs->push_back("CodecAlgorithm");
-    values->push_back("SLS");
+    ret="SLS";
     break;
 
   case AOT_ER_AAC_ELD:
-    hdrs->push_back("CodecAlgorithm");
-    values->push_back("AAC-ELD");
+    ret="AAC-ELD";
     break;
 
   case AOT_USAC:
-    hdrs->push_back("CodecAlgorithm");
-    values->push_back("USAC");
+    ret="USAC";
     break;
 
   case AOT_SAOC:
-    hdrs->push_back("CodecAlgorithm");
-    values->push_back("SAOC");
+    ret="SAOC";
     break;
 
   case AOT_LD_MPEGS:
-    hdrs->push_back("CodecAlgorithm");
-    values->push_back("LowDelay MPEG Surround");
+    ret="LowDelay MPEG Surround";
     break;
 
   case AOT_MP2_AAC_MAIN:
-    hdrs->push_back("CodecAlgorithm");
-    values->push_back("AAC-MP2-Main");
+    ret="AAC-MP2-Main";
     break;
 
   case AOT_MP2_AAC_LC:
-    hdrs->push_back("CodecAlgorithm");
-    values->push_back("AAC-MP2-LC");
+    ret="AAC-MP2-LC";
     break;
 
   case AOT_MP2_AAC_SSR:
-    hdrs->push_back("CodecAlgorithm");
-    values->push_back("AAC-MP2-SSR");
+    ret="AAC-MP2-SSR";
     break;
 
   case AOT_MP2_SBR:
-    hdrs->push_back("CodecAlgorithm");
-    values->push_back("MP2-SBR");
+    ret="MP2-SBR";
     break;
 
   case AOT_DAB:
-    hdrs->push_back("CodecAlgorithm");
-    values->push_back("DAB");
+    ret="DAB";
     break;
 
   case AOT_DABPLUS_AAC_LC:
-    hdrs->push_back("CodecAlgorithm");
-    values->push_back("DAB-AAC-LC");
+    ret="DAB-AAC-LC";
     break;
 
   case AOT_DABPLUS_SBR:
-    hdrs->push_back("CodecAlgorithm");
-    values->push_back("DAB-SBR");
+    ret="DAB-SBR";
     break;
 
   case AOT_DABPLUS_PS:
-    hdrs->push_back("CodecAlgorithm");
-    values->push_back("DAB-PS");
+    ret="DAB-PS";
     break;
 
   case AOT_PLAIN_MP1:
-    hdrs->push_back("CodecAlgorithm");
-    values->push_back("MPEG-1 Layer 1");
+    ret="MPEG-1 Layer 1";
     break;
 
   case AOT_PLAIN_MP2:
-    hdrs->push_back("CodecAlgorithm");
-    values->push_back("MPEG-1 Layer 2");
+    ret="MPEG-1 Layer 2";
     break;
 
   case AOT_PLAIN_MP3:
-    hdrs->push_back("CodecAlgorithm");
-    values->push_back("MPEG-1 Layer 3");
+    ret="MPEG-1 Layer 3";
     break;
 
   case AOT_DRM_AAC:
-    hdrs->push_back("CodecAlgorithm");
-    values->push_back("DRM-AAC");
+    ret="DRM-AAC";
     break;
 
   case AOT_DRM_SBR:
-    hdrs->push_back("CodecAlgorithm");
-    values->push_back("DRM-SBR");
+    ret="DRM-SBR";
     break;
 
   case AOT_DRM_MPEG_PS:
-    hdrs->push_back("CodecAlgorithm");
-    values->push_back("DRM-MPEG-PS");
+    ret="DRM-MPEG-PS";
     break;
 
   case AOT_DRM_SURROUND:
-    hdrs->push_back("CodecAlgorithm");
-    values->push_back("DRM-Surround");
+    ret="DRM-Surround";
     break;
 
   case AOT_MP2_PS:
-    hdrs->push_back("CodecAlgorithm");
-    values->push_back("MP2-PS");
+    ret="MP2-PS";
     break;
 
   case AOT_MPEGS_RESIDUALS:
-    hdrs->push_back("CodecAlgorithm");
-    values->push_back("MPEG Surround Residuals");
+    ret="MPEG Surround Residuals";
     break;
 
   case AOT_RSVD_10:
@@ -405,13 +366,9 @@ void CodecFdk::loadStats(QStringList *hdrs,QStringList *values)
   case AOT_NULL_OBJECT:
     break;
   }
-
-  hdrs->push_back("CodecChannels");
-  values->push_back(QString().sprintf("%u",fdk_cinfo->numChannels));
-
-  //  hdrs->push_back("CodecBitrate");
-  //  values->push_back(QString().sprintf("%d",fdk_cinfo->bitRate));
 #endif  // HAVE_FDKAAC
+
+  return ret;
 }
 
 
