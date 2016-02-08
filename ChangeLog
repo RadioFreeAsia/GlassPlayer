@@ -140,3 +140,6 @@
 	'src/glassplayer/codec_fdk.cpp' and 'src/glassplayer/codec_fdk.h'.
 2016-02-08 Fred Gleason <fredg@paravelsystems.com>
 	* Implemented --stats-out parameters for the Connector classes.
+2016-02-08 Fred Gleason <fredg@paravelsystems.com>
+	* Fixed a bug in 'src/glassplayer/serverid.cpp' that caused playout
+	to fail with non-extended M3U lists containing multiple URLs.

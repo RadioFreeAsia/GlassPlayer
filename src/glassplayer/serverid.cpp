@@ -19,6 +19,7 @@
 //
 
 #include "logging.h"
+#include "m3uplaylist.h"
 #include "serverid.h"
 
 ServerId::ServerId(QObject *parent)
@@ -117,19 +118,36 @@ void ServerId::errorData(QAbstractSocket::SocketError err)
   switch(err) {
   case QAbstractSocket::RemoteHostClosedError:
     if(!id_restarting) {
-      if(id_content_type.toLower()=="audio/x-mpegurl") {
-	if(global_log_verbose) {
-	  Log(LOG_INFO,tr("using mountpoint")+": "+id_body.trimmed());
+      if((id_content_type.toLower()=="audio/x-mpegurl")||
+	 (id_content_type.toLower()=="application/vnc.appl.mpegurl")||
+	 (id_content_type.toLower()=="application/x-mpegurl")) {
+	M3uPlaylist *playlist=new M3uPlaylist();
+	if(playlist->parse(id_body.toUtf8(),id_url)) {
+	  if(playlist->isExtended()) {
+	    emit typeFound(Connector::HlsServer,id_url);
+	  }
+	  else {
+	    if(playlist->segmentQuantity()>0) {
+	      if(global_log_verbose) {
+		Log(LOG_INFO,tr("using mountpoint")+
+		    ": "+playlist->segmentUrl(0).toString());
+	      }
+	      emit typeFound(Connector::XCastServer,playlist->segmentUrl(0));
+	    }
+	    else {
+	      Log(LOG_ERR,"playlist contains no media segments");
+	      exit(256);
+	    }
+	  }
+	  delete playlist;
+	  id_kill_timer->start(0);
+	  return;
 	}
-	emit typeFound(Connector::XCastServer,QUrl(id_body.trimmed()));
-	id_kill_timer->start(0);
-	return;
-      }
-      if((id_content_type.toLower()=="application/vnd.apple.mpegurl")||
-	 (id_content_type.toLower()=="application/x-mpegurl")){
-	emit typeFound(Connector::HlsServer,id_url);
-	id_kill_timer->start(0);
-	return;
+	else {
+	  Log(LOG_ERR,"invalid M3U list format");
+	  exit(256);
+	}
+	exit(0);
       }
       Log(LOG_ERR,tr("unsupported stream type")+" ["+id_content_type+"]");
       exit(256);
