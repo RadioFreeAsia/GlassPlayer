@@ -143,3 +143,5 @@
 2016-02-08 Fred Gleason <fredg@paravelsystems.com>
 	* Fixed a bug in 'src/glassplayer/serverid.cpp' that caused playout
 	to fail with non-extended M3U lists containing multiple URLs.
+2016-02-08 Fred Gleason <fredg@paravelsystems.com>
+	* Added a 'DeviceType' stat to the audio device statistics.

@@ -377,6 +377,9 @@ void DevAlsa::playPositionData()
 
 void DevAlsa::loadStats(QStringList *hdrs,QStringList *values)
 {
+  hdrs->push_back("DeviceType");
+  values->push_back("ALSA");
+
   hdrs->push_back("DeviceName");
   values->push_back(alsa_device);
 

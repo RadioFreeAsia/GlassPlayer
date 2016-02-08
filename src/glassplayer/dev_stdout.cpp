@@ -106,4 +106,6 @@ void DevStdout::synchronousWrite(unsigned frames)
 
 void DevStdout::loadStats(QStringList *hdrs,QStringList *values)
 {
+  hdrs->push_back("DeviceType");
+  values->push_back("STDOUT");
 }

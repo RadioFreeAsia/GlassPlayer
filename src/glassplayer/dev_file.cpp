@@ -134,4 +134,6 @@ void DevFile::synchronousWrite(unsigned frames)
 
 void DevFile::loadStats(QStringList *hdrs,QStringList *values)
 {
+  hdrs->push_back("DeviceType");
+  values->push_back("FILE");
 }
