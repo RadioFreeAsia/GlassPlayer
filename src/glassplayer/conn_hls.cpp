@@ -81,10 +81,59 @@ void Hls::disconnectFromHostConnector()
 }
 
 
+void Hls::loadStats(QStringList *hdrs,QStringList *values)
+{
+  hdrs->push_back("ConnectorType");
+  values->push_back("HLS");
+
+  hdrs->push_back("ConnectorServer");
+  values->push_back(hls_server);
+
+  hdrs->push_back("ConnectorMimetype");
+  values->push_back(hls_content_type);
+
+  hdrs->push_back("ConnectorHLSVersion");
+  values->push_back(QString().sprintf("%d",hls_index_playlist->version()));
+
+  hdrs->push_back("ConnectorHLSTargetDuration");
+  values->
+    push_back(QString().sprintf("%d",hls_index_playlist->targetDuration()));
+
+  hdrs->push_back("ConnectorHLSMediaSequence");
+  values->
+    push_back(QString().sprintf("%d",hls_index_playlist->mediaSequence()));
+
+  hdrs->push_back("ConnectorHLSSegmentQuantity");
+  values->
+    push_back(QString().sprintf("%u",hls_index_playlist->segmentQuantity()));
+
+  for(unsigned i=0;i<hls_index_playlist->segmentQuantity();i++) {
+    if(!hls_index_playlist->segmentTitle(i).isEmpty()) {
+      hdrs->push_back(QString().sprintf("ConnectorHLSSegment%uTitle",i+1));
+      values->push_back(hls_index_playlist->segmentTitle(i));
+    }
+    hdrs->push_back(QString().sprintf("ConnectorHLSSegment%uUrl",i+1));
+    values->push_back(hls_index_playlist->segmentUrl(i).toString());
+
+    hdrs->push_back(QString().sprintf("ConnectorHLSSegment%uDuration",i+1));;
+    values->push_back(QString().
+		      sprintf("%8.5lf",hls_index_playlist->segmentDuration(i)));
+
+    if(hls_index_playlist->segmentDateTime(i).isValid()) {
+      hdrs->push_back(QString().sprintf("ConnectorHLSSegment%uDateTime",i+1));
+      values->push_back(hls_index_playlist->segmentDateTime(i).
+			toString("yyyy-mm-dd hh::mm:ss"));
+    }
+  }
+}
+
+
 void Hls::indexProcessStartData()
 {
   QStringList args;
 
+  args.push_back("-D");
+  args.push_back("-");
   args.push_back(serverUrl().toString());
   if(hls_index_process!=NULL) {
     delete hls_index_process;
@@ -109,9 +158,10 @@ void Hls::indexProcessFinishedData(int exit_code,QProcess::ExitStatus status)
 	  QString().sprintf(" [%d]",exit_code));
     }
     else {
+      QByteArray data=hls_index_process->readAllStandardOutput();
+      data=ReadHeaders(data);
       M3uPlaylist *playlist=new M3uPlaylist();
-      if(playlist->parse(hls_index_process->readAllStandardOutput(),
-			 serverUrl())) {
+      if(playlist->parse(data,serverUrl())) {
 	if(*playlist!=*hls_index_playlist) {
 	  *hls_index_playlist=*playlist;
 	  if(isConnected()||hls_index_playlist->segmentQuantity()>=3) {
@@ -234,4 +284,52 @@ void Hls::mediaProcessErrorData(QProcess::ProcessError err)
 {
   Log(LOG_WARNING,tr("media process returned error")+
       " ["+Connector::processErrorText(err)+"]");
+}
+
+
+QByteArray Hls::ReadHeaders(QByteArray &data)
+{
+  QString line;
+  unsigned used=0;
+
+  for(int i=0;i<data.size();i++) {
+    switch(0xFF&data.constData()[i]) {
+    case 13:
+      break;
+
+    case 10:
+      if(line.isEmpty()) {
+	return data.right(data.length()-used);
+      }
+      ProcessHeader(line);
+      line="";
+      break;
+
+    default:
+      line+=data.constData()[i];
+      break;
+    }
+    used++;
+  }
+  return QByteArray();
+}
+
+
+void Hls::ProcessHeader(const QString &str)
+{
+  //fprintf(stderr,"HEADER: %s\n",(const char *)str.toUtf8());
+  QStringList f0=str.split(":");
+
+  if(f0.size()>=2) {
+    QString hdr=f0[0].toLower().trimmed();
+    f0.erase(f0.begin());
+    QString value=f0.join(":").trimmed();
+
+    if(hdr=="server") {
+      hls_server=value;
+    }
+    if(hdr=="content-type") {
+      hls_content_type=value;
+    }
+  }
 }

@@ -40,6 +40,7 @@ class XCast : public Connector
  protected:
   void connectToHostConnector(const QString &hostname,uint16_t port);
   void disconnectFromHostConnector();
+  void loadStats(QStringList *hdrs,QStringList *values);
 
  private slots:
   void connectedData();
@@ -64,6 +65,9 @@ class XCast : public Connector
   int xcast_metadata_counter;
   QTimer *xcast_watchdog_retry_timer;
   uint64_t xcast_byte_counter;
+  QString xcast_server;
+  QString xcast_content_type;
+  bool xcast_is_shoutcast;
 };
 
 

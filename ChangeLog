@@ -138,3 +138,5 @@
 2016-02-08 Fred Gleason <fredg@paravelsystems.com>
 	* Tweaked the --stats-out parameters for the AAC codec in
 	'src/glassplayer/codec_fdk.cpp' and 'src/glassplayer/codec_fdk.h'.
+2016-02-08 Fred Gleason <fredg@paravelsystems.com>
+	* Implemented --stats-out parameters for the Connector classes.

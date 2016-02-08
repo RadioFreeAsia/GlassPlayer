@@ -125,7 +125,8 @@ void ServerId::errorData(QAbstractSocket::SocketError err)
 	id_kill_timer->start(0);
 	return;
       }
-      if(id_content_type.toLower()=="application/vnd.apple.mpegurl") {
+      if((id_content_type.toLower()=="application/vnd.apple.mpegurl")||
+	 (id_content_type.toLower()=="application/x-mpegurl")){
 	emit typeFound(Connector::HlsServer,id_url);
 	id_kill_timer->start(0);
 	return;

@@ -46,6 +46,7 @@ Connector::Connector(QObject *parent)
   conn_host_hostname="";
   conn_host_port=0;
   conn_connected=false;
+  conn_dropouts=0;
 }
 
 
@@ -293,6 +294,26 @@ void Connector::setScriptDown(const QString &cmd)
 }
 
 
+void Connector::getStats(QStringList *hdrs,QStringList *values)
+{
+  hdrs->push_back("ConnectorConnected");
+  if(conn_connected) {
+    values->push_back("Yes");
+  }
+  else {
+    values->push_back("No");
+  }
+
+  hdrs->push_back("ConnectorUrl");
+  values->push_back(conn_server_url.toString());
+
+  hdrs->push_back("ConnectorDropouts");
+  values->push_back(QString().sprintf("%u",conn_dropouts));
+
+  loadStats(hdrs,values);
+}
+
+
 QString Connector::serverTypeText(Connector::ServerType type)
 {
   QString ret=tr("Unknown");
@@ -513,6 +534,9 @@ void Connector::setCodecType(Codec::Type type)
 void Connector::setConnected(bool state)
 {
   if(state!=conn_connected) {
+    if(!state) {
+      conn_dropouts++;
+    }
     conn_connected=state;
     emit connected(conn_connected);
   }

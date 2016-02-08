@@ -62,7 +62,7 @@ Connector::ServerType XCast::serverType() const
 void XCast::reset()
 {
   xcast_socket->disconnect();
-  emit connected(false);
+  setConnected(false);
   xcast_watchdog_retry_timer->start(XCAST_WATCHDOG_RETRY_INTERVAL);
 }
 
@@ -87,6 +87,7 @@ void XCast::connectedData()
   xcast_metadata_string="";
   xcast_metadata_counter=0;
   xcast_byte_counter=0;
+  xcast_is_shoutcast=false;
   SendHeader("GET "+serverMountpoint()+" HTTP/1.1");
   SendHeader("Host: "+hostHostname()+":"+QString().sprintf("%u",hostPort()));
   SendHeader(QString().sprintf("icy-metadata: %d",streamMetadataEnabled()));
@@ -117,7 +118,7 @@ void XCast::readyReadData()
 	  if(xcast_header.isEmpty()) {
 	    xcast_header_active=false;
 	    if((xcast_result_code>=200)&&(xcast_result_code<300)) {
-	      emit connected(true);
+	      setConnected(true);
 	      data=data.right(data.length()-i-1);
 	      ProcessFrames(data);
 	    }
@@ -150,12 +151,32 @@ void XCast::errorData(QAbstractSocket::SocketError err)
     exit(255);
 
   default:
-    emit connected(false);
+    setConnected(false);
     xcast_watchdog_retry_timer->start(XCAST_WATCHDOG_RETRY_INTERVAL);
     Log(LOG_WARNING,tr("server connection lost")+
 	QString().sprintf(" [error: %u], ",err)+tr("attempting reconnect"));
     break;
   }
+}
+
+
+void XCast::loadStats(QStringList *hdrs,QStringList *values)
+{
+  hdrs->push_back("ConnectorType");
+  if(xcast_is_shoutcast) {
+    values->push_back("Shoutcast");
+  }
+  else {
+    values->push_back("Icecast");
+  }
+
+  if(!xcast_server.isEmpty()) {
+    hdrs->push_back("ConnectorServer");
+    values->push_back(xcast_server);
+  }
+
+  hdrs->push_back("ConnectorMimetype");
+  values->push_back(xcast_content_type);
 }
 
 
@@ -198,7 +219,7 @@ void XCast::ProcessHeader(const QString &str)
 {
   QStringList f0;
 
-  //fprintf(stderr,"%s\n",(const char *)str.toUtf8());
+  //  fprintf(stderr,"%s\n",(const char *)str.toUtf8());
 
   if(xcast_result_code==0) {
     f0=str.split(" ",QString::SkipEmptyParts);
@@ -206,6 +227,7 @@ void XCast::ProcessHeader(const QString &str)
       Log(LOG_ERR,"malformed response from server ["+str+"]");
       exit(256);
     }
+    xcast_is_shoutcast=f0[0]=="ICY";
     xcast_result_code=f0[1].toInt();
     if((xcast_result_code<200)||(xcast_result_code>=300)) {
       f0.erase(f0.begin());
@@ -219,11 +241,15 @@ void XCast::ProcessHeader(const QString &str)
       QString hdr=f0[0].trimmed().toLower();
       QString value=f0[1].trimmed();
       if(hdr=="content-type") {
+	xcast_content_type=value;
 	for(int i=0;i<Codec::TypeLast;i++) {
 	  if(Codec::acceptsContentType((Codec::Type)i,value)) {
 	    setCodecType((Codec::Type)i);
 	  }
 	}
+      }
+      if(hdr=="server") {
+	xcast_server=value;
       }
       if(hdr=="icy-br") {
 	setAudioBitrate(value.toInt());

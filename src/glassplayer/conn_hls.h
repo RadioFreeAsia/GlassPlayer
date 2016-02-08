@@ -40,6 +40,7 @@ class Hls : public Connector
  protected:
   void connectToHostConnector(const QString &hostname,uint16_t port);
   void disconnectFromHostConnector();
+  void loadStats(QStringList *hdrs,QStringList *values);
 
  private slots:
   void indexProcessStartData();
@@ -51,6 +52,8 @@ class Hls : public Connector
   void mediaProcessErrorData(QProcess::ProcessError err);
 
  private:
+  QByteArray ReadHeaders(QByteArray &data);
+  void ProcessHeader(const QString &str);
   QProcess *hls_index_process;
   M3uPlaylist *hls_index_playlist;
   QTimer *hls_index_timer;
@@ -59,6 +62,8 @@ class Hls : public Connector
   QUrl hls_last_media_segment;
   QTimer *hls_media_timer;
   bool hls_new_segment;
+  QString hls_server;
+  QString hls_content_type;
 };
 
 

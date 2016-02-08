@@ -317,9 +317,16 @@ void MainObject::statsData()
     hdrs.push_back("MetadataUrl");
     values.push_back(sir_meta_event.field(MetaEvent::Url).toString());
   }
-  sir_codec->getStats(&hdrs,&values);
-  sir_audio_device->getStats(&hdrs,&values);
- for(int i=0;i<hdrs.size();i++) {
+  if(sir_connector!=NULL) {
+    sir_connector->getStats(&hdrs,&values);
+  }
+  if(sir_codec!=NULL) {
+    sir_codec->getStats(&hdrs,&values);
+  }
+  if(sir_audio_device!=NULL) {
+    sir_audio_device->getStats(&hdrs,&values);
+  }
+  for(int i=0;i<hdrs.size();i++) {
     printf("%s: %s\n",(const char *)hdrs[i].toUtf8(),
 	   (const char *)values[i].toUtf8());
   }

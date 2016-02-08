@@ -84,6 +84,7 @@ class Connector : public QObject
   void setScriptUp(const QString &cmd);
   QString scriptDown() const;
   void setScriptDown(const QString &cmd);
+  virtual void getStats(QStringList *hdrs,QStringList *values);
   static QString serverTypeText(Connector::ServerType);
   static QString optionKeyword(Connector::ServerType type);
   static Connector::ServerType serverType(const QString &key);
@@ -117,7 +118,7 @@ class Connector : public QObject
   virtual void disconnectFromHostConnector()=0;
   QString hostHostname() const;
   uint16_t hostPort() const;
-
+  virtual void loadStats(QStringList *hdrs,QStringList *values)=0;
 
  private:
   QString conn_server_username;
@@ -140,6 +141,7 @@ class Connector : public QObject
   QString conn_script_up;
   QString conn_script_down;
   bool conn_connected;
+  unsigned conn_dropouts;
 };
 
 
