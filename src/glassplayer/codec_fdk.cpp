@@ -118,8 +118,7 @@ void CodecFdk::process(const QByteArray &data)
 	else {
 	  src_short_to_float_array(pcm16,pcm,
 				   fdk_cinfo->frameSize*fdk_cinfo->numChannels);
-	  ring()->write(pcm,fdk_cinfo->frameSize);
-	  signalAudioWritten(fdk_cinfo->frameSize);
+	  writePcm(pcm,fdk_cinfo->frameSize);
 	}
       }
     }

@@ -62,7 +62,6 @@ void CodecMpeg1::process(const QByteArray &data)
 #ifdef HAVE_LIBMAD
   float pcm[32768*4];
   int frame_offset=0;
-  int lost_frames=0;
   int err_count=0;
 
   mpeg1_mpeg.append(data);
@@ -88,12 +87,6 @@ void CodecMpeg1::process(const QByteArray &data)
   } while(mpeg1_mad_stream.error!=MAD_ERROR_BUFLEN);
 
   if(mpeg1_mad_stream.error==MAD_ERROR_BUFLEN) {
-    if(ring()!=NULL) {
-      if((lost_frames=frame_offset-ring()->writeSpace())>0) {
-	Log(LOG_WARNING,QString().sprintf("XRUN: possible loss of %d frames",
-					  lost_frames));
-      }
-    }
     if(frame_offset>0) {
       mpeg1_mad_header=mpeg1_mad_frame.header;
       if(!isFramed()) {
@@ -105,8 +98,7 @@ void CodecMpeg1::process(const QByteArray &data)
 		  mpeg1_mad_frame.header.bitrate/1000);
       }
       else {
-	ring()->write(pcm,frame_offset/channels());
-	signalAudioWritten(frame_offset/channels());
+	writePcm(pcm,frame_offset/channels());
       }
     }
     mpeg1_mpeg=

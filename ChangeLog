@@ -151,3 +151,8 @@
 	'src/common/connector.h'.
 	* Fixed a bug in 'src/glassplayer/conn_xcast.cpp' that generated a
 	malformed HTTP request.
+2016-02-09 Fred Gleason <fredg@paravelsystems.com>
+	* Added a 'Codec::writePcm()' method in 'src/common/codec.cpp' and
+	'src/common/codec.h'.
+	* Removed the 'Codec::signalAudioWritten()' method in
+	'src/common/codec.cpp' and 'src/common/codec.h'.

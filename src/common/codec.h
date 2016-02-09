@@ -80,7 +80,8 @@ class Codec : public QObject
  protected:
   virtual void process(const QByteArray &data)=0;
   virtual void setFramed(unsigned chans,unsigned samprate,unsigned bitrate);
-  virtual void signalAudioWritten(unsigned frames);
+  virtual void writePcm(float *pcm,unsigned frames);
+  //virtual void signalAudioWritten(unsigned frames);
   virtual void loadStats(QStringList *hdrs,QStringList *values)=0;
 
  private:

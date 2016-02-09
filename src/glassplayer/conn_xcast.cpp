@@ -212,7 +212,6 @@ void XCast::ProcessFrames(QByteArray &data)
 
 void XCast::SendHeader(const QString &str)
 {
-  fprintf(stderr,"SEND: %s\n",(const char *)str.toUtf8());
   xcast_socket->write((str+"\r\n").toUtf8(),str.length()+2);
 }
 

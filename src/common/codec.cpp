@@ -19,7 +19,9 @@
 //
 
 #include <stdio.h>
+#include <unistd.h>
 
+#include <QCoreApplication>
 #include <QStringList>
 
 #include "codec.h"
@@ -320,8 +322,21 @@ void Codec::setFramed(unsigned chans,unsigned samprate,unsigned bitrate)
 }
 
 
+void Codec::writePcm(float *pcm,unsigned frames)
+{
+
+  while(codec_ring->writeSpace()<frames) {
+    usleep(100000);
+  }
+  codec_ring->write(pcm,frames);
+  codec_frames_generated+=frames;
+  emit audioWritten(frames);
+}
+
+/*
 void Codec::signalAudioWritten(unsigned frames)
 {
   codec_frames_generated+=frames;
   emit audioWritten(frames);
 }
+*/
