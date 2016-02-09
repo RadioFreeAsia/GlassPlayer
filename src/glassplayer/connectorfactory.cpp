@@ -23,21 +23,22 @@
 #include "conn_xcast.h"
 #include "connectorfactory.h"
 
-Connector *ConnectorFactory(Connector::ServerType type,QObject *parent)
+Connector *ConnectorFactory(Connector::ServerType type,const QString &mimetype,
+			    QObject *parent)
 {
   Connector *conn=NULL;
 
   switch(type) {
   case Connector::HlsServer:
-    conn=new Hls(parent);
+    conn=new Hls(mimetype,parent);
     break;
 
   case Connector::XCastServer:
-    conn=new XCast(parent);
+    conn=new XCast(mimetype,parent);
     break;
 
   case Connector::FileServer:
-    conn=new File(parent);
+    conn=new File(mimetype,parent);
     break;
 
   case Connector::LastServer:

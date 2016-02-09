@@ -41,7 +41,7 @@ class Connector : public QObject
   Q_OBJECT;
  public:
   enum ServerType {XCastServer=1,HlsServer=2,FileServer=3,LastServer=4};
-  Connector(QObject *parent=0);
+  Connector(const QString &mimetype,QObject *parent=0);
   ~Connector();
   virtual Connector::ServerType serverType() const=0;
   QString serverUsername() const;
@@ -106,11 +106,12 @@ class Connector : public QObject
 
  signals:
   void connected(bool state);
-  void dataReceived(const QByteArray &data);
+  void dataReceived(const QByteArray &data,bool is_last);
   void error(QAbstractSocket::SocketError err);
   void metadataReceived(uint64_t bytes,MetaEvent *e);
 
  protected:
+  QString contentType() const;
   void setCodecType(Codec::Type type);
   void setConnected(bool state);
   //  void setError(QAbstractSocket::SocketError err);
@@ -140,6 +141,7 @@ class Connector : public QObject
   QString conn_script_down;
   bool conn_connected;
   unsigned conn_dropouts;
+  QString conn_content_type;
 };
 
 

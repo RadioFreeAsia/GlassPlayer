@@ -32,7 +32,7 @@ class Hls : public Connector
 {
   Q_OBJECT;
  public:
-  Hls(QObject *parent=0);
+  Hls(const QString &mimetype,QObject *parent=0);
   ~Hls();
   Connector::ServerType serverType() const;
   void reset();

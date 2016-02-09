@@ -27,7 +27,7 @@
 #include "glasslimits.h"
 #include "logging.h"
 
-Connector::Connector(QObject *parent)
+Connector::Connector(const QString &mimetype,QObject *parent)
   : QObject(parent)
 {
   conn_server_username="source";
@@ -47,6 +47,13 @@ Connector::Connector(QObject *parent)
   conn_host_port=0;
   conn_connected=false;
   conn_dropouts=0;
+  conn_content_type=mimetype;
+
+  for(unsigned i=0;i<Codec::TypeLast;i++) {
+    if(Codec::acceptsContentType((Codec::Type)i,mimetype)) {
+      setCodecType((Codec::Type)i);
+    }
+  }
 }
 
 
@@ -531,6 +538,12 @@ int Connector::timezoneOffset()
   lt=mktime(localtime(&t));
 
   return (gmt-lt)/60;
+}
+
+
+QString Connector::contentType() const
+{
+  return conn_content_type;
 }
 
 

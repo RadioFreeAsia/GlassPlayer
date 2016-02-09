@@ -72,7 +72,7 @@ bool DevStdout::start(QString *err)
 }
 
 
-void DevStdout::synchronousWrite(unsigned frames)
+void DevStdout::synchronousWrite(unsigned frames,bool is_last)
 {
   float pcm[frames*codec()->channels()];
   int16_t *pcm16;
@@ -100,6 +100,9 @@ void DevStdout::synchronousWrite(unsigned frames)
 
   case AudioDevice::LastFormat:
     break;
+  }
+  if(is_last) {
+    exit(0);
   }
 }
 

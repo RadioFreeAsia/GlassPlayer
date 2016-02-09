@@ -37,7 +37,8 @@ class ServerId : public QObject
   void connectToServer(const QUrl &url);
 
  signals:
-  void typeFound(Connector::ServerType type,const QUrl &url);
+  void typeFound(Connector::ServerType type,const QString &mimetype,
+		 const QUrl &url);
 
  private slots:
   void connectedData();
@@ -60,9 +61,10 @@ class ServerId : public QObject
   bool id_header_active;
   unsigned id_result_code;
   QString id_result_text;
-  QString id_body;
+  QByteArray id_body;
   QTimer *id_restart_timer;
   bool id_restarting;
+  bool id_icy;
 };
 
 

@@ -24,8 +24,8 @@
 #include "conn_xcast.h"
 #include "logging.h"
 
-XCast::XCast(QObject *parent)
-  : Connector(parent)
+XCast::XCast(const QString &mimetype,QObject *parent)
+  : Connector(mimetype,parent)
 {
   xcast_header="";
   xcast_header_active=false;
@@ -176,7 +176,7 @@ void XCast::loadStats(QStringList *hdrs,QStringList *values)
     values->push_back(xcast_server);
   }
 
-  hdrs->push_back("ConnectorMimetype");
+  hdrs->push_back("ConnectorContentType");
   values->push_back(xcast_content_type);
 }
 
@@ -206,7 +206,7 @@ void XCast::ProcessFrames(QByteArray &data)
     }
   }
   xcast_byte_counter+=data.length();
-  emit dataReceived(data);
+  emit dataReceived(data,false);
 }
 
 

@@ -398,6 +398,7 @@ Ringbuffer::Ringbuffer(size_t bytes,unsigned channels)
   ring_channels=channels;
   ring_ring=glass_ringbuffer_create(bytes);
   ring_reset=false;
+  ring_finished=false;
 }
 
 
@@ -465,4 +466,16 @@ bool Ringbuffer::isReset()
     return true;
   }
   return false;
+}
+
+
+bool Ringbuffer::isFinished() const
+{
+  return ring_finished;
+}
+
+
+void Ringbuffer::setFinished()
+{
+  ring_finished=true;
 }

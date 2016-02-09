@@ -25,8 +25,8 @@
 #include "conn_hls.h"
 #include "logging.h"
 
-Hls::Hls(QObject *parent)
-  : Connector(parent)
+Hls::Hls(const QString &mimetype,QObject *parent)
+  : Connector(mimetype,parent)
 {
   hls_index_process=NULL;
   hls_media_process=NULL;
@@ -89,7 +89,7 @@ void Hls::loadStats(QStringList *hdrs,QStringList *values)
   hdrs->push_back("ConnectorServer");
   values->push_back(hls_server);
 
-  hdrs->push_back("ConnectorMimetype");
+  hdrs->push_back("ConnectorContentType");
   values->push_back(hls_content_type);
 
   hdrs->push_back("ConnectorHLSVersion");
@@ -243,7 +243,7 @@ void Hls::mediaReadyReadData()
       }
       hls_new_segment=false;
     }
-    emit dataReceived(data);
+    emit dataReceived(data,false);
   }
 }
 

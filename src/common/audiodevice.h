@@ -56,7 +56,7 @@ class AudioDevice : public QObject
   static QString formatString(AudioDevice::Format fmt);
 
  public slots:
-  virtual void synchronousWrite(unsigned frames);
+  virtual void synchronousWrite(unsigned frames,bool is_last);
   void processMetadata(uint64_t frames,MetaEvent *e);
 
  signals:

@@ -34,7 +34,7 @@ class DevStdout : public AudioDevice
   bool start(QString *err);
 
  public slots:
-  void synchronousWrite(unsigned frames);
+   void synchronousWrite(unsigned frames,bool is_last);
 
  protected:
   void loadStats(QStringList *hdrs,QStringList *values);

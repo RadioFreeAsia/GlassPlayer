@@ -83,11 +83,14 @@ class Ringbuffer
   unsigned writeSpace() const;
   unsigned dump(unsigned frames);
   bool isReset();
+  bool isFinished() const;
+  void setFinished();
 
  private:
   glass_ringbuffer_t *ring_ring;
   unsigned ring_channels;
   bool ring_reset;
+  bool ring_finished;
 };
 
 

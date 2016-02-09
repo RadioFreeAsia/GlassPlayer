@@ -179,15 +179,19 @@ MainObject::MainObject(QObject *parent)
   // Attempt to auto-detect remote server type
   //
   sir_server_id=new ServerId(this);
-  connect(sir_server_id,SIGNAL(typeFound(Connector::ServerType,const QUrl &)),
-	  this,SLOT(serverTypeFoundData(Connector::ServerType,const QUrl &)));
+  connect(sir_server_id,
+	  SIGNAL(typeFound(Connector::ServerType,const QString &,const QUrl &)),
+	  this,
+	  SLOT(serverTypeFoundData(Connector::ServerType,const QString &,
+				   const QUrl &)));
   sir_server_id->connectToServer(server_url);
 }
 
 
-void MainObject::serverTypeFoundData(Connector::ServerType type,const QUrl &url)
+void MainObject::serverTypeFoundData(Connector::ServerType type,
+				     const QString &mimetype,const QUrl &url)
 {
-  sir_connector=ConnectorFactory(type,this);
+  sir_connector=ConnectorFactory(type,mimetype,this);
   sir_connector->setStreamMetadataEnabled(!disable_stream_metadata);
   connect(sir_connector,SIGNAL(connected(bool)),
 	  this,SLOT(serverConnectedData(bool)));
@@ -200,7 +204,7 @@ void MainObject::serverConnectedData(bool state)
 {
   if(state) {
     if(dump_bitstream) {  // Dump raw bitstream to standard output
-      sir_codec=
+       sir_codec=
 	CodecFactory(Codec::TypeNull,sir_connector->audioBitrate(),this);
     }
     else {   // Normal codec initialization here
@@ -216,8 +220,8 @@ void MainObject::serverConnectedData(bool state)
       Log(LOG_INFO,"Streaming from "+
 	  Connector::serverTypeText(sir_connector->serverType())+" server");
     }
-    connect(sir_connector,SIGNAL(dataReceived(const QByteArray &)),
-    	    sir_codec,SLOT(processBitstream(const QByteArray &)));
+    connect(sir_connector,SIGNAL(dataReceived(const QByteArray &,bool)),
+    	    sir_codec,SLOT(processBitstream(const QByteArray &,bool)));
     connect(sir_connector,SIGNAL(metadataReceived(uint64_t,MetaEvent *)),
 	    sir_codec,SLOT(processMetadata(uint64_t,MetaEvent *)));
     connect(sir_codec,SIGNAL(framed(unsigned,unsigned,unsigned,Ringbuffer *)),
@@ -296,8 +300,13 @@ void MainObject::starvationData()
   if(sir_codec!=NULL) {
     if(sir_codec->ring()!=NULL) {
       if(sir_codec->ring()->isReset()) {
-	sir_connector->reset();
-	Log(LOG_WARNING,"stream data starvation detected, connection reset");
+	if(sir_codec->ring()->isFinished()) {
+	  exit(0);
+	}
+	else {
+	  sir_connector->reset();
+	  Log(LOG_WARNING,"stream data starvation detected, connection reset");
+	}
       }
     }
   }

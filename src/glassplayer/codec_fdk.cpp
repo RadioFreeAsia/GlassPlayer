@@ -87,7 +87,7 @@ QString CodecFdk::defaultExtension() const
 }
 
 
-void CodecFdk::process(const QByteArray &data)
+void CodecFdk::process(const QByteArray &data,bool is_last)
 {
 #ifdef HAVE_FDKAAC
   AAC_DECODER_ERROR err;
@@ -118,11 +118,14 @@ void CodecFdk::process(const QByteArray &data)
 	else {
 	  src_short_to_float_array(pcm16,pcm,
 				   fdk_cinfo->frameSize*fdk_cinfo->numChannels);
-	  writePcm(pcm,fdk_cinfo->frameSize);
+	  writePcm(pcm,fdk_cinfo->frameSize,is_last);
 	}
       }
     }
   } while(remaining!=0);
+  if(is_last) {
+    ring()->setFinished();
+  }
 #endif  // HAVE_FDKAAC
 }
 

@@ -18,6 +18,8 @@
 //   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 //
 
+#include <stdio.h>
+
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <errno.h>
@@ -57,7 +59,7 @@ QString CodecMpeg1::defaultExtension() const
 }
 
 
-void CodecMpeg1::process(const QByteArray &data)
+void CodecMpeg1::process(const QByteArray &data,bool is_last)
 {
 #ifdef HAVE_LIBMAD
   float pcm[32768*4];
@@ -98,11 +100,36 @@ void CodecMpeg1::process(const QByteArray &data)
 		  mpeg1_mad_frame.header.bitrate/1000);
       }
       else {
-	writePcm(pcm,frame_offset/channels());
+	writePcm(pcm,frame_offset/channels(),is_last);
       }
     }
     mpeg1_mpeg=
       mpeg1_mpeg.right(mpeg1_mad_stream.bufend-mpeg1_mad_stream.next_frame);
+  }
+  if(is_last) {
+    frame_offset=0;
+    mpeg1_mpeg.append(0,MAD_BUFFER_GUARD);
+    mad_stream_buffer(&mpeg1_mad_stream,(const unsigned char *)mpeg1_mpeg.data(),
+		      mpeg1_mpeg.length());
+    do {
+      while(mad_frame_decode(&mpeg1_mad_frame,&mpeg1_mad_stream)==0) {  
+	mad_synth_frame(&mpeg1_mad_synth,&mpeg1_mad_frame);
+	for(int i=0;i<mpeg1_mad_synth.pcm.length;i++) {
+	  for(int j=0;j<mpeg1_mad_synth.pcm.channels;j++) {
+	    pcm[frame_offset+i*mpeg1_mad_synth.pcm.channels+j]=
+	      (float)mad_f_todouble(mpeg1_mad_synth.pcm.samples[j][i]);
+	  }
+	}
+	frame_offset+=(mpeg1_mad_synth.pcm.length*mpeg1_mad_synth.pcm.channels);
+      }
+      if(MAD_RECOVERABLE(mpeg1_mad_stream.error)!=0) {
+	if(err_count++>10) {
+	  Reset();
+	  break;
+	}
+      }
+    } while(mpeg1_mad_stream.error!=MAD_ERROR_BUFLEN);
+    writePcm(pcm,frame_offset/channels(),is_last);
   }
 #endif  // HAVE_LIBMAD
 }

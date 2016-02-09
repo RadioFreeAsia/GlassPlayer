@@ -70,18 +70,17 @@ class Codec : public QObject
  signals:
   void framed(unsigned chans,unsigned samprate,unsigned bitrate,
 	      Ringbuffer *ring);
-  void audioWritten(unsigned frames);
+  void audioWritten(unsigned frames,bool is_last);
   void metadataReceived(uint64_t frames,MetaEvent *e);
 
  public slots:
-  void processBitstream(const QByteArray &data);
+  void processBitstream(const QByteArray &data,bool is_last);
   void processMetadata(uint64_t bytes,MetaEvent *e);
 
  protected:
-  virtual void process(const QByteArray &data)=0;
+  virtual void process(const QByteArray &data,bool is_last)=0;
   virtual void setFramed(unsigned chans,unsigned samprate,unsigned bitrate);
-  virtual void writePcm(float *pcm,unsigned frames);
-  //virtual void signalAudioWritten(unsigned frames);
+  virtual void writePcm(float *pcm,unsigned frames,bool is_last);
   virtual void loadStats(QStringList *hdrs,QStringList *values)=0;
 
  private:

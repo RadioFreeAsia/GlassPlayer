@@ -57,9 +57,12 @@ bool CodecNull::acceptsFormatIdentifier(const QString &str) const
 }
 
 
-void CodecNull::process(const QByteArray &data)
+void CodecNull::process(const QByteArray &data,bool is_last)
 {
   write(1,data.data(),data.length());
+  if(is_last) {
+    exit(0);
+  }
 }
 
 

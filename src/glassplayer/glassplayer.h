@@ -41,7 +41,8 @@ class MainObject : public QObject
   MainObject(QObject *parent=0);
 
  private slots:
-  void serverTypeFoundData(Connector::ServerType type,const QUrl &url);
+  void serverTypeFoundData(Connector::ServerType type,const QString &mimetype,
+			   const QUrl &url);
   void serverConnectedData(bool state);
   void codecFramedData(unsigned chans,unsigned samprate,unsigned bitrate,
 		       Ringbuffer *ring);

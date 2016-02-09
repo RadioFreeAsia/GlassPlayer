@@ -160,3 +160,6 @@
 	* Removed the 'hostname' and 'port' parameters from the
 	'Connector::connectToHostConnector()' method in
 	'src/common/connector.cpp' and 'src/common/connector.h'.
+2016-02-09 Fred Gleason <fredg@paravelsystems.com>
+	* Added a 'File' connector in 'src/glassplayer/conn_file.cpp' and
+	'src/glassplayer/conn_file.h'.

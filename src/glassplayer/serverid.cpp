@@ -18,6 +18,10 @@
 //   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 //
 
+#include <errno.h>
+#include <stdlib.h>
+#include <unistd.h>
+
 #include "logging.h"
 #include "m3uplaylist.h"
 #include "serverid.h"
@@ -67,6 +71,7 @@ void ServerId::connectedData()
   id_content_type="";
   id_location="";
   id_restarting=false;
+  id_icy=false;
   SendHeader("GET "+id_url.path()+" HTTP/1.1");
   SendHeader("Host: "+id_url.host()+":"+QString().sprintf("%u",id_url.port(80)));
   SendHeader("Accept: */*");
@@ -118,13 +123,17 @@ void ServerId::errorData(QAbstractSocket::SocketError err)
   switch(err) {
   case QAbstractSocket::RemoteHostClosedError:
     if(!id_restarting) {
+
+      //
+      // M3U Playlist
+      //
       if((id_content_type.toLower()=="audio/x-mpegurl")||
 	 (id_content_type.toLower()=="application/vnd.apple.mpegurl")||
 	 (id_content_type.toLower()=="application/x-mpegurl")) {
 	M3uPlaylist *playlist=new M3uPlaylist();
-	if(playlist->parse(id_body.toUtf8(),id_url)) {
+	if(playlist->parse(id_body.constData(),id_url)) {
 	  if(playlist->isExtended()) {
-	    emit typeFound(Connector::HlsServer,id_url);
+	    emit typeFound(Connector::HlsServer,"",id_url);
 	  }
 	  else {
 	    if(playlist->segmentQuantity()>0) {
@@ -132,7 +141,7 @@ void ServerId::errorData(QAbstractSocket::SocketError err)
 		Log(LOG_INFO,tr("using mountpoint")+
 		    ": "+playlist->segmentUrl(0).toString());
 	      }
-	      emit typeFound(Connector::XCastServer,playlist->segmentUrl(0));
+	      emit typeFound(Connector::XCastServer,"",playlist->segmentUrl(0));
 	    }
 	    else {
 	      Log(LOG_ERR,"playlist contains no media segments");
@@ -143,11 +152,27 @@ void ServerId::errorData(QAbstractSocket::SocketError err)
 	  id_kill_timer->start(0);
 	  return;
 	}
-	else {
-	  Log(LOG_ERR,"invalid M3U list format");
+	Log(LOG_ERR,"invalid M3U list format");
+	exit(256);
+      }
+
+      //
+      // Static File
+      //
+      if(id_content_type.toLower()=="audio/mpeg") {
+	int fd=-1;
+	char tempfile[]={"/tmp/glassplayerXXXXXX"};
+	if((fd=mkstemp(tempfile))<0) {
+	  Log(LOG_ERR,tr("unable to create temporary file")+
+	      " ["+strerror(errno)+"]");
 	  exit(256);
 	}
-	exit(0);
+	write(fd,id_body.constData(),id_body.size());
+	close(fd);
+	emit typeFound(Connector::FileServer,id_content_type,
+		       QUrl(QString("file://")+tempfile));
+	id_kill_timer->start(0);
+	return;
       }
       Log(LOG_ERR,tr("unsupported stream type")+" ["+id_content_type+"]");
       exit(256);
@@ -184,13 +209,10 @@ void ServerId::ProcessResult()
   case 100:   // Continue
   case 200:   // OK
   case 203:   // Non-Authoritative Information
-    for(unsigned i=0;i<Connector::LastServer;i++) {
-      if(Connector::acceptsContentType((Connector::ServerType)i,
-				       id_content_type)) {
-	emit typeFound((Connector::ServerType)i,id_url);
-	id_kill_timer->start(0);
-	return;
-      }
+    if(id_icy) {
+      emit typeFound(Connector::XCastServer,id_content_type,id_url);
+      id_kill_timer->start(0);
+      return;
     }
     break;
 
@@ -258,6 +280,7 @@ void ServerId::ProcessHeader(const QString &str)
       if(hdr=="location") {
 	id_location=value;
       }
+      id_icy=id_icy||(hdr.split("-")[0].toLower()=="icy");
     }
   }
 }

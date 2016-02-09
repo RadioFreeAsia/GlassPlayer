@@ -23,7 +23,8 @@
 
 #include "connector.h"
 
-Connector *ConnectorFactory(Connector::ServerType type,QObject *parent=0);
+Connector *ConnectorFactory(Connector::ServerType type,const QString &mimetype,
+			    QObject *parent=0);
 
 
 #endif  // CONNECTORFACTORY_H

@@ -286,10 +286,10 @@ QString Codec::optionKeyword(Codec::Type type)
 }
 
 
-void Codec::processBitstream(const QByteArray &data)
+void Codec::processBitstream(const QByteArray &data,bool is_last)
 {
   codec_bytes_processed+=data.length();
-  process(data);
+  process(data,is_last);
   while((codec_metadata_bytes.size()>0)&&
 	(codec_metadata_bytes.front()<codec_bytes_processed)) {
     emit metadataReceived(codec_frames_generated,codec_metadata_events.front());
@@ -322,7 +322,7 @@ void Codec::setFramed(unsigned chans,unsigned samprate,unsigned bitrate)
 }
 
 
-void Codec::writePcm(float *pcm,unsigned frames)
+void Codec::writePcm(float *pcm,unsigned frames,bool is_last)
 {
 
   while(codec_ring->writeSpace()<frames) {
@@ -330,13 +330,8 @@ void Codec::writePcm(float *pcm,unsigned frames)
   }
   codec_ring->write(pcm,frames);
   codec_frames_generated+=frames;
-  emit audioWritten(frames);
+  emit audioWritten(frames,is_last);
+  if(is_last) {
+    ring()->setFinished();
+  }
 }
-
-/*
-void Codec::signalAudioWritten(unsigned frames)
-{
-  codec_frames_generated+=frames;
-  emit audioWritten(frames);
-}
-*/

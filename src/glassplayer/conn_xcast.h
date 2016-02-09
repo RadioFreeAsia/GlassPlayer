@@ -32,7 +32,7 @@ class XCast : public Connector
 {
   Q_OBJECT;
  public:
-  XCast(QObject *parent=0);
+  XCast(const QString &mimetype,QObject *parent=0);
   ~XCast();
   Connector::ServerType serverType() const;
   void reset();

@@ -122,13 +122,17 @@ void DevFile::stop()
 }
 
 
-void DevFile::synchronousWrite(unsigned frames)
+void DevFile::synchronousWrite(unsigned frames,bool is_last)
 {
   float pcm[frames*codec()->channels()];
   int n;
 
   n=codec()->ring()->read(pcm,frames);
   sf_writef_float(file_sndfile,pcm,n);
+  if(is_last) {
+    sf_close(file_sndfile);
+    exit(0);
+  }
 }
 
 

@@ -35,8 +35,8 @@ AudioDevice::AudioDevice(Codec *codec,QObject *parent)
   audio_codec=codec;
 
   if(codec!=NULL) {
-    connect(codec,SIGNAL(audioWritten(unsigned)),
-	    this,SLOT(synchronousWrite(unsigned)));
+    connect(codec,SIGNAL(audioWritten(unsigned,bool)),
+	    this,SLOT(synchronousWrite(unsigned,bool)));
   }
 }
 
@@ -182,7 +182,7 @@ QString AudioDevice::formatString(AudioDevice::Format fmt)
 }
 
 
-void AudioDevice::synchronousWrite(unsigned frames)
+void AudioDevice::synchronousWrite(unsigned frames,bool is_last)
 {
 }
 

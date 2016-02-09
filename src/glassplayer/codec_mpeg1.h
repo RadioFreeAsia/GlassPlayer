@@ -35,7 +35,7 @@ class CodecMpeg1 : public Codec
   ~CodecMpeg1();
   bool isAvailable() const;
   QString defaultExtension() const;
-  void process(const QByteArray &data);
+  void process(const QByteArray &data,bool is_last);
 
  protected:
   void loadStats(QStringList *hdrs,QStringList *values);

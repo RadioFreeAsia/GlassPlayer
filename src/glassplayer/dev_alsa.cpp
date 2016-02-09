@@ -119,7 +119,7 @@ void *AlsaCallback(void *ptr)
       }
     }
     else {
-      show_xrun=true;
+      show_xrun=!dev->codec()->ring()->isFinished();
     }
     if((n=dev->codec()->ring()->
 	read(pcm_s1,dev->alsa_buffer_size/(dev->alsa_period_quantity*2)))>0) {
