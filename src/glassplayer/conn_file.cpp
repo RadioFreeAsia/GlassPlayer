@@ -1,8 +1,8 @@
-// conn_xcast.cpp
+// conn_file.cpp
 //
-// Server connector for Icecast/Shoutcast streams.
+// Server connector for static files.
 //
-//   (C) Copyright 2014-2016 Fred Gleason <fredg@paravelsystems.com>
+//   (C) Copyright 2016 Fred Gleason <fredg@paravelsystems.com>
 //
 //   This program is free software; you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License version 2 as
@@ -21,73 +21,73 @@
 #include <QByteArray>
 #include <QStringList>
 
-#include "conn_xcast.h"
+#include "conn_file.h"
 #include "logging.h"
 
-XCast::XCast(QObject *parent)
+File::File(QObject *parent)
   : Connector(parent)
 {
-  xcast_header="";
-  xcast_header_active=false;
-  xcast_result_code=0;
-  xcast_metadata_istate=0;
-  xcast_metadata_interval=0;
-  xcast_metadata_counter=0;
+  file_header="";
+  file_header_active=false;
+  file_result_code=0;
+  file_metadata_istate=0;
+  file_metadata_interval=0;
+  file_metadata_counter=0;
 
-  xcast_socket=NULL;
+  file_socket=NULL;
   InitSocket();
 
   //
   // Watchdog Timer
   //
-  xcast_watchdog_retry_timer=new QTimer(this);
-  xcast_watchdog_retry_timer->setSingleShot(true);
-  connect(xcast_watchdog_retry_timer,SIGNAL(timeout()),
+  file_watchdog_retry_timer=new QTimer(this);
+  file_watchdog_retry_timer->setSingleShot(true);
+  connect(file_watchdog_retry_timer,SIGNAL(timeout()),
 	  this,SLOT(watchdogRetryData()));
 }
 
 
-XCast::~XCast()
+File::~File()
 {
-  delete xcast_socket;
+  delete file_socket;
 }
 
 
-Connector::ServerType XCast::serverType() const
+Connector::ServerType File::serverType() const
 {
-  return Connector::XCastServer;
+  return Connector::FileServer;
 }
 
 
-void XCast::reset()
+void File::reset()
 {
-  xcast_socket->disconnect();
+  file_socket->disconnect();
   setConnected(false);
-  xcast_watchdog_retry_timer->start(XCAST_WATCHDOG_RETRY_INTERVAL);
+  file_watchdog_retry_timer->start(FILE_WATCHDOG_RETRY_INTERVAL);
 }
 
 
-void XCast::connectToHostConnector()
+void File::connectToHostConnector()
 {
-  xcast_socket->connectToHost(serverUrl().host(),serverUrl().port(80));
+  //  file_socket->connectToHost(hostname,port);
 }
 
 
-void XCast::disconnectFromHostConnector()
+void File::disconnectFromHostConnector()
 {
 }
 
 
-void XCast::connectedData()
+void File::connectedData()
 {
-  xcast_header_active=true;
-  xcast_result_code=0;
-  xcast_metadata_interval=0;
-  xcast_metadata_istate=0;
-  xcast_metadata_string="";
-  xcast_metadata_counter=0;
-  xcast_byte_counter=0;
-  xcast_is_shoutcast=false;
+  file_header_active=true;
+  file_result_code=0;
+  file_metadata_interval=0;
+  file_metadata_istate=0;
+  file_metadata_string="";
+  file_metadata_counter=0;
+  file_byte_counter=0;
+  file_is_shoutcast=false;
   SendHeader("GET "+serverMountpoint()+" HTTP/1.1");
   SendHeader("Host: "+serverUrl().host()+":"+
 	     QString().sprintf("%u",serverUrl().port(80)));
@@ -100,25 +100,25 @@ void XCast::connectedData()
 }
 
 
-void XCast::readyReadData()
+void File::readyReadData()
 {
   QByteArray data;
 
-  while(xcast_socket->bytesAvailable()>0) {
-    data=xcast_socket->read(1024);
-    if(xcast_header_active) {   // Get headers
+  while(file_socket->bytesAvailable()>0) {
+    data=file_socket->read(1024);
+    if(file_header_active) {   // Get headers
       for(int i=0;i<data.length();i++) {
 	switch(0xFF&data.data()[i]) {
 	case 13:
-	  if(!xcast_header.isEmpty()) {
-	    ProcessHeader(xcast_header);
+	  if(!file_header.isEmpty()) {
+	    ProcessHeader(file_header);
 	  }
 	  break;
 
 	case 10:
-	  if(xcast_header.isEmpty()) {
-	    xcast_header_active=false;
-	    if((xcast_result_code>=200)&&(xcast_result_code<300)) {
+	  if(file_header.isEmpty()) {
+	    file_header_active=false;
+	    if((file_result_code>=200)&&(file_result_code<300)) {
 	      setConnected(true);
 	      data=data.right(data.length()-i-1);
 	      ProcessFrames(data);
@@ -128,11 +128,11 @@ void XCast::readyReadData()
 	    }
 	    return;
 	  }
-	  xcast_header="";
+	  file_header="";
 	  break;
 
 	default:
-	  xcast_header+=data.data()[i];
+	  file_header+=data.data()[i];
 	  break;
 	}
       }
@@ -144,7 +144,7 @@ void XCast::readyReadData()
 }
 
 
-void XCast::errorData(QAbstractSocket::SocketError err)
+void File::errorData(QAbstractSocket::SocketError err)
 {
   switch(err) {
   case QAbstractSocket::HostNotFoundError:
@@ -153,7 +153,7 @@ void XCast::errorData(QAbstractSocket::SocketError err)
 
   default:
     setConnected(false);
-    xcast_watchdog_retry_timer->start(XCAST_WATCHDOG_RETRY_INTERVAL);
+    file_watchdog_retry_timer->start(FILE_WATCHDOG_RETRY_INTERVAL);
     Log(LOG_WARNING,tr("server connection lost")+
 	QString().sprintf(" [error: %u], ",err)+tr("attempting reconnect"));
     break;
@@ -161,76 +161,76 @@ void XCast::errorData(QAbstractSocket::SocketError err)
 }
 
 
-void XCast::loadStats(QStringList *hdrs,QStringList *values)
+void File::loadStats(QStringList *hdrs,QStringList *values)
 {
   hdrs->push_back("ConnectorType");
-  if(xcast_is_shoutcast) {
+  if(file_is_shoutcast) {
     values->push_back("Shoutcast");
   }
   else {
     values->push_back("Icecast");
   }
 
-  if(!xcast_server.isEmpty()) {
+  if(!file_server.isEmpty()) {
     hdrs->push_back("ConnectorServer");
-    values->push_back(xcast_server);
+    values->push_back(file_server);
   }
 
   hdrs->push_back("ConnectorMimetype");
-  values->push_back(xcast_content_type);
+  values->push_back(file_content_type);
 }
 
 
-void XCast::watchdogRetryData()
+void File::watchdogRetryData()
 {
   InitSocket();
   connectToServer();
 }
 
 
-void XCast::ProcessFrames(QByteArray &data)
+void File::ProcessFrames(QByteArray &data)
 {
   int md_start=0;
   int md_len=0;
 
-  if(xcast_metadata_interval>0) {
-    if(xcast_metadata_counter+data.length()>xcast_metadata_interval) {
-      md_start=xcast_metadata_interval-xcast_metadata_counter;
+  if(file_metadata_interval>0) {
+    if(file_metadata_counter+data.length()>file_metadata_interval) {
+      md_start=file_metadata_interval-file_metadata_counter;
       md_len=0xFF&data[md_start]*16;
       ProcessMetadata(data.mid(md_start+1,md_len));
-      xcast_metadata_counter=data.size()-(md_start+md_len+1);
+      file_metadata_counter=data.size()-(md_start+md_len+1);
       data.remove(md_start,md_len+1);
     }
     else {
-      xcast_metadata_counter+=data.length();
+      file_metadata_counter+=data.length();
     }
   }
-  xcast_byte_counter+=data.length();
+  file_byte_counter+=data.length();
   emit dataReceived(data);
 }
 
 
-void XCast::SendHeader(const QString &str)
+void File::SendHeader(const QString &str)
 {
-  xcast_socket->write((str+"\r\n").toUtf8(),str.length()+2);
+  file_socket->write((str+"\r\n").toUtf8(),str.length()+2);
 }
 
 
-void XCast::ProcessHeader(const QString &str)
+void File::ProcessHeader(const QString &str)
 {
   QStringList f0;
 
   //  fprintf(stderr,"%s\n",(const char *)str.toUtf8());
 
-  if(xcast_result_code==0) {
+  if(file_result_code==0) {
     f0=str.split(" ",QString::SkipEmptyParts);
     if(f0.size()<3) {
       Log(LOG_ERR,"malformed response from server ["+str+"]");
       exit(256);
     }
-    xcast_is_shoutcast=f0[0]=="ICY";
-    xcast_result_code=f0[1].toInt();
-    if((xcast_result_code<200)||(xcast_result_code>=300)) {
+    file_is_shoutcast=f0[0]=="ICY";
+    file_result_code=f0[1].toInt();
+    if((file_result_code<200)||(file_result_code>=300)) {
       f0.erase(f0.begin());
       Log(LOG_ERR,"server returned error ["+f0.join(" ")+"]");
       // exit(256);
@@ -242,7 +242,7 @@ void XCast::ProcessHeader(const QString &str)
       QString hdr=f0[0].trimmed().toLower();
       QString value=f0[1].trimmed();
       if(hdr=="content-type") {
-	xcast_content_type=value;
+	file_content_type=value;
 	for(int i=0;i<Codec::TypeLast;i++) {
 	  if(Codec::acceptsContentType((Codec::Type)i,value)) {
 	    setCodecType((Codec::Type)i);
@@ -250,7 +250,7 @@ void XCast::ProcessHeader(const QString &str)
 	}
       }
       if(hdr=="server") {
-	xcast_server=value;
+	file_server=value;
       }
       if(hdr=="icy-br") {
 	setAudioBitrate(value.toInt());
@@ -262,7 +262,7 @@ void XCast::ProcessHeader(const QString &str)
 	setStreamGenre(value);
       }
       if(hdr=="icy-metaint") {
-	xcast_metadata_interval=value.toInt();
+	file_metadata_interval=value.toInt();
       }
       if(hdr=="icy-name") {
 	setStreamName(value);
@@ -278,7 +278,7 @@ void XCast::ProcessHeader(const QString &str)
 }
 
 
-void XCast::ProcessMetadata(const QByteArray &mdata)
+void File::ProcessMetadata(const QByteArray &mdata)
 {
   if(mdata.length()>0) {
     //fprintf(stderr,"METADATA: %s\n",(const char *)f0[i].toUtf8());
@@ -299,20 +299,20 @@ void XCast::ProcessMetadata(const QByteArray &mdata)
 	continue;
       }
     }
-    emit metadataReceived(xcast_byte_counter,e);
+    emit metadataReceived(file_byte_counter,e);
     delete e;
   }
 }
 
 
-void XCast::InitSocket()
+void File::InitSocket()
 {
-  if(xcast_socket!=NULL) {
-    delete xcast_socket;
+  if(file_socket!=NULL) {
+    delete file_socket;
   }
-  xcast_socket=new QTcpSocket(this);
-  connect(xcast_socket,SIGNAL(connected()),this,SLOT(connectedData()));
-  connect(xcast_socket,SIGNAL(readyRead()),this,SLOT(readyReadData()));
-  connect(xcast_socket,SIGNAL(error(QAbstractSocket::SocketError)),
+  file_socket=new QTcpSocket(this);
+  connect(file_socket,SIGNAL(connected()),this,SLOT(connectedData()));
+  connect(file_socket,SIGNAL(readyRead()),this,SLOT(readyReadData()));
+  connect(file_socket,SIGNAL(error(QAbstractSocket::SocketError)),
 	  this,SLOT(errorData(QAbstractSocket::SocketError)));
 }

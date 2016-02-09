@@ -70,7 +70,7 @@ void Hls::reset()
 }
 
 
-void Hls::connectToHostConnector(const QString &hostname,uint16_t port)
+void Hls::connectToHostConnector()
 {
   hls_index_timer->start(0);
 }

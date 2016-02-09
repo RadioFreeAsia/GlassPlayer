@@ -38,7 +38,7 @@ class XCast : public Connector
   void reset();
 
  protected:
-  void connectToHostConnector(const QString &hostname,uint16_t port);
+  void connectToHostConnector();
   void disconnectFromHostConnector();
   void loadStats(QStringList *hdrs,QStringList *values);
 

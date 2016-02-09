@@ -119,7 +119,7 @@ void ServerId::errorData(QAbstractSocket::SocketError err)
   case QAbstractSocket::RemoteHostClosedError:
     if(!id_restarting) {
       if((id_content_type.toLower()=="audio/x-mpegurl")||
-	 (id_content_type.toLower()=="application/vnc.appl.mpegurl")||
+	 (id_content_type.toLower()=="application/vnd.apple.mpegurl")||
 	 (id_content_type.toLower()=="application/x-mpegurl")) {
 	M3uPlaylist *playlist=new M3uPlaylist();
 	if(playlist->parse(id_body.toUtf8(),id_url)) {

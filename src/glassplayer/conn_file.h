@@ -1,8 +1,8 @@
-// conn_hls.h
+// conn_file.h
 //
-// Server connector for HTTP live streams (HLS).
+// Server connector for static files.
 //
-//   (C) Copyright 2014-2016 Fred Gleason <fredg@paravelsystems.com>
+//   (C) Copyright 2016 Fred Gleason <fredg@paravelsystems.com>
 //
 //   This program is free software; you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License version 2 as
@@ -18,22 +18,22 @@
 //   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 //
 
-#ifndef CONN_HLS_H
-#define CONN_HLS_H
+#ifndef CONN_FILE_H
+#define CONN_FILE_H
 
-#include <QProcess>
 #include <QTcpSocket>
 #include <QTimer>
 
 #include "connector.h"
-#include "m3uplaylist.h"
 
-class Hls : public Connector
+#define FILE_WATCHDOG_RETRY_INTERVAL 5000
+
+class File : public Connector
 {
   Q_OBJECT;
  public:
-  Hls(QObject *parent=0);
-  ~Hls();
+  File(QObject *parent=0);
+  ~File();
   Connector::ServerType serverType() const;
   void reset();
 
@@ -43,28 +43,32 @@ class Hls : public Connector
   void loadStats(QStringList *hdrs,QStringList *values);
 
  private slots:
-  void indexProcessStartData();
-  void indexProcessFinishedData(int exit_code,QProcess::ExitStatus status);
-  void indexProcessErrorData(QProcess::ProcessError err);
-  void mediaProcessStartData();
-  void mediaReadyReadData();
-  void mediaProcessFinishedData(int exit_code,QProcess::ExitStatus status);
-  void mediaProcessErrorData(QProcess::ProcessError err);
+  void connectedData();
+  void readyReadData();
+  void errorData(QAbstractSocket::SocketError err);
+  void watchdogRetryData();
 
  private:
-  QByteArray ReadHeaders(QByteArray &data);
+  void ProcessFrames(QByteArray &data);
+  void SendHeader(const QString &str);
   void ProcessHeader(const QString &str);
-  QProcess *hls_index_process;
-  M3uPlaylist *hls_index_playlist;
-  QTimer *hls_index_timer;
-  QProcess *hls_media_process;
-  QUrl hls_current_media_segment;
-  QUrl hls_last_media_segment;
-  QTimer *hls_media_timer;
-  bool hls_new_segment;
-  QString hls_server;
-  QString hls_content_type;
+  void ProcessMetadata(const QByteArray &mdata);
+  void InitSocket();
+  QString file_header;
+  bool file_header_active;
+  QTcpSocket *file_socket;
+  int file_result_code;
+  int file_metadata_interval;
+  int file_metadata_istate;
+  QString file_metadata_backstore;
+  QString file_metadata_string;
+  int file_metadata_counter;
+  QTimer *file_watchdog_retry_timer;
+  uint64_t file_byte_counter;
+  QString file_server;
+  QString file_content_type;
+  bool file_is_shoutcast;
 };
 
 
-#endif  // CONN_HLS_H
+#endif  // CONN_FILE_H

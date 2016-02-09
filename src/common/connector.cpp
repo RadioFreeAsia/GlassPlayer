@@ -260,7 +260,7 @@ bool Connector::isConnected() const
 
 void Connector::connectToServer()
 {
-  connectToHostConnector(conn_server_url.host(),conn_server_url.port());
+  connectToHostConnector();
 }
 
 
@@ -327,6 +327,10 @@ QString Connector::serverTypeText(Connector::ServerType type)
     ret=tr("IceCast or Shoutcast");
     break;
 
+  case Connector::FileServer:
+    ret=tr("File");
+    break;
+
   case Connector::LastServer:
     break;
   }
@@ -346,6 +350,10 @@ QString Connector::optionKeyword(Connector::ServerType type)
 
   case Connector::XCastServer:
     ret="xcast";
+    break;
+
+  case Connector::FileServer:
+    ret="file";
     break;
 
   case Connector::LastServer:
@@ -381,8 +389,9 @@ bool Connector:: acceptsContentType(Connector::ServerType type,
       (mimetype.toLower()=="audio/aacp");
     break;
 
-  case Connector::HlsServer:  // We don't list any mimetypes here because
-    break;                    // ServerId handles it.
+  case Connector::HlsServer:    // We don't list any mimetypes here because
+  case Connector::FileServer:   // ServerId handles it.
+    break;
 
   case Connector::LastServer:
     break;

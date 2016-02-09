@@ -40,7 +40,7 @@ class Connector : public QObject
 {
   Q_OBJECT;
  public:
-  enum ServerType {XCastServer=1,HlsServer=2,LastServer=3};
+  enum ServerType {XCastServer=1,HlsServer=2,FileServer=3,LastServer=4};
   Connector(QObject *parent=0);
   ~Connector();
   virtual Connector::ServerType serverType() const=0;
@@ -114,7 +114,7 @@ class Connector : public QObject
   void setCodecType(Codec::Type type);
   void setConnected(bool state);
   //  void setError(QAbstractSocket::SocketError err);
-  virtual void connectToHostConnector(const QString &hostname,uint16_t port)=0;
+  virtual void connectToHostConnector()=0;
   virtual void disconnectFromHostConnector()=0;
   virtual void loadStats(QStringList *hdrs,QStringList *values)=0;
 

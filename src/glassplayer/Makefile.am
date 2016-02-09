@@ -35,6 +35,7 @@ dist_glassplayer_SOURCES = audiodevicefactory.cpp audiodevicefactory.h\
                            codec_mpeg1.cpp codec_mpeg1.h\
                            codec_null.cpp codec_null.h\
                            codecfactory.cpp codecfactory.h\
+                           conn_file.cpp conn_file.h\
                            conn_hls.cpp conn_hls.h\
                            conn_xcast.cpp conn_xcast.h\
                            connectorfactory.cpp connectorfactory.h\
@@ -57,6 +58,7 @@ nodist_glassplayer_SOURCES = audiodevice.cpp audiodevice.h\
                              moc_codec_fdk.cpp\
                              moc_codec_mpeg1.cpp\
                              moc_codec_null.cpp\
+                             moc_conn_file.cpp\
                              moc_conn_hls.cpp\
                              moc_conn_xcast.cpp\
                              moc_connector.cpp\
