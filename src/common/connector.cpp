@@ -543,43 +543,6 @@ void Connector::setConnected(bool state)
 }
 
 
-void Connector::setError(QAbstractSocket::SocketError err)
-{
-  /*
-  if(!conn_watchdog_active) {
-    if(conn_server_mountpoint.isEmpty()) {
-      Log(LOG_WARNING,
-	  QString().sprintf("connection to \"%s:%u\" lost",
-			    (const char *)conn_host_hostname.toUtf8(),
-			    0xFFFF&conn_host_port));
-    }
-    else {
-      Log(LOG_WARNING,
-	  QString().sprintf("connection to \"%s:%u/%s\" lost",
-			    (const char *)conn_host_hostname.toUtf8(),
-			    0xFFFF&conn_host_port,
-			    (const char *)conn_server_mountpoint.toUtf8()));
-    }
-    conn_watchdog_active=true;
-  }
-  disconnectFromHostConnector();
-  conn_watchdog_timer->start(5000);
-  */
-}
-
-
-QString Connector::hostHostname() const
-{
-  return conn_host_hostname;
-}
-
-
-uint16_t Connector::hostPort() const
-{
-  return conn_host_port;
-}
-
-
 QString Connector::urlEncode(const QString &str)
 {
   QString ret;

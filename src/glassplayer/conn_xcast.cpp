@@ -89,7 +89,8 @@ void XCast::connectedData()
   xcast_byte_counter=0;
   xcast_is_shoutcast=false;
   SendHeader("GET "+serverMountpoint()+" HTTP/1.1");
-  SendHeader("Host: "+hostHostname()+":"+QString().sprintf("%u",hostPort()));
+  SendHeader("Host: "+serverUrl().host()+":"+
+	     QString().sprintf("%u",serverUrl().port(80)));
   SendHeader(QString().sprintf("icy-metadata: %d",streamMetadataEnabled()));
   SendHeader("Accept: */*");
   SendHeader("User-Agent: glassplayer/"+QString(VERSION));
@@ -211,6 +212,7 @@ void XCast::ProcessFrames(QByteArray &data)
 
 void XCast::SendHeader(const QString &str)
 {
+  fprintf(stderr,"SEND: %s\n",(const char *)str.toUtf8());
   xcast_socket->write((str+"\r\n").toUtf8(),str.length()+2);
 }
 

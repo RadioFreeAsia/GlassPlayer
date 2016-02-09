@@ -234,7 +234,7 @@ void ServerId::ProcessHeader(const QString &str)
 {
   QStringList f0;
 
-  //    fprintf(stderr,"%s\n",(const char *)str.toUtf8());
+  fprintf(stderr,"%s\n",(const char *)str.toUtf8());
 
   if(id_result_code==0) {
     f0=str.split(" ",QString::SkipEmptyParts);

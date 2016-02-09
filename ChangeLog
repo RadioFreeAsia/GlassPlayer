@@ -145,3 +145,9 @@
 	to fail with non-extended M3U lists containing multiple URLs.
 2016-02-08 Fred Gleason <fredg@paravelsystems.com>
 	* Added a 'DeviceType' stat to the audio device statistics.
+2016-02-09 Fred Gleason <fredg@paravelsystems.com>
+	* Removed 'Connector::hostHostname()', 'Connector::hostPort()' and
+	'Connector::setError()' methods in 'src/common/connector.cpp' and
+	'src/common/connector.h'.
+	* Fixed a bug in 'src/glassplayer/conn_xcast.cpp' that generated a
+	malformed HTTP request.

@@ -113,11 +113,9 @@ class Connector : public QObject
  protected:
   void setCodecType(Codec::Type type);
   void setConnected(bool state);
-  void setError(QAbstractSocket::SocketError err);
+  //  void setError(QAbstractSocket::SocketError err);
   virtual void connectToHostConnector(const QString &hostname,uint16_t port)=0;
   virtual void disconnectFromHostConnector()=0;
-  QString hostHostname() const;
-  uint16_t hostPort() const;
   virtual void loadStats(QStringList *hdrs,QStringList *values)=0;
 
  private:
