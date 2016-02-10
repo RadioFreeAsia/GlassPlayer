@@ -186,3 +186,5 @@
 	'src/common/cmdswitch.cpp' and 'src/common/cmdswitch.h'.
 	* Implemented a run-control file for glassplayer(1) at
 	'/etc/glassplayer.conf' and '$HOME/glassplayerrc'.
+2016-02-10 Fred Gleason <fredg@paravelsystems.com>
+	* Incremented the package version to 0.6.3.
