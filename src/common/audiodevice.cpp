@@ -59,12 +59,12 @@ void AudioDevice::stop()
 
 void AudioDevice::getStats(QStringList *hdrs,QStringList *values)
 {
-  hdrs->push_back("DeviceFramesPlayed");
+  hdrs->push_back("Device|FramesPlayed");
   values->push_back(QString().sprintf("%lu",audio_play_position));
 
   loadStats(hdrs,values);
 
-  hdrs->push_back("DevicePLLCurrentFrames");
+  hdrs->push_back("Device|PLLCurrentFrames");
   values->push_back(QString().sprintf("%u",codec()->ring()->readSpace()));
 }
 

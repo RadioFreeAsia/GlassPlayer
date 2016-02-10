@@ -125,7 +125,7 @@ Ringbuffer *Codec::ring()
 
 void Codec::getStats(QStringList *hdrs,QStringList *values)
 {
-  hdrs->push_back("CodecFramed");
+  hdrs->push_back("Codec|Framed");
   if(isFramed()) {
     values->push_back("Yes");
   }
@@ -133,13 +133,13 @@ void Codec::getStats(QStringList *hdrs,QStringList *values)
     values->push_back("No");
   }
 
-  hdrs->push_back("CodecChannels");
+  hdrs->push_back("Codec|Channels");
   values->push_back(QString().sprintf("%u",codec_channels));
 
-  hdrs->push_back("CodecSampleRate");
+  hdrs->push_back("Codec|SampleRate");
   values->push_back(QString().sprintf("%u",codec_samplerate));
 
-  hdrs->push_back("CodecBytesProcessed");
+  hdrs->push_back("Codec|BytesProcessed");
   values->push_back(QString().sprintf("%lu",codec_bytes_processed));
 
   loadStats(hdrs,values);

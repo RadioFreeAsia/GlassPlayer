@@ -83,44 +83,44 @@ void Hls::disconnectFromHostConnector()
 
 void Hls::loadStats(QStringList *hdrs,QStringList *values)
 {
-  hdrs->push_back("ConnectorType");
+  hdrs->push_back("Connector|Type");
   values->push_back("HLS");
 
-  hdrs->push_back("ConnectorServer");
+  hdrs->push_back("Connector|Server");
   values->push_back(hls_server);
 
-  hdrs->push_back("ConnectorContentType");
+  hdrs->push_back("Connector|ContentType");
   values->push_back(hls_content_type);
 
-  hdrs->push_back("ConnectorHLSVersion");
+  hdrs->push_back("Connector|HLSVersion");
   values->push_back(QString().sprintf("%d",hls_index_playlist->version()));
 
-  hdrs->push_back("ConnectorHLSTargetDuration");
+  hdrs->push_back("Connector|HLSTargetDuration");
   values->
     push_back(QString().sprintf("%d",hls_index_playlist->targetDuration()));
 
-  hdrs->push_back("ConnectorHLSMediaSequence");
+  hdrs->push_back("Connector|HLSMediaSequence");
   values->
     push_back(QString().sprintf("%d",hls_index_playlist->mediaSequence()));
 
-  hdrs->push_back("ConnectorHLSSegmentQuantity");
+  hdrs->push_back("Connector|HLSSegmentQuantity");
   values->
     push_back(QString().sprintf("%u",hls_index_playlist->segmentQuantity()));
 
   for(unsigned i=0;i<hls_index_playlist->segmentQuantity();i++) {
     if(!hls_index_playlist->segmentTitle(i).isEmpty()) {
-      hdrs->push_back(QString().sprintf("ConnectorHLSSegment%uTitle",i+1));
+      hdrs->push_back(QString().sprintf("Connector|HLSSegment%uTitle",i+1));
       values->push_back(hls_index_playlist->segmentTitle(i));
     }
-    hdrs->push_back(QString().sprintf("ConnectorHLSSegment%uUrl",i+1));
+    hdrs->push_back(QString().sprintf("Connector|HLSSegment%uUrl",i+1));
     values->push_back(hls_index_playlist->segmentUrl(i).toString());
 
-    hdrs->push_back(QString().sprintf("ConnectorHLSSegment%uDuration",i+1));;
+    hdrs->push_back(QString().sprintf("Connector|HLSSegment%uDuration",i+1));;
     values->push_back(QString().
 		      sprintf("%8.5lf",hls_index_playlist->segmentDuration(i)));
 
     if(hls_index_playlist->segmentDateTime(i).isValid()) {
-      hdrs->push_back(QString().sprintf("ConnectorHLSSegment%uDateTime",i+1));
+      hdrs->push_back(QString().sprintf("Connector|HLSSegment%uDateTime",i+1));
       values->push_back(hls_index_playlist->segmentDateTime(i).
 			toString("yyyy-mm-dd hh::mm:ss"));
     }

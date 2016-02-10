@@ -178,3 +178,6 @@
 	* Fixed a bug in 'src/glasscoder/glasscoder.cpp' where the
 	descructors would fail to be executed upon reception of a SIGINT
 	or SIGTERM signal.
+2016-02-10 Fred Gleason <fredg@paravelsystems.com>
+	* Added '|' character to separate the source and parameter name
+	fields in statistics data.

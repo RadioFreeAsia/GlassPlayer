@@ -138,9 +138,9 @@ void File::disconnectFromHostConnector()
 
 void File::loadStats(QStringList *hdrs,QStringList *values)
 {
-  hdrs->push_back("ConnectorType");
+  hdrs->push_back("Connector|Type");
   values->push_back("File");
 
-  hdrs->push_back("ConnectorContentType");
+  hdrs->push_back("Connector|ContentType");
   values->push_back(contentType());
 }

@@ -338,7 +338,7 @@ void Connector::setScriptDown(const QString &cmd)
 
 void Connector::getStats(QStringList *hdrs,QStringList *values)
 {
-  hdrs->push_back("ConnectorConnected");
+  hdrs->push_back("Connector|Connected");
   if(conn_connected) {
     values->push_back("Yes");
   }
@@ -346,10 +346,15 @@ void Connector::getStats(QStringList *hdrs,QStringList *values)
     values->push_back("No");
   }
 
-  hdrs->push_back("ConnectorUrl");
+  hdrs->push_back("Connector|Url");
   values->push_back(conn_public_url.toString());
 
-  hdrs->push_back("ConnectorDropouts");
+  if(conn_public_url.path()!=conn_server_url.path()) {
+    hdrs->push_back("Connector|InternalUrl");
+    values->push_back(conn_server_url.toString());
+  }
+
+  hdrs->push_back("Connector|Dropouts");
   values->push_back(QString().sprintf("%u",conn_dropouts));
 
   loadStats(hdrs,values);

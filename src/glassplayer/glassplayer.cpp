@@ -324,11 +324,11 @@ void MainObject::statsData()
   QStringList values;
 
   if(!sir_meta_event.field(MetaEvent::Title).isNull()) {
-    hdrs.push_back("MetadataTitle");
+    hdrs.push_back("Metadata|Title");
     values.push_back(sir_meta_event.field(MetaEvent::Title).toString());
   }
   if(!sir_meta_event.field(MetaEvent::Url).isNull()) {
-    hdrs.push_back("MetadataUrl");
+    hdrs.push_back("Metadata|Url");
     values.push_back(sir_meta_event.field(MetaEvent::Url).toString());
   }
   if(sir_connector!=NULL) {
@@ -340,10 +340,12 @@ void MainObject::statsData()
   if(sir_audio_device!=NULL) {
     sir_audio_device->getStats(&hdrs,&values);
   }
+  printf("---START---\n");
   for(int i=0;i<hdrs.size();i++) {
     printf("%s: %s\n",(const char *)hdrs[i].toUtf8(),
 	   (const char *)values[i].toUtf8());
   }
+  printf("---END---\n");
 }
 
 

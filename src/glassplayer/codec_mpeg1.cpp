@@ -138,59 +138,59 @@ void CodecMpeg1::process(const QByteArray &data,bool is_last)
 void CodecMpeg1::loadStats(QStringList *hdrs,QStringList *values)
 {
 #ifdef HAVE_LIBMAD
-  hdrs->push_back("CodecAlgorithm");
+  hdrs->push_back("Codec|Algorithm");
   values->push_back("MPEG-1");
 
-  hdrs->push_back("CodecLayer");
+  hdrs->push_back("Codec|Layer");
   values->push_back(QString().sprintf("%u",mpeg1_mad_header.layer));
 
   switch(mpeg1_mad_header.mode) {
   case MAD_MODE_STEREO:
-    hdrs->push_back("CodecMode");
+    hdrs->push_back("Codec|Mode");
     values->push_back("Stereo");
     break;
 
   case MAD_MODE_JOINT_STEREO:
-    hdrs->push_back("CodecMode");
+    hdrs->push_back("Codec|Mode");
     values->push_back("JointStereo");
     break;
 
   case MAD_MODE_DUAL_CHANNEL:
-    hdrs->push_back("CodecMode");
+    hdrs->push_back("Codec|Mode");
     values->push_back("DualChannel");
     break;
 
   case MAD_MODE_SINGLE_CHANNEL:
-    hdrs->push_back("CodecMode");
+    hdrs->push_back("Codec|Mode");
     values->push_back("SingleChannel");
     break;
   }
 
-  hdrs->push_back("CodecChannels");
+  hdrs->push_back("Codec|Channels");
   values->push_back(QString().sprintf("%u",channels()));
 
-  hdrs->push_back("CodecBitrate");
+  hdrs->push_back("Codec|Bitrate");
   values->push_back(QString().sprintf("%lu",mpeg1_mad_header.bitrate));
 
   switch(mpeg1_mad_header.emphasis) {
   case MAD_EMPHASIS_NONE:
-    hdrs->push_back("CodecEmphasis");
+    hdrs->push_back("Codec|Emphasis");
     values->push_back("None");
     break;
 
   case MAD_EMPHASIS_50_15_US:
-    hdrs->push_back("CodecEmphasis");
+    hdrs->push_back("Codec|Emphasis");
     values->push_back("50/15 uS");
     break;
 
   case MAD_EMPHASIS_CCITT_J_17:
-    hdrs->push_back("CodecEmphasis");
+    hdrs->push_back("Codec|Emphasis");
     values->push_back("CCITT J.17");
     break;
 
   case MAD_EMPHASIS_RESERVED:
   default:
-    hdrs->push_back("CodecEmphasis");
+    hdrs->push_back("Codec|Emphasis");
     values->push_back("Unknown");
     break;
   }
