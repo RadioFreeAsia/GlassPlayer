@@ -181,3 +181,8 @@
 2016-02-10 Fred Gleason <fredg@paravelsystems.com>
 	* Added '|' character to separate the source and parameter name
 	fields in statistics data.
+2016-02-10 Fred Gleason <fredg@paravelsystems.com>
+	* Added a 'CmdSwitch::addOverlay()' method in
+	'src/common/cmdswitch.cpp' and 'src/common/cmdswitch.h'.
+	* Implemented a run-control file for glassplayer(1) at
+	'/etc/glassplayer.conf' and '$HOME/glassplayerrc'.

@@ -2,7 +2,7 @@
 //
 // Process Command-Line Switches
 //
-//   (C) Copyright 2012-2015 Fred Gleason <fredg@paravelsystems.com>
+//   (C) Copyright 2012-2016 Fred Gleason <fredg@paravelsystems.com>
 //
 //   This program is free software; you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License version 2 as
@@ -34,6 +34,7 @@ class CmdSwitch
   bool processed(unsigned n) const;
   void setProcessed(unsigned n,bool state);
   bool allProcessed() const;
+  bool addOverlay(const QString &filename);
 
  private:
   std::vector<QString> switch_keys;

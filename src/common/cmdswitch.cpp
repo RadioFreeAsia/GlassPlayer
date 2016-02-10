@@ -21,6 +21,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#include <QStringList>
+
 #include "cmdswitch.h"
 #include "logging.h"
 
@@ -114,5 +116,41 @@ bool CmdSwitch::allProcessed() const
       return false;
     }
   }
+  return true;
+}
+
+
+bool CmdSwitch::addOverlay(const QString &filename)
+{
+  FILE *f=NULL;
+  char line[1024];
+
+  if((f=fopen(filename.toUtf8(),"r"))==NULL) {
+    return false;
+  }
+  while(fgets(line,1024,f)!=NULL) {
+    bool unique=true;
+    QStringList f0=QString(line).trimmed().split("=",QString::KeepEmptyParts);
+    if((f0[0].length()>0)&&(f0[0].left(1)!="#")) {
+      for(unsigned i=0;i<switch_keys.size();i++) {
+	if(f0[0]==switch_keys[i]) {
+	  unique=false;
+	}
+      }
+      if(unique) {
+	switch_keys.insert(switch_keys.begin(),f0[0].trimmed());
+	if(f0.size()>=2) {
+	  f0.erase(f0.begin());
+	  switch_values.insert(switch_values.begin(),f0.join("=").trimmed());
+	}
+	else {
+	  switch_values.insert(switch_values.begin(),QString());
+	}
+      }
+    }
+  }
+
+  fclose(f);
+
   return true;
 }

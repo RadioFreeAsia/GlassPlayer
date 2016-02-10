@@ -65,6 +65,10 @@ MainObject::MainObject(QObject *parent)
 
   CmdSwitch *cmd=
     new CmdSwitch(qApp->argc(),qApp->argv(),"glassplayer",GLASSPLAYER_USAGE);
+  if(getenv("HOME")!=NULL) {
+    cmd->addOverlay(getenv("HOME")+QString("/.glassplayerrc"));
+  }
+  cmd->addOverlay("/etc/glassplayer.conf");
   if(cmd->keys()==0) {
     fprintf(stderr,"glassplayer: no stream-URL specified\n");
     exit(256);
