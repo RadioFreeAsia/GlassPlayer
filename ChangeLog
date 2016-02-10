@@ -168,3 +168,9 @@
 2016-02-10 Fred Gleason <fredg@paravelsystems.com>
 	* Added a Passthrough codec in 'src/glassplayer/codec_pass.cpp' and
 	'src/glassplayer/codec_pass.h'.
+2016-02-10 Fred Gleason <fredg@paravelsystems.com>
+	* Added 'audio/x-wav', 'audio/wav', 'audio/wave', 'audio/vnd.wave',
+	'audio/aiff', 'audio/x-aiff', 'audio/basic', 'audio/x-au',
+	'audio/voc', 'audio/x-voc', 'audio/x-adpcm', 'audio/x-flac' and
+	'application/ogg' mimetypes for the Passthrough codec in
+	'src/common/codec.cpp'.

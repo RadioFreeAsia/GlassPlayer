@@ -157,7 +157,7 @@ bool Codec::acceptsContentType(Type type,const QString &mimetype)
     break;
 
   case Codec::TypeMpeg1:
-    ret=mime=="audio/mpeg";
+    ret=(mime=="audio/mpeg")||(mime=="audio/mpeg3")||(mime=="audio/x-mpeg3");
     break;
  
   case Codec::TypeVorbis:
@@ -169,7 +169,11 @@ bool Codec::acceptsContentType(Type type,const QString &mimetype)
     break;
 
   case Codec::TypePassthrough:
-    ret=mime=="audio/x-wav";
+    ret=(mime=="audio/x-wav")||(mime=="audio/wav")||(mime=="audio/wave")||
+      (mime=="audio/vnd.wave")||(mime=="audio/aiff")||(mime=="audio/x-aiff")||
+      (mime=="audio/basic")||(mime=="audio/x-au")||(mime=="audio/voc")||
+      (mime=="audio/x-voc")||(mime=="audio/x-adpcm")||(mime=="audio/x-flac")||
+      (mime=="application/ogg");
     break;
 
   case Codec::TypeLast:
