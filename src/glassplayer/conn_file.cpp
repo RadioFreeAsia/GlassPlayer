@@ -25,6 +25,7 @@
 #include <unistd.h>
 
 #include <QByteArray>
+#include <QProcess>
 #include <QStringList>
 
 #include "conn_file.h"

@@ -29,6 +29,7 @@ Group: Productivity/Multimedia/Other
 Source: %{name}-@VERSION@.tar.gz
 BuildRequires: qt-devel libsamplerate-devel libsndfile-devel alsa-lib-devel
 BuildRoot: /var/tmp/%{name}-@VERSION@
+Requires: curl file
 
 %description
 Glassplayer is a streaming audio player intended for use with Shoutcast and

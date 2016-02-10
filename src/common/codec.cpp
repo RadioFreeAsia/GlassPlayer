@@ -149,6 +149,7 @@ void Codec::getStats(QStringList *hdrs,QStringList *values)
 bool Codec::acceptsContentType(Type type,const QString &mimetype)
 {
   bool ret=false;
+  QString mime=mimetype.toLower().trimmed();
 
   switch(type) {
   case Codec::TypeNull:
@@ -156,15 +157,15 @@ bool Codec::acceptsContentType(Type type,const QString &mimetype)
     break;
 
   case Codec::TypeMpeg1:
-    ret=mimetype.toLower()=="audio/mpeg";
+    ret=mime=="audio/mpeg";
     break;
  
   case Codec::TypeVorbis:
-    ret=mimetype.toLower()=="audio/ogg";
+    ret=mime=="audio/ogg";
     break;
 
   case Codec::TypeAac:
-    ret=mimetype.toLower()=="audio/aacp";
+    ret=mime=="audio/aacp";
     break;
 
   case Codec::TypeLast:

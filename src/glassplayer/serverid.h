@@ -52,6 +52,7 @@ class ServerId : public QObject
   void SendHeader(const QString &str);
   void ProcessHeader(const QString &str);
   QTcpSocket *CreateSocket();
+  QString GetContentType(const QString &filename);
   QTcpSocket *id_socket;
   QTimer *id_kill_timer;
   QUrl id_url;

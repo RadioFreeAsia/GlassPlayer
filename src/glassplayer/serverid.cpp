@@ -22,6 +22,8 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+#include <QProcess>
+
 #include "logging.h"
 #include "m3uplaylist.h"
 #include "serverid.h"
@@ -58,7 +60,12 @@ void ServerId::connectToServer(const QUrl &url)
   if(id_url.path().isEmpty()) {
     id_url.setPath("/");
   }
-  id_socket->connectToHost(url.host(),url.port(80));
+  if(id_url.scheme().isEmpty()||(id_url.scheme().toLower()=="file")) {
+    emit typeFound(Connector::FileServer,GetContentType(id_url.path()),id_url);
+  }
+  else {
+    id_socket->connectToHost(url.host(),url.port(80));
+  }
 }
 
 
@@ -294,4 +301,22 @@ QTcpSocket *ServerId::CreateSocket()
   connect(sock,SIGNAL(error(QAbstractSocket::SocketError)),
 	  this,SLOT(errorData(QAbstractSocket::SocketError)));
   return sock;
+}
+
+
+QString ServerId::GetContentType(const QString &filename)
+{
+  QStringList args;
+  QString ret;
+
+  args.push_back("-b");
+  args.push_back("--mime-type");
+  args.push_back(filename);
+  QProcess *proc=new QProcess(this);
+  proc->start("file",args);
+  proc->waitForFinished();
+  ret=proc->readAllStandardOutput().trimmed();
+  delete proc;
+
+  return ret;
 }

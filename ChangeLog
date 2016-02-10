@@ -163,3 +163,5 @@
 2016-02-09 Fred Gleason <fredg@paravelsystems.com>
 	* Added a 'File' connector in 'src/glassplayer/conn_file.cpp' and
 	'src/glassplayer/conn_file.h'.
+2016-02-10 Fred Gleason <fredg@paravelsystems.com>
+	* Enabled playout of local files.

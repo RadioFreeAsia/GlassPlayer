@@ -144,10 +144,12 @@ MainObject::MainObject(QObject *parent)
   //
   // Sanity Checks
   //
+  /*
   if(server_url.host().isEmpty()) {
     Log(LOG_ERR,"you must specify a stream URL");
     exit(256);
   }
+  */
   int stdout_count=0;
   if(sir_stats_out) {
     stdout_count++;
