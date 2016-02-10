@@ -49,6 +49,7 @@ void SigHandler(int signo)
 MainObject::MainObject(QObject *parent)
   : QObject(parent)
 {
+  sir_connector=NULL;
   sir_codec=NULL;
   sir_ring=NULL;
   sir_audio_device=NULL;
@@ -351,6 +352,13 @@ void MainObject::exitData()
   if(global_exiting) {
     if(sir_audio_device!=NULL) {
       sir_audio_device->stop();
+      delete sir_audio_device;
+    }
+    if(sir_codec!=NULL) {
+      delete sir_codec;
+    }
+    if(sir_connector!=NULL) {
+      delete sir_connector;
     }
     exit(0);
   }

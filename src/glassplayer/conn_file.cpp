@@ -44,6 +44,9 @@ File::File(const QString &mimetype,QObject *parent)
 
 File::~File()
 {
+  if(serverUrl().path()!=publicUrl().path()) {
+    unlink(serverUrl().path().toUtf8());
+  }
   delete file_write_timer;
 }
 

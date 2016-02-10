@@ -174,3 +174,7 @@
 	'audio/voc', 'audio/x-voc', 'audio/x-adpcm', 'audio/x-flac' and
 	'application/ogg' mimetypes for the Passthrough codec in
 	'src/common/codec.cpp'.
+2016-02-10 Fred Gleason <fredg@paravelsystems.com>
+	* Fixed a bug in 'src/glasscoder/glasscoder.cpp' where the
+	descructors would fail to be executed upon reception of a SIGINT
+	or SIGTERM signal.
