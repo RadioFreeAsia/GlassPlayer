@@ -130,7 +130,6 @@ void ServerId::errorData(QAbstractSocket::SocketError err)
   switch(err) {
   case QAbstractSocket::RemoteHostClosedError:
     if(!id_restarting) {
-
       //
       // M3U Playlist
       //
@@ -143,6 +142,9 @@ void ServerId::errorData(QAbstractSocket::SocketError err)
 	    emit typeFound(Connector::HlsServer,"",id_url);
 	  }
 	  else {
+	    //
+	    // XCast Server
+	    //
 	    if(playlist->segmentQuantity()>0) {
 	      if(global_log_verbose) {
 		Log(LOG_INFO,tr("using mountpoint")+
@@ -166,23 +168,18 @@ void ServerId::errorData(QAbstractSocket::SocketError err)
       //
       // Static File
       //
-      if(id_content_type.toLower()=="audio/mpeg") {
-	int fd=-1;
-	char tempfile[]={"/tmp/glassplayerXXXXXX"};
-	if((fd=mkstemp(tempfile))<0) {
-	  Log(LOG_ERR,tr("unable to create temporary file")+
-	      " ["+strerror(errno)+"]");
-	  exit(256);
-	}
-	write(fd,id_body.constData(),id_body.size());
-	close(fd);
-	emit typeFound(Connector::FileServer,id_content_type,
-		       QUrl(QString("file://")+tempfile));
-	id_kill_timer->start(0);
-	return;
+      int fd=-1;
+      char tempfile[]={"/tmp/glassplayerXXXXXX"};
+      if((fd=mkstemp(tempfile))<0) {
+	Log(LOG_ERR,tr("unable to create temporary file")+
+	    " ["+strerror(errno)+"]");
+	exit(256);
       }
-      Log(LOG_ERR,tr("unsupported stream type")+" ["+id_content_type+"]");
-      exit(256);
+      write(fd,id_body.constData(),id_body.size());
+      close(fd);
+      emit typeFound(Connector::FileServer,id_content_type,
+		     QUrl(QString("file://")+tempfile));
+      id_kill_timer->start(0);
     }
     break;
 

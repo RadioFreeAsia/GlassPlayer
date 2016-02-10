@@ -144,12 +144,6 @@ MainObject::MainObject(QObject *parent)
   //
   // Sanity Checks
   //
-  /*
-  if(server_url.host().isEmpty()) {
-    Log(LOG_ERR,"you must specify a stream URL");
-    exit(256);
-  }
-  */
   int stdout_count=0;
   if(sir_stats_out) {
     stdout_count++;
@@ -198,6 +192,7 @@ void MainObject::serverTypeFoundData(Connector::ServerType type,
   connect(sir_connector,SIGNAL(connected(bool)),
 	  this,SLOT(serverConnectedData(bool)));
   sir_connector->setServerUrl(url);
+  sir_connector->setPublicUrl(server_url);
   sir_connector->connectToServer();
 }
 
@@ -210,6 +205,11 @@ void MainObject::serverConnectedData(bool state)
 	CodecFactory(Codec::TypeNull,sir_connector->audioBitrate(),this);
     }
     else {   // Normal codec initialization here
+      if(sir_connector->codecType()==Codec::TypeNull) {
+	Log(LOG_ERR,tr("unsupported codec")+
+	    " ["+sir_connector->contentType()+"]");
+	exit(256);
+      }
       sir_codec=CodecFactory(sir_connector->codecType(),
 			     sir_connector->audioBitrate(),this);
     }
@@ -218,6 +218,8 @@ void MainObject::serverConnectedData(bool state)
 	  "["+Codec::typeText(sir_connector->codecType())+"]");
       exit(256);
     }
+    sir_codec->setChannels(sir_connector->audioChannels());
+    sir_codec->setSamplerate(sir_connector->audioSamplerate());
     if(global_log_verbose) {
       Log(LOG_INFO,"Streaming from "+
 	  Connector::serverTypeText(sir_connector->serverType())+" server");

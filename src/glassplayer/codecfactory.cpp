@@ -21,6 +21,7 @@
 #include "codec_fdk.h"
 #include "codec_mpeg1.h"
 #include "codec_null.h"
+#include "codec_pass.h"
 #include "codecfactory.h"
 
 Codec *CodecFactory(Codec::Type type,unsigned bitrate,QObject *parent)
@@ -41,6 +42,10 @@ Codec *CodecFactory(Codec::Type type,unsigned bitrate,QObject *parent)
 
   case Codec::TypeNull:
     codec=new CodecNull(bitrate,parent);
+    break;
+
+  case Codec::TypePassthrough:
+    codec=new CodecPassthrough(bitrate,parent);
     break;
 
   case Codec::TypeLast:

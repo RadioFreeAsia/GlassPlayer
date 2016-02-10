@@ -34,9 +34,11 @@
 File::File(const QString &mimetype,QObject *parent)
   : Connector(mimetype,parent)
 {
+  file_fd=-1;
+  file_sf=NULL;
+
   file_write_timer=new QTimer(this);
   file_write_timer->setSingleShot(true);
-  connect(file_write_timer,SIGNAL(timeout()),this,SLOT(writeData()));
 }
 
 
@@ -57,6 +59,28 @@ void File::reset()
 }
 
 
+void File::passthroughData()
+{
+  float pcm[2048];
+  sf_count_t n;
+  unsigned frames=2048/audioChannels();
+
+  if((n=sf_readf_float(file_sf,pcm,frames))>=0) {
+    emit dataReceived(QByteArray((char *)pcm,
+				 n*audioChannels()*sizeof(float)),n!=(frames));
+  }
+  if(n==frames) {
+    file_write_timer->start(0);
+  }
+  else {
+    sf_close(file_sf);
+    if(serverUrl().path()!=publicUrl().path()) {
+      unlink(serverUrl().path().toUtf8());
+    }
+  }
+}
+
+
 void File::writeData()
 {
   char data[1024];
@@ -70,17 +94,34 @@ void File::writeData()
   }
   else {
     close(file_fd);
-    unlink(serverUrl().path().toUtf8());
+    if(serverUrl().path()!=publicUrl().path()) {
+      unlink(serverUrl().path().toUtf8());
+    }
   }
 }
 
 
 void File::connectToHostConnector()
 {
-  if((file_fd=open(serverUrl().path().toUtf8(),O_RDONLY))<0) {
-    Log(LOG_ERR,tr("unable to open downloaded file")+
-	" \""+serverUrl().path()+"\" ["+strerror(errno)+"]");
-    exit(256);
+  if(codecType()==Codec::TypePassthrough) {
+    memset(&file_sfinfo,0,sizeof(file_sfinfo));
+    if((file_sf=sf_open(serverUrl().path().toUtf8(),
+			SFM_READ,&file_sfinfo))==NULL) {
+      Log(LOG_ERR,tr("unable to open downloaded file")+
+	  " \""+serverUrl().path()+"\" ["+sf_strerror(file_sf)+"]");
+      exit(256);
+    }
+    setAudioChannels(file_sfinfo.channels);
+    setAudioSamplerate(file_sfinfo.samplerate);
+    connect(file_write_timer,SIGNAL(timeout()),this,SLOT(passthroughData()));
+  }
+  else {
+    if((file_fd=open(serverUrl().path().toUtf8(),O_RDONLY))<0) {
+      Log(LOG_ERR,tr("unable to open downloaded file")+
+	  " \""+serverUrl().path()+"\" ["+strerror(errno)+"]");
+      exit(256);
+    }
+    connect(file_write_timer,SIGNAL(timeout()),this,SLOT(writeData()));
   }
   setConnected(true);
   file_write_timer->start(0);

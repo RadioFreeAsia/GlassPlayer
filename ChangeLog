@@ -165,3 +165,6 @@
 	'src/glassplayer/conn_file.h'.
 2016-02-10 Fred Gleason <fredg@paravelsystems.com>
 	* Enabled playout of local files.
+2016-02-10 Fred Gleason <fredg@paravelsystems.com>
+	* Added a Passthrough codec in 'src/glassplayer/codec_pass.cpp' and
+	'src/glassplayer/codec_pass.h'.

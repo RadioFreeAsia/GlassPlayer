@@ -1,6 +1,6 @@
-// conn_file.h
+// codec_pass.h
 //
-// Server connector for static files.
+// Passthrough Codec
 //
 //   (C) Copyright 2016 Fred Gleason <fredg@paravelsystems.com>
 //
@@ -18,40 +18,24 @@
 //   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 //
 
-#ifndef CONN_FILE_H
-#define CONN_FILE_H
+#ifndef CODEC_PASS_H
+#define CODEC_PASS_H
 
-#include <sndfile.h>
+#include "codec.h"
 
-#include <QTcpSocket>
-#include <QTimer>
-
-#include "connector.h"
-
-class File : public Connector
+class CodecPassthrough : public Codec
 {
   Q_OBJECT;
  public:
-  File(const QString &mimetype,QObject *parent=0);
-  ~File();
-  Connector::ServerType serverType() const;
-  void reset();
-
- private slots:
-  void passthroughData();
-  void writeData();
+  CodecPassthrough(unsigned bitrate,QObject *parent=0);
+  ~CodecPassthrough();
+  bool isAvailable() const;
+  QString defaultExtension() const;
+  void process(const QByteArray &data,bool is_last);
 
  protected:
-  void connectToHostConnector();
-  void disconnectFromHostConnector();
   void loadStats(QStringList *hdrs,QStringList *values);
-
- private:
-  QTimer *file_write_timer;
-  int file_fd;
-  SNDFILE *file_sf;
-  SF_INFO file_sfinfo;
 };
 
 
-#endif  // CONN_FILE_H
+#endif  // CODEC_PASS_H

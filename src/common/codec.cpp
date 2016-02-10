@@ -168,6 +168,10 @@ bool Codec::acceptsContentType(Type type,const QString &mimetype)
     ret=mime=="audio/aacp";
     break;
 
+  case Codec::TypePassthrough:
+    ret=mime=="audio/x-wav";
+    break;
+
   case Codec::TypeLast:
     break;
   }
@@ -196,6 +200,9 @@ bool Codec::acceptsFormatIdentifier(Type type,const QString &fmt_id)
     ret=(fmt_id=="mp4a.40.1")||(fmt_id=="mp4a.40.2")||(fmt_id=="mp4a.40.5");
     break;
 
+  case Codec::TypePassthrough:
+    break;
+
   case Codec::TypeLast:
     break;
   }
@@ -222,6 +229,10 @@ bool Codec::acceptsExtension(Type type,const QString &ext)
 
   case Codec::TypeAac:
     ret=ext.toLower()=="aac";
+    break;
+
+  case Codec::TypePassthrough:
+    ret=ext.toLower()=="wav";
     break;
 
   case Codec::TypeLast:
@@ -253,6 +264,10 @@ QString Codec::typeText(Codec::Type type)
     ret=tr("Null");
     break;
 
+  case Codec::TypePassthrough:
+    ret=tr("PCM Passthrough");
+    break;
+
   case Codec::TypeLast:
     break;
   }
@@ -276,6 +291,10 @@ QString Codec::optionKeyword(Codec::Type type)
  
   case Codec::TypeVorbis:
     ret="vorbis";
+    break;
+ 
+  case Codec::TypePassthrough:
+    ret="wav";
     break;
  
   case Codec::TypeNull:

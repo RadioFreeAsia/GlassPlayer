@@ -50,7 +50,11 @@ class Connector : public QObject
   void setServerPassword(const QString &str);
   QUrl serverUrl() const;
   void setServerUrl(const QUrl &url);
+  QUrl publicUrl() const;
+  void setPublicUrl(const QUrl &url);
   QString serverMountpoint() const;
+  unsigned audioChannels() const;
+  unsigned audioSamplerate() const;
   unsigned audioBitrate() const;
   void setAudioBitrate(unsigned rate);
   std::vector<unsigned> *audioBitrates();
@@ -76,6 +80,7 @@ class Connector : public QObject
   bool streamPublic() const;
   void setStreamPublic(bool state);
   Codec::Type codecType() const;
+  QString contentType() const;
   bool isConnected() const;
   virtual void connectToServer();
   void stop();
@@ -111,7 +116,8 @@ class Connector : public QObject
   void metadataReceived(uint64_t bytes,MetaEvent *e);
 
  protected:
-  QString contentType() const;
+  void setAudioChannels(unsigned chans);
+  void setAudioSamplerate(unsigned samprate);
   void setCodecType(Codec::Type type);
   void setConnected(bool state);
   //  void setError(QAbstractSocket::SocketError err);
@@ -123,6 +129,7 @@ class Connector : public QObject
   QString conn_server_username;
   QString conn_server_password;
   QUrl conn_server_url;
+  QUrl conn_public_url;
   std::vector<unsigned> conn_audio_bitrates;
   QString conn_stream_name;
   QString conn_stream_description;
@@ -142,6 +149,8 @@ class Connector : public QObject
   bool conn_connected;
   unsigned conn_dropouts;
   QString conn_content_type;
+  unsigned conn_audio_channels;
+  unsigned conn_audio_samplerate;
 };
 
 

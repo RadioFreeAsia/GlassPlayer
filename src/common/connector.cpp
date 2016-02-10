@@ -32,6 +32,8 @@ Connector::Connector(const QString &mimetype,QObject *parent)
 {
   conn_server_username="source";
   conn_server_password="";
+  conn_audio_channels=0;
+  conn_audio_samplerate=0;
   conn_audio_bitrates.push_back(0);
   conn_stream_name="no name";
   conn_stream_description="unknown";
@@ -105,9 +107,36 @@ void Connector::setServerUrl(const QUrl &url)
 }
 
 
+QUrl Connector::publicUrl() const
+{
+  if(conn_public_url.toString().isEmpty()) {
+    return conn_server_url;
+  }
+  return conn_public_url;
+}
+
+
+void Connector::setPublicUrl(const QUrl &url)
+{
+  conn_public_url=url;
+}
+
+
 QString Connector::serverMountpoint() const
 {
   return conn_server_url.path();
+}
+
+
+unsigned Connector::audioChannels() const
+{
+  return conn_audio_channels;
+}
+
+
+unsigned Connector::audioSamplerate() const
+{
+  return conn_audio_samplerate;
 }
 
 
@@ -259,6 +288,12 @@ Codec::Type Connector::codecType() const
 }
 
 
+QString Connector::contentType() const
+{
+  return conn_content_type;
+}
+
+
 bool Connector::isConnected() const
 {
   return conn_connected;
@@ -312,7 +347,7 @@ void Connector::getStats(QStringList *hdrs,QStringList *values)
   }
 
   hdrs->push_back("ConnectorUrl");
-  values->push_back(conn_server_url.toString());
+  values->push_back(conn_public_url.toString());
 
   hdrs->push_back("ConnectorDropouts");
   values->push_back(QString().sprintf("%u",conn_dropouts));
@@ -541,9 +576,15 @@ int Connector::timezoneOffset()
 }
 
 
-QString Connector::contentType() const
+void Connector::setAudioChannels(unsigned chans)
 {
-  return conn_content_type;
+  conn_audio_channels=chans;
+}
+
+
+void Connector::setAudioSamplerate(unsigned samprate)
+{
+  conn_audio_samplerate=samprate;
 }
 
 

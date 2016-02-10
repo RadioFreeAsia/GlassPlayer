@@ -1,6 +1,6 @@
-// conn_file.h
+// codec_pass.cpp
 //
-// Server connector for static files.
+// Passthrough Codec
 //
 //   (C) Copyright 2016 Fred Gleason <fredg@paravelsystems.com>
 //
@@ -18,40 +18,42 @@
 //   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 //
 
-#ifndef CONN_FILE_H
-#define CONN_FILE_H
+#include "codec_pass.h"
 
-#include <sndfile.h>
-
-#include <QTcpSocket>
-#include <QTimer>
-
-#include "connector.h"
-
-class File : public Connector
+CodecPassthrough::CodecPassthrough(unsigned bitrate,QObject *parent)
+  : Codec(Codec::TypePassthrough,bitrate,parent)
 {
-  Q_OBJECT;
- public:
-  File(const QString &mimetype,QObject *parent=0);
-  ~File();
-  Connector::ServerType serverType() const;
-  void reset();
-
- private slots:
-  void passthroughData();
-  void writeData();
-
- protected:
-  void connectToHostConnector();
-  void disconnectFromHostConnector();
-  void loadStats(QStringList *hdrs,QStringList *values);
-
- private:
-  QTimer *file_write_timer;
-  int file_fd;
-  SNDFILE *file_sf;
-  SF_INFO file_sfinfo;
-};
+}
 
 
-#endif  // CONN_FILE_H
+CodecPassthrough::~CodecPassthrough()
+{
+}
+
+
+bool CodecPassthrough::isAvailable() const
+{
+  return true;
+}
+
+
+QString CodecPassthrough::defaultExtension() const
+{
+  return QString("wav");
+}
+
+
+void CodecPassthrough::process(const QByteArray &data,bool is_last)
+{
+  if(!isFramed()) {
+    setFramed(channels(),samplerate(),
+	      channels()*samplerate()*sizeof(float)/1000);
+  }
+  writePcm((float *)data.constData(),data.length()/(channels()*sizeof(float)),
+	   is_last);
+}
+
+
+void CodecPassthrough::loadStats(QStringList *hdrs,QStringList *values)
+{
+}
