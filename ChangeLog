@@ -190,3 +190,5 @@
 	* Incremented the package version to 0.6.3.
 2016-02-11 Fred Gleason <fredg@paravelsystems.com>
 	* Stubbed out a glassplayergui(1) applet in 'src/glassplayergui/'.
+2016-02-11 Fred Gleason <fredg@paravelsystems.com>
+	* Got glassplayergui(1) working with XCast servers.

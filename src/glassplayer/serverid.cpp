@@ -61,7 +61,28 @@ void ServerId::connectToServer(const QUrl &url)
     id_url.setPath("/");
   }
   if(id_url.scheme().isEmpty()||(id_url.scheme().toLower()=="file")) {
-    emit typeFound(Connector::FileServer,GetContentType(id_url.path()),id_url);
+    id_content_type=GetContentType(id_url.path());
+    if(id_content_type=="text/plain") {  // Could be a playlist
+      M3uPlaylist *playlist=new M3uPlaylist();
+      if(playlist->parseFile(id_url)) {
+	if(playlist->segmentQuantity()>0) {
+	  if(playlist->segmentUrl(0).isLocalFile()) {
+	    emit typeFound(Connector::FileServer,"",playlist->segmentUrl(0));
+	  }
+	  else {
+	    emit typeFound(Connector::XCastServer,"",playlist->segmentUrl(0));
+	  }
+	  delete playlist;
+	  return;
+	}
+      }
+      delete playlist;
+      Log(LOG_ERR,tr("unsupported playlist format")+" ["+id_content_type+"]");
+      exit(256);
+    }
+    else {
+      emit typeFound(Connector::FileServer,id_content_type,id_url);
+    }
   }
   else {
     id_socket->connectToHost(url.host(),url.port(80));

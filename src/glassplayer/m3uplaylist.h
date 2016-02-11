@@ -46,6 +46,7 @@ class M3uPlaylist
   QString segmentTitle(unsigned n) const;
   QUrl segmentUrl(unsigned n) const;
   bool parse(const QByteArray &data,const QUrl &src);
+  bool parseFile(const QUrl &url);
   QString dump() const;
   void clear();
   bool operator!=(const M3uPlaylist &plist);

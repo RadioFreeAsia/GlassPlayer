@@ -20,6 +20,7 @@
 
 #include <stdio.h>
 
+#include <QFile>
 #include <QStringList>
 
 #include "connector.h"
@@ -200,7 +201,7 @@ bool M3uPlaylist::parse(const QByteArray &data,const QUrl &src)
       else {
 	m3u_segment_urls.push_back(QUrl(f0[i]));
 	if(!m3u_segment_urls.back().isValid()) {
-	  Log(LOG_WARNING,"hls: invalid URL");
+	  Log(LOG_WARNING,"M3uPlaylist: invalid URL");
 	  return false;
 	}
 	m3u_segment_durations.push_back(m3u_current_segment_duration);
@@ -213,6 +214,18 @@ bool M3uPlaylist::parse(const QByteArray &data,const QUrl &src)
     }
   }
   return true;
+}
+
+
+bool M3uPlaylist::parseFile(const QUrl &url)
+{
+  QFile *file=new QFile(url.path());
+  if(!file->open(QIODevice::ReadOnly)) {
+    return false;
+  }
+  QByteArray data=file->readAll();
+  file->close();
+  return parse(data,url);
 }
 
 
