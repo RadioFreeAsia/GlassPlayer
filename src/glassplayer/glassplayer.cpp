@@ -344,12 +344,12 @@ void MainObject::statsData()
   if(sir_audio_device!=NULL) {
     sir_audio_device->getStats(&hdrs,&values);
   }
-  printf("---START---\n");
   for(int i=0;i<hdrs.size();i++) {
     printf("%s: %s\n",(const char *)hdrs[i].toUtf8(),
 	   (const char *)values[i].toUtf8());
   }
-  printf("---END---\n");
+  printf("\n");
+  fflush(stdout);
 }
 
 

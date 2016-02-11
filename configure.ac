@@ -232,6 +232,7 @@ AC_CONFIG_FILES([ \
     src/Makefile \
     src/common/Makefile \
     src/glassplayer/Makefile \
+    src/glassplayergui/Makefile \
     glassplayer.spec \
     Makefile ])
 AC_OUTPUT()
@@ -243,39 +244,69 @@ rm -f src/glassplayer/cmdswitch.cpp
 ln -s ../../src/common/cmdswitch.cpp src/glassplayer/cmdswitch.cpp
 rm -f src/glassplayer/cmdswitch.h
 ln -s ../../src/common/cmdswitch.h src/glassplayer/cmdswitch.h
+rm -f src/glassplayergui/cmdswitch.cpp
+ln -s ../../src/common/cmdswitch.cpp src/glassplayergui/cmdswitch.cpp
+rm -f src/glassplayergui/cmdswitch.h
+ln -s ../../src/common/cmdswitch.h src/glassplayergui/cmdswitch.h
 
 rm -f src/glassplayer/codec.cpp
 ln -s ../../src/common/codec.cpp src/glassplayer/codec.cpp
 rm -f src/glassplayer/codec.h
 ln -s ../../src/common/codec.h src/glassplayer/codec.h
+rm -f src/glassplayergui/codec.cpp
+ln -s ../../src/common/codec.cpp src/glassplayergui/codec.cpp
+rm -f src/glassplayergui/codec.h
+ln -s ../../src/common/codec.h src/glassplayergui/codec.h
 
 rm -f src/glassplayer/connector.cpp
 ln -s ../../src/common/connector.cpp src/glassplayer/connector.cpp
 rm -f src/glassplayer/connector.h
 ln -s ../../src/common/connector.h src/glassplayer/connector.h
+rm -f src/glassplayergui/connector.cpp
+ln -s ../../src/common/connector.cpp src/glassplayergui/connector.cpp
+rm -f src/glassplayergui/connector.h
+ln -s ../../src/common/connector.h src/glassplayergui/connector.h
 
 rm -f src/glassplayer/logging.cpp
 ln -s ../../src/common/logging.cpp src/glassplayer/logging.cpp
 rm -f src/glassplayer/logging.h
 ln -s ../../src/common/logging.h src/glassplayer/logging.h
+rm -f src/glassplayergui/logging.cpp
+ln -s ../../src/common/logging.cpp src/glassplayergui/logging.cpp
+rm -f src/glassplayergui/logging.h
+ln -s ../../src/common/logging.h src/glassplayergui/logging.h
 
 rm -f src/glassplayer/metaevent.cpp
 ln -s ../../src/common/metaevent.cpp src/glassplayer/metaevent.cpp
 rm -f src/glassplayer/metaevent.h
 ln -s ../../src/common/metaevent.h src/glassplayer/metaevent.h
+rm -f src/glassplayergui/metaevent.cpp
+ln -s ../../src/common/metaevent.cpp src/glassplayergui/metaevent.cpp
+rm -f src/glassplayergui/metaevent.h
+ln -s ../../src/common/metaevent.h src/glassplayergui/metaevent.h
 
 rm -f src/glassplayer/ringbuffer.cpp
 ln -s ../../src/common/ringbuffer.cpp src/glassplayer/ringbuffer.cpp
 rm -f src/glassplayer/ringbuffer.h
 ln -s ../../src/common/ringbuffer.h src/glassplayer/ringbuffer.h
+rm -f src/glassplayergui/ringbuffer.cpp
+ln -s ../../src/common/ringbuffer.cpp src/glassplayergui/ringbuffer.cpp
+rm -f src/glassplayergui/ringbuffer.h
+ln -s ../../src/common/ringbuffer.h src/glassplayergui/ringbuffer.h
 
 rm -f src/glassplayer/audiodevice.cpp
 ln -s ../../src/common/audiodevice.cpp src/glassplayer/audiodevice.cpp
 rm -f src/glassplayer/audiodevice.h
 ln -s ../../src/common/audiodevice.h src/glassplayer/audiodevice.h
+rm -f src/glassplayergui/audiodevice.cpp
+ln -s ../../src/common/audiodevice.cpp src/glassplayergui/audiodevice.cpp
+rm -f src/glassplayergui/audiodevice.h
+ln -s ../../src/common/audiodevice.h src/glassplayergui/audiodevice.h
 
 rm -f src/glassplayer/glasslimits.h
 ln -s ../../src/common/glasslimits.h src/glassplayer/glasslimits.h
+rm -f src/glassplayergui/glasslimits.h
+ln -s ../../src/common/glasslimits.h src/glassplayergui/glasslimits.h
 
 
 AC_MSG_NOTICE()
