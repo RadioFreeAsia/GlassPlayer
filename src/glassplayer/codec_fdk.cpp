@@ -381,7 +381,7 @@ void CodecFdk::SetDecoderParam(const AACDEC_PARAM param,const int value)
 
   if((err=aacDecoder_SetParam(fdk_decoder,param,value))!=AAC_DEC_OK) {
     fprintf(stderr,"AAC decoder error %d\n",err);
-    exit(256);
+    exit(GLASS_EXIT_DECODER_ERROR);
   }
 }
 #endif  // HAVE_FDKAAC

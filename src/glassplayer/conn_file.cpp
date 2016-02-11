@@ -110,9 +110,9 @@ void File::connectToHostConnector()
     memset(&file_sfinfo,0,sizeof(file_sfinfo));
     if((file_sf=sf_open(serverUrl().path().toUtf8(),
 			SFM_READ,&file_sfinfo))==NULL) {
-      Log(LOG_ERR,tr("unable to open downloaded file")+
+      Log(LOG_ERR,tr("unable to open local file")+
 	  " \""+serverUrl().path()+"\" ["+sf_strerror(file_sf)+"]");
-      exit(256);
+      exit(GLASS_EXIT_FILEOPEN_ERROR);
     }
     setAudioChannels(file_sfinfo.channels);
     setAudioSamplerate(file_sfinfo.samplerate);
@@ -120,9 +120,9 @@ void File::connectToHostConnector()
   }
   else {
     if((file_fd=open(serverUrl().path().toUtf8(),O_RDONLY))<0) {
-      Log(LOG_ERR,tr("unable to open downloaded file")+
+      Log(LOG_ERR,tr("unable to open local file")+
 	  " \""+serverUrl().path()+"\" ["+strerror(errno)+"]");
-      exit(256);
+      exit(GLASS_EXIT_FILEOPEN_ERROR);
     }
     connect(file_write_timer,SIGNAL(timeout()),this,SLOT(writeData()));
   }

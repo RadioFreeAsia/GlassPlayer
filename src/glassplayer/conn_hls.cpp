@@ -268,8 +268,8 @@ void Hls::mediaProcessFinishedData(int exit_code,QProcess::ExitStatus status)
 	  }
 	}
 	if(!isConnected()) {
-	  Log(LOG_ERR,tr("no such codec")+" ["+f0[f0.size()-1]+"]");
-	  exit(256);
+	  Log(LOG_ERR,tr("unsupported codec")+" ["+f0[f0.size()-1]+"]");
+	  exit(GLASS_EXIT_UNSUPPORTED_CODEC_ERROR);
 	}
       }
       hls_last_media_segment=hls_current_media_segment;

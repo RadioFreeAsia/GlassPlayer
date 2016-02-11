@@ -68,7 +68,7 @@ void *AlsaCallback(void *ptr)
   data.src_ratio=pll_setpoint_ratio;
   if((src=src_new(SRC_LINEAR,dev->codec()->channels(),&err))==NULL) {
     fprintf(stderr,"SRC initialization error [%s]\n",src_strerror(err));
-    exit(256);
+    exit(GLASS_EXIT_SRC_ERROR);
   }
 
   //
@@ -128,7 +128,7 @@ void *AlsaCallback(void *ptr)
 	dev->alsa_play_position+=n;
 	if((err=src_process(src,&data))<0) {
 	  fprintf(stderr,"SRC processing error [%s]\n",src_strerror(err));
-	  exit(256);
+	  exit(GLASS_EXIT_SRC_ERROR);
 	}
 	n=data.output_frames_gen;
       }

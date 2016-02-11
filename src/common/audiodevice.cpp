@@ -27,6 +27,7 @@
 #include <samplerate.h>
 
 #include "audiodevice.h"
+#include "glasslimits.h"
 #include "logging.h"
 
 AudioDevice::AudioDevice(Codec *codec,QObject *parent)
@@ -267,7 +268,7 @@ void AudioDevice::remixChannels(float *pcm_out,unsigned chans_out,float *pcm_in,
   Log(LOG_ERR,
       QString().sprintf("invalid channel remix: chans_in: %d  chans_out: %d",
 			chans_in,chans_out));
-  exit(256);
+  exit(GLASS_EXIT_CHANNEL_ERROR);
 }
 
 

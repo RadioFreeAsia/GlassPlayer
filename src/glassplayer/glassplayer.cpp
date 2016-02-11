@@ -71,7 +71,7 @@ MainObject::MainObject(QObject *parent)
   cmd->addOverlay("/etc/glassplayer.conf");
   if(cmd->keys()==0) {
     fprintf(stderr,"glassplayer: no stream-URL specified\n");
-    exit(256);
+    exit(GLASS_EXIT_ARGUMENT_ERROR);
   }
   for(unsigned i=0;i<(cmd->keys()-1);i++) {
     if(cmd->key(i)=="--audio-device") {
@@ -123,7 +123,7 @@ MainObject::MainObject(QObject *parent)
       server_url.setUrl(cmd->key(cmd->keys()-1));
       if(!server_url.isValid()) {
 	Log(LOG_ERR,"invalid stream URL");
-	exit(256);
+	exit(GLASS_EXIT_ARGUMENT_ERROR);
       }
     }
   }
@@ -161,7 +161,7 @@ MainObject::MainObject(QObject *parent)
   }
   if(stdout_count>1) {
     Log(LOG_ERR,"only one option using STDOUT may be specified at a time");
-    exit(256);
+    exit(GLASS_EXIT_ARGUMENT_ERROR);
   }
 
   sir_stats_timer=new QTimer(this);
@@ -213,7 +213,7 @@ void MainObject::serverConnectedData(bool state)
       if(sir_connector->codecType()==Codec::TypeNull) {
 	Log(LOG_ERR,tr("unsupported codec")+
 	    " ["+sir_connector->contentType()+"]");
-	exit(256);
+	exit(GLASS_EXIT_UNSUPPORTED_CODEC_ERROR);
       }
       sir_codec=CodecFactory(sir_connector->codecType(),
 			     sir_connector->audioBitrate(),this);
@@ -221,7 +221,7 @@ void MainObject::serverConnectedData(bool state)
     if((sir_codec==NULL)||(!sir_codec->isAvailable())) {
       Log(LOG_ERR,tr("codec unavailable")+
 	  "["+Codec::typeText(sir_connector->codecType())+"]");
-      exit(256);
+      exit(GLASS_EXIT_UNSUPPORTED_CODEC_ERROR);
     }
     sir_codec->setChannels(sir_connector->audioChannels());
     sir_codec->setSamplerate(sir_connector->audioSamplerate());
@@ -271,11 +271,11 @@ void MainObject::codecFramedData(unsigned chans,unsigned samprate,
   if((sir_audio_device=
       AudioDeviceFactory(audio_device_type,sir_codec,this))==NULL) {
     Log(LOG_ERR,"unsupported audio device");
-    exit(256);
+    exit(GLASS_EXIT_UNSUPPORTED_DEVICE_ERROR);
   }
   if(!sir_audio_device->processOptions(&err,device_keys,device_values)) {
     Log(LOG_ERR,err);
-    exit(256);
+    exit(GLASS_EXIT_ARGUMENT_ERROR);
   }
   connect(sir_codec,SIGNAL(metadataReceived(uint64_t,MetaEvent *)),
 	  sir_audio_device,SLOT(processMetadata(uint64_t,MetaEvent *)));
@@ -283,7 +283,7 @@ void MainObject::codecFramedData(unsigned chans,unsigned samprate,
 	  this,SLOT(metadataReceivedData(MetaEvent *)));
   if(!sir_audio_device->start(&err)) {
     Log(LOG_ERR,err);
-    exit(256);
+    exit(GLASS_EXIT_GENERAL_DEVICE_ERROR);
   }
   if(sir_stats_out) {
     sir_stats_timer->start(2000);

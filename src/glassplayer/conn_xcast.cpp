@@ -149,7 +149,7 @@ void XCast::errorData(QAbstractSocket::SocketError err)
   switch(err) {
   case QAbstractSocket::HostNotFoundError:
     Log(LOG_ERR,"glassplayer: host not found\n");
-    exit(255);
+    exit(GLASS_EXIT_HTTP_ERROR);
 
   default:
     setConnected(false);
@@ -226,14 +226,13 @@ void XCast::ProcessHeader(const QString &str)
     f0=str.split(" ",QString::SkipEmptyParts);
     if(f0.size()<3) {
       Log(LOG_ERR,"malformed response from server ["+str+"]");
-      exit(256);
+      exit(GLASS_EXIT_SERVER_ERROR);
     }
     xcast_is_shoutcast=f0[0]=="ICY";
     xcast_result_code=f0[1].toInt();
     if((xcast_result_code<200)||(xcast_result_code>=300)) {
       f0.erase(f0.begin());
       Log(LOG_ERR,"server returned error ["+f0.join(" ")+"]");
-      // exit(256);
     }
   }
   else {

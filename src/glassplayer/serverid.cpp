@@ -78,7 +78,7 @@ void ServerId::connectToServer(const QUrl &url)
       }
       delete playlist;
       Log(LOG_ERR,tr("unsupported playlist format")+" ["+id_content_type+"]");
-      exit(256);
+      exit(GLASS_EXIT_UNSUPPORTED_PLAYLIST_ERROR);
     }
     else {
       emit typeFound(Connector::FileServer,id_content_type,id_url);
@@ -175,7 +175,7 @@ void ServerId::errorData(QAbstractSocket::SocketError err)
 	    }
 	    else {
 	      Log(LOG_ERR,"playlist contains no media segments");
-	      exit(256);
+	      exit(GLASS_EXIT_INVALID_PLAYLIST_ERROR);
 	    }
 	  }
 	  delete playlist;
@@ -183,7 +183,7 @@ void ServerId::errorData(QAbstractSocket::SocketError err)
 	  return;
 	}
 	Log(LOG_ERR,"invalid M3U list format");
-	exit(256);
+	exit(GLASS_EXIT_INVALID_PLAYLIST_ERROR);
       }
 
       //
@@ -194,7 +194,7 @@ void ServerId::errorData(QAbstractSocket::SocketError err)
       if((fd=mkstemp(tempfile))<0) {
 	Log(LOG_ERR,tr("unable to create temporary file")+
 	    " ["+strerror(errno)+"]");
-	exit(256);
+	exit(GLASS_EXIT_FILEOPEN_ERROR);
       }
       write(fd,id_body.constData(),id_body.size());
       close(fd);
@@ -206,7 +206,7 @@ void ServerId::errorData(QAbstractSocket::SocketError err)
 
   default:
     Log(LOG_ERR,Connector::socketErrorText(err));
-    exit(256);
+    exit(GLASS_EXIT_NETWORK_ERROR);
     break;
   }
 }
@@ -260,13 +260,13 @@ void ServerId::ProcessResult()
       Log(LOG_ERR,
 	  tr("server returned")+" "+id_result_text+", "+
 	  tr("but redirected URI is empty."));
-      exit(256);
+      exit(GLASS_EXIT_SERVER_ERROR);
     }
     break;
 
   default:
     Log(LOG_ERR,"server returned error ["+id_result_text+"]");
-    exit(256);
+    exit(GLASS_EXIT_HTTP_ERROR);
   }
 }
 
@@ -287,7 +287,7 @@ void ServerId::ProcessHeader(const QString &str)
     f0=str.split(" ",QString::SkipEmptyParts);
     if(f0.size()<3) {
       Log(LOG_ERR,"malformed response from server ["+str+"]");
-      exit(256);
+      exit(GLASS_EXIT_SERVER_ERROR);
     }
     id_result_code=f0[1].toInt();
     f0.erase(f0.begin());

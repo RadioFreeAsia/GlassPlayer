@@ -28,5 +28,23 @@
 #define MAX_AUDIO_CHANNELS 2
 #define RINGBUFFER_SIZE 262144
 
+//
+// Exit Codes
+//
+#define GLASS_EXIT_OK 0
+#define GLASS_EXIT_UNSUPPORTED_CODEC_ERROR 1  // Unsupported codec
+#define GLASS_EXIT_CHANNEL_ERROR 2            // invalid channel remix
+#define GLASS_EXIT_DECODER_ERROR 3            // decoder error
+#define GLASS_EXIT_FILEOPEN_ERROR 4           // unable to open local file
+#define GLASS_EXIT_SERVER_ERROR 5             // malformed response from server
+#define GLASS_EXIT_HTTP_ERROR 6               // non-200 http response
+#define GLASS_EXIT_SRC_ERROR 7                // samplerate converter error
+#define GLASS_EXIT_ARGUMENT_ERROR 8           // invalid command-line invocation
+#define GLASS_EXIT_UNSUPPORTED_DEVICE_ERROR 9 // unsupported audio device
+#define GLASS_EXIT_GENERAL_DEVICE_ERROR 10    // audio device error
+#define GLASS_EXIT_UNSUPPORTED_PLAYLIST_ERROR 11 // unsupported playlist format
+#define GLASS_EXIT_INVALID_PLAYLIST_ERROR 12  // invalid playlist format
+#define GLASS_EXIT_NETWORK_ERROR 13           // general network error
+
 
 #endif  // GLASSLIMITS_H

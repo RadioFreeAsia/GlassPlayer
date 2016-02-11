@@ -192,3 +192,5 @@
 	* Stubbed out a glassplayergui(1) applet in 'src/glassplayergui/'.
 2016-02-11 Fred Gleason <fredg@paravelsystems.com>
 	* Got glassplayergui(1) working with XCast servers.
+2016-02-11 Fred Gleason <fredg@paravelsystems.com>
+	* Enumerated exit error codes in 'src/common/glasslimits.h'.

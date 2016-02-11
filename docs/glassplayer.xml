@@ -806,6 +806,82 @@
   </variablelist>
 </refsect1>
 
+<refsect1 id='exit_values'><title>Exit Values</title>
+<variablelist>
+  <varlistentry>
+    <term>
+      <computeroutput>0</computeroutput> Success
+    </term>
+  </varlistentry>
+  <varlistentry>
+    <term>
+      <computeroutput>1</computeroutput> Unsupported audio codec
+    </term>
+  </varlistentry>
+  <varlistentry>
+    <term>
+      <computeroutput>2</computeroutput> Invalid channel remix
+    </term>
+  </varlistentry>
+  <varlistentry>
+    <term>
+      <computeroutput>3</computeroutput> Decoder error
+    </term>
+  </varlistentry>
+  <varlistentry>
+    <term>
+      <computeroutput>4</computeroutput> Local file error
+    </term>
+  </varlistentry>
+  <varlistentry>
+    <term>
+      <computeroutput>5</computeroutput> Server sent a malformed response
+    </term>
+  </varlistentry>
+  <varlistentry>
+    <term>
+      <computeroutput>6</computeroutput> Server sent a non-2xx response
+    </term>
+  </varlistentry>
+  <varlistentry>
+    <term>
+      <computeroutput>7</computeroutput> Samplerate converter error
+    </term>
+  </varlistentry>
+  <varlistentry>
+    <term>
+      <computeroutput>8</computeroutput> Syntax or usage error
+    </term>
+  </varlistentry>
+  <varlistentry>
+    <term>
+      <computeroutput>9</computeroutput> Unsupported audio device
+    </term>
+  </varlistentry>
+  <varlistentry>
+    <term>
+      <computeroutput>10</computeroutput> Audio device error
+    </term>
+  </varlistentry>
+  <varlistentry>
+    <term>
+      <computeroutput>11</computeroutput> Unsupported playlist
+    </term>
+  </varlistentry>
+  <varlistentry>
+    <term>
+      <computeroutput>12</computeroutput> Invalid playlist
+    </term>
+  </varlistentry>
+  <varlistentry>
+    <term>
+      <computeroutput>13</computeroutput> General network error
+    </term>
+  </varlistentry>
+
+</variablelist>
+</refsect1>
+
 <refsect1 id='author'><title>Author</title>
 <para>
   Fred Gleason &lt;fredg@paravelsystems.com&gt;
@@ -818,7 +894,7 @@
     <refentrytitle>glasscoder</refentrytitle><manvolnum>1</manvolnum>
   </citerefentry>,
   <citerefentry>
-    <refentrytitle>glassgui</refentrytitle><manvolnum>1</manvolnum>
+    <refentrytitle>glassplayergui</refentrytitle><manvolnum>1</manvolnum>
   </citerefentry>,
   <citerefentry>
     <refentrytitle>jackd</refentrytitle><manvolnum>1</manvolnum>
