@@ -40,7 +40,7 @@ class DevFile : public AudioDevice
    void synchronousWrite(unsigned frames,bool is_last);
 
  protected:
-  void loadStats(QStringList *hdrs,QStringList *values);
+   void loadStats(QStringList *hdrs,QStringList *values,bool is_first);
 
  private:
   AudioDevice::Format file_format;

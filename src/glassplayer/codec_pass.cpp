@@ -54,6 +54,7 @@ void CodecPassthrough::process(const QByteArray &data,bool is_last)
 }
 
 
-void CodecPassthrough::loadStats(QStringList *hdrs,QStringList *values)
+void CodecPassthrough::loadStats(QStringList *hdrs,QStringList *values,
+				 bool is_first)
 {
 }

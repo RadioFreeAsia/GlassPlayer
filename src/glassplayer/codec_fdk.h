@@ -40,7 +40,7 @@ class CodecFdk : public Codec
   void process(const QByteArray &data,bool is_last);
 
  protected:
-  void loadStats(QStringList *hdrs,QStringList *values);
+  void loadStats(QStringList *hdrs,QStringList *values,bool is_first);
 
  private:
   QString GetAotText(int aot);

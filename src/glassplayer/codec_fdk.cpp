@@ -130,14 +130,16 @@ void CodecFdk::process(const QByteArray &data,bool is_last)
 }
 
 
-void CodecFdk::loadStats(QStringList *hdrs,QStringList *values)
+void CodecFdk::loadStats(QStringList *hdrs,QStringList *values,bool is_first)
 {
 #ifdef HAVE_FDKAAC
-  hdrs->push_back("Codec|Algorithm");
-  values->push_back(GetAotText(fdk_cinfo->aot));
+  if(is_first) {
+    hdrs->push_back("Codec|Algorithm");
+    values->push_back(GetAotText(fdk_cinfo->aot));
 
-  hdrs->push_back("Codec|Channels");
-  values->push_back(QString().sprintf("%u",fdk_cinfo->numChannels));
+    hdrs->push_back("Codec|Channels");
+    values->push_back(QString().sprintf("%u",fdk_cinfo->numChannels));
+  }
 #endif  // HAVE_FDKAAC
 }
 

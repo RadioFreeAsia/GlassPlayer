@@ -54,6 +54,7 @@ MainObject::MainObject(QObject *parent)
   sir_ring=NULL;
   sir_audio_device=NULL;
   sir_server_id=NULL;
+  sir_first_stats=true;
   disable_stream_metadata=false;
 
   audio_device_type=AudioDevice::Alsa;
@@ -336,13 +337,13 @@ void MainObject::statsData()
     values.push_back(sir_meta_event.field(MetaEvent::Url).toString());
   }
   if(sir_connector!=NULL) {
-    sir_connector->getStats(&hdrs,&values);
+    sir_connector->getStats(&hdrs,&values,sir_first_stats);
   }
   if(sir_codec!=NULL) {
-    sir_codec->getStats(&hdrs,&values);
+    sir_codec->getStats(&hdrs,&values,sir_first_stats);
   }
   if(sir_audio_device!=NULL) {
-    sir_audio_device->getStats(&hdrs,&values);
+    sir_audio_device->getStats(&hdrs,&values,sir_first_stats);
   }
   for(int i=0;i<hdrs.size();i++) {
     printf("%s: %s\n",(const char *)hdrs[i].toUtf8(),
@@ -350,6 +351,7 @@ void MainObject::statsData()
   }
   printf("\n");
   fflush(stdout);
+  sir_first_stats=false;
 }
 
 

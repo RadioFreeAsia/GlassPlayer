@@ -48,7 +48,7 @@ class DevAlsa : public AudioDevice
   void playPositionData();
 
  protected:
-  void loadStats(QStringList *hdrs,QStringList *values);
+  void loadStats(QStringList *hdrs,QStringList *values,bool is_first);
 
  private:
 #ifdef ALSA

@@ -48,7 +48,9 @@ Connector::Connector(const QString &mimetype,QObject *parent)
   conn_host_hostname="";
   conn_host_port=0;
   conn_connected=false;
+  conn_connected_changed=true;
   conn_dropouts=0;
+  conn_dropouts_changed=true;
   conn_content_type=mimetype;
 
   for(unsigned i=0;i<Codec::TypeLast;i++) {
@@ -336,28 +338,36 @@ void Connector::setScriptDown(const QString &cmd)
 }
 
 
-void Connector::getStats(QStringList *hdrs,QStringList *values)
+void Connector::getStats(QStringList *hdrs,QStringList *values,bool is_first)
 {
-  hdrs->push_back("Connector|Connected");
-  if(conn_connected) {
-    values->push_back("Yes");
-  }
-  else {
-    values->push_back("No");
-  }
-
-  hdrs->push_back("Connector|Url");
-  values->push_back(conn_public_url.toString());
-
-  if(conn_public_url.path()!=conn_server_url.path()) {
-    hdrs->push_back("Connector|InternalUrl");
-    values->push_back(conn_server_url.toString());
+  if(conn_connected_changed) {
+    hdrs->push_back("Connector|Connected");
+    if(conn_connected) {
+      values->push_back("Yes");
+    }
+    else {
+      values->push_back("No");
+    }
+    conn_connected_changed=false;
   }
 
-  hdrs->push_back("Connector|Dropouts");
-  values->push_back(QString().sprintf("%u",conn_dropouts));
+  if(is_first) {
+    hdrs->push_back("Connector|Url");
+    values->push_back(conn_public_url.toString());
 
-  loadStats(hdrs,values);
+    if(conn_public_url.path()!=conn_server_url.path()) {
+      hdrs->push_back("Connector|InternalUrl");
+      values->push_back(conn_server_url.toString());
+    }
+  }
+
+  if(conn_dropouts_changed) {
+    hdrs->push_back("Connector|Dropouts");
+    values->push_back(QString().sprintf("%u",conn_dropouts));
+    conn_dropouts_changed=false;
+  }
+
+  loadStats(hdrs,values,is_first);
 }
 
 
@@ -604,8 +614,10 @@ void Connector::setConnected(bool state)
   if(state!=conn_connected) {
     if(!state) {
       conn_dropouts++;
+      conn_dropouts_changed=true;
     }
     conn_connected=state;
+    conn_connected_changed=true;
     emit connected(conn_connected);
   }
 }

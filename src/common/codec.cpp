@@ -36,6 +36,9 @@ Codec::Codec(Codec::Type type,unsigned bitrate,QObject *parent)
   codec_quality=0.5;
   codec_samplerate=48000;
   codec_is_framed=false;
+  codec_is_framed_changed=true;
+  codec_bytes_processed=0;
+  codec_bytes_processed_changed=true;
   codec_pcm_in=NULL;
   codec_pcm_out=NULL;
   codec_pcm_buffer[0]=NULL;
@@ -123,26 +126,34 @@ Ringbuffer *Codec::ring()
 }
 
 
-void Codec::getStats(QStringList *hdrs,QStringList *values)
+void Codec::getStats(QStringList *hdrs,QStringList *values,bool is_first)
 {
-  hdrs->push_back("Codec|Framed");
-  if(isFramed()) {
-    values->push_back("Yes");
+  if(codec_is_framed_changed) {
+    hdrs->push_back("Codec|Framed");
+    if(isFramed()) {
+      values->push_back("Yes");
+    }
+    else {
+      values->push_back("No");
+    }
+    codec_is_framed_changed=false;
   }
-  else {
-    values->push_back("No");
+
+  if(is_first) {
+    hdrs->push_back("Codec|Channels");
+    values->push_back(QString().sprintf("%u",codec_channels));
+
+    hdrs->push_back("Codec|SampleRate");
+    values->push_back(QString().sprintf("%u",codec_samplerate));
   }
 
-  hdrs->push_back("Codec|Channels");
-  values->push_back(QString().sprintf("%u",codec_channels));
+  if(codec_bytes_processed_changed) {
+    hdrs->push_back("Codec|BytesProcessed");
+    values->push_back(QString().sprintf("%lu",codec_bytes_processed));
+    codec_bytes_processed_changed=false;
+  }
 
-  hdrs->push_back("Codec|SampleRate");
-  values->push_back(QString().sprintf("%u",codec_samplerate));
-
-  hdrs->push_back("Codec|BytesProcessed");
-  values->push_back(QString().sprintf("%lu",codec_bytes_processed));
-
-  loadStats(hdrs,values);
+  loadStats(hdrs,values,is_first);
 }
 
 
@@ -313,6 +324,7 @@ QString Codec::optionKeyword(Codec::Type type)
 void Codec::processBitstream(const QByteArray &data,bool is_last)
 {
   codec_bytes_processed+=data.length();
+  codec_bytes_processed_changed=true;
   process(data,is_last);
   while((codec_metadata_bytes.size()>0)&&
 	(codec_metadata_bytes.front()<codec_bytes_processed)) {
@@ -337,7 +349,9 @@ void Codec::setFramed(unsigned chans,unsigned samprate,unsigned bitrate)
   codec_samplerate=samprate;
   codec_bitrate=bitrate;
   codec_is_framed=true;
+  codec_is_framed_changed=true;
   codec_bytes_processed=0;
+  codec_bytes_processed_changed=true;
   codec_frames_generated=0;
 
   codec_ring=new Ringbuffer(CODEC_RINGBUFFER_SIZE,chans);

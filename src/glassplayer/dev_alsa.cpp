@@ -375,25 +375,27 @@ void DevAlsa::playPositionData()
 }
 
 
-void DevAlsa::loadStats(QStringList *hdrs,QStringList *values)
+void DevAlsa::loadStats(QStringList *hdrs,QStringList *values,bool is_first)
 {
-  hdrs->push_back("Device|Type");
-  values->push_back("ALSA");
+  if(is_first) {
+    hdrs->push_back("Device|Type");
+    values->push_back("ALSA");
 
-  hdrs->push_back("Device|Name");
-  values->push_back(alsa_device);
+    hdrs->push_back("Device|Name");
+    values->push_back(alsa_device);
 
-  hdrs->push_back("Device|Channels");
-  values->push_back(QString().sprintf("%u",alsa_channels));
+    hdrs->push_back("Device|Channels");
+    values->push_back(QString().sprintf("%u",alsa_channels));
 
-  hdrs->push_back("Device|SampleRate");
-  values->push_back(QString().sprintf("%u",alsa_samplerate));
+    hdrs->push_back("Device|SampleRate");
+    values->push_back(QString().sprintf("%u",alsa_samplerate));
 
-  hdrs->push_back("Device|BufferSize");
-  values->push_back(QString().sprintf("%lu",alsa_buffer_size));
+    hdrs->push_back("Device|BufferSize");
+    values->push_back(QString().sprintf("%lu",alsa_buffer_size));
 
-  hdrs->push_back("Device|PeriodQuantity");
-  values->push_back(QString().sprintf("%u",alsa_period_quantity));
+    hdrs->push_back("Device|PeriodQuantity");
+    values->push_back(QString().sprintf("%u",alsa_period_quantity));
+  }
 
   hdrs->push_back("Device|PllOffset");
   values->push_back(QString().sprintf("%8.6lf",alsa_pll_offset));

@@ -34,6 +34,8 @@ AudioDevice::AudioDevice(Codec *codec,QObject *parent)
   : QObject(parent)
 {
   audio_codec=codec;
+  audio_play_position_changed=true;
+  audio_ring_read_space_prev=0;
 
   if(codec!=NULL) {
     connect(codec,SIGNAL(audioWritten(unsigned,bool)),
@@ -58,15 +60,22 @@ void AudioDevice::stop()
 }
 
 
-void AudioDevice::getStats(QStringList *hdrs,QStringList *values)
+void AudioDevice::getStats(QStringList *hdrs,QStringList *values,bool is_first)
 {
-  hdrs->push_back("Device|FramesPlayed");
-  values->push_back(QString().sprintf("%lu",audio_play_position));
+  if(audio_play_position_changed) {
+    hdrs->push_back("Device|FramesPlayed");
+    values->push_back(QString().sprintf("%lu",audio_play_position));
+    audio_play_position_changed=false;
+  }
 
-  loadStats(hdrs,values);
+  loadStats(hdrs,values,is_first);
 
-  hdrs->push_back("Device|PLLCurrentFrames");
-  values->push_back(QString().sprintf("%u",codec()->ring()->readSpace()));
+  unsigned space=codec()->ring()->readSpace();
+  if(space!=audio_ring_read_space_prev) {
+    hdrs->push_back("Device|PLLCurrentFrames");
+    values->push_back(QString().sprintf("%u",space));
+    audio_ring_read_space_prev=space;
+  }
 }
 
 
@@ -229,6 +238,7 @@ void AudioDevice::updateMeterLevels(int *lvls)
 void AudioDevice::updatePlayPosition(uint64_t frames)
 {
   audio_play_position=frames;
+  audio_play_position_changed=true;
   while((audio_metadata_frames.size()>0)&&
 	(audio_metadata_frames.front()<audio_play_position)) {
     emit metadataReceived(audio_metadata_events.front());

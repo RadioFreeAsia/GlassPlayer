@@ -136,11 +136,13 @@ void File::disconnectFromHostConnector()
 }
 
 
-void File::loadStats(QStringList *hdrs,QStringList *values)
+void File::loadStats(QStringList *hdrs,QStringList *values,bool is_first)
 {
-  hdrs->push_back("Connector|Type");
-  values->push_back("File");
+  if(is_first) {
+    hdrs->push_back("Connector|Type");
+    values->push_back("File");
 
-  hdrs->push_back("Connector|ContentType");
-  values->push_back(contentType());
+    hdrs->push_back("Connector|ContentType");
+    values->push_back(contentType());
+  }
 }

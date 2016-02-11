@@ -59,7 +59,7 @@ class Codec : public QObject
   uint64_t bytesProcessed() const;
   uint64_t framesGenerated() const;
   Ringbuffer *ring();
-  virtual void getStats(QStringList *hdrs,QStringList *values);
+  virtual void getStats(QStringList *hdrs,QStringList *values,bool is_first);
   virtual bool isAvailable() const=0;
   virtual QString defaultExtension() const=0;
   static bool acceptsContentType(Type type,const QString &mimetype);
@@ -82,10 +82,11 @@ class Codec : public QObject
   virtual void process(const QByteArray &data,bool is_last)=0;
   virtual void setFramed(unsigned chans,unsigned samprate,unsigned bitrate);
   virtual void writePcm(float *pcm,unsigned frames,bool is_last);
-  virtual void loadStats(QStringList *hdrs,QStringList *values)=0;
+  virtual void loadStats(QStringList *hdrs,QStringList *values,bool is_first)=0;
 
  private:
   uint64_t codec_bytes_processed;
+  bool codec_bytes_processed_changed;
   uint64_t codec_frames_generated;
   std::queue<uint64_t> codec_metadata_bytes;
   std::queue<MetaEvent *> codec_metadata_events;
@@ -98,6 +99,7 @@ class Codec : public QObject
   float *codec_pcm_out;
   float *codec_pcm_buffer[2];
   bool codec_is_framed;
+  bool codec_is_framed_changed;
   Codec::Type codec_type;
 };
 

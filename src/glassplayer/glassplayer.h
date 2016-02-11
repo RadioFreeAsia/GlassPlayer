@@ -72,6 +72,7 @@ class MainObject : public QObject
   ServerId *sir_server_id;
   QTimer *sir_stats_timer;
   MetaEvent sir_meta_event;
+  bool sir_first_stats;
 };
 
 

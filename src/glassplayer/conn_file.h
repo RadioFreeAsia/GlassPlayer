@@ -44,7 +44,7 @@ class File : public Connector
  protected:
   void connectToHostConnector();
   void disconnectFromHostConnector();
-  void loadStats(QStringList *hdrs,QStringList *values);
+  void loadStats(QStringList *hdrs,QStringList *values,bool is_first);
 
  private:
   QTimer *file_write_timer;

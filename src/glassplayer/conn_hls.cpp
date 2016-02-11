@@ -81,16 +81,18 @@ void Hls::disconnectFromHostConnector()
 }
 
 
-void Hls::loadStats(QStringList *hdrs,QStringList *values)
+void Hls::loadStats(QStringList *hdrs,QStringList *values,bool is_first)
 {
-  hdrs->push_back("Connector|Type");
-  values->push_back("HLS");
+  if(is_first) {
+    hdrs->push_back("Connector|Type");
+    values->push_back("HLS");
 
-  hdrs->push_back("Connector|Server");
-  values->push_back(hls_server);
+    hdrs->push_back("Connector|Server");
+    values->push_back(hls_server);
 
-  hdrs->push_back("Connector|ContentType");
-  values->push_back(hls_content_type);
+    hdrs->push_back("Connector|ContentType");
+    values->push_back(hls_content_type);
+  }
 
   hdrs->push_back("Connector|HLSVersion");
   values->push_back(QString().sprintf("%d",hls_index_playlist->version()));

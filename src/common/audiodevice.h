@@ -48,7 +48,7 @@ class AudioDevice : public QObject
 			      const QStringList &values)=0;
   virtual bool start(QString *err)=0;
   virtual void stop();
-  virtual void getStats(QStringList *hdrs,QStringList *values);
+  virtual void getStats(QStringList *hdrs,QStringList *values,bool is_first);
   void meterLevels(int *lvls) const;
   static QString typeText(AudioDevice::Type type);
   static QString optionKeyword(AudioDevice::Type type);
@@ -77,12 +77,14 @@ class AudioDevice : public QObject
 			unsigned nframes,unsigned chans);
   void peakLevels(float *lvls,const float *pcm,unsigned nframes,unsigned chans);
   void peakLevels(int *lvls,const float *pcm,unsigned nframes,unsigned chans);
-  virtual void loadStats(QStringList *hdrs,QStringList *values)=0;
+  virtual void loadStats(QStringList *hdrs,QStringList *values,bool is_first)=0;
 
  private:
   Codec *audio_codec;
   int audio_meter_levels[MAX_AUDIO_CHANNELS];
   uint64_t audio_play_position;
+  bool audio_play_position_changed;
+  unsigned audio_ring_read_space_prev;
   std::queue<uint64_t> audio_metadata_frames;
   std::queue<MetaEvent *> audio_metadata_events;
 };

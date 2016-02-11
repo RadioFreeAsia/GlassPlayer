@@ -38,7 +38,7 @@ class CodecMpeg1 : public Codec
   void process(const QByteArray &data,bool is_last);
 
  protected:
-  void loadStats(QStringList *hdrs,QStringList *values);
+  void loadStats(QStringList *hdrs,QStringList *values,bool is_first);
 
  private:
   void Reset();

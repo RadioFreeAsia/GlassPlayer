@@ -161,23 +161,25 @@ void XCast::errorData(QAbstractSocket::SocketError err)
 }
 
 
-void XCast::loadStats(QStringList *hdrs,QStringList *values)
+void XCast::loadStats(QStringList *hdrs,QStringList *values,bool is_first)
 {
-  hdrs->push_back("Connector|Type");
-  if(xcast_is_shoutcast) {
-    values->push_back("Shoutcast");
-  }
-  else {
-    values->push_back("Icecast");
-  }
+  if(is_first) {
+    hdrs->push_back("Connector|Type");
+    if(xcast_is_shoutcast) {
+      values->push_back("Shoutcast");
+    }
+    else {
+      values->push_back("Icecast");
+    }
 
-  if(!xcast_server.isEmpty()) {
-    hdrs->push_back("Connector|Server");
-    values->push_back(xcast_server);
-  }
+    if(!xcast_server.isEmpty()) {
+      hdrs->push_back("Connector|Server");
+      values->push_back(xcast_server);
+    }
 
-  hdrs->push_back("Connector|ContentType");
-  values->push_back(xcast_content_type);
+    hdrs->push_back("Connector|ContentType");
+    values->push_back(xcast_content_type);
+  }
 }
 
 

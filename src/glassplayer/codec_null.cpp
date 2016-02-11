@@ -66,6 +66,6 @@ void CodecNull::process(const QByteArray &data,bool is_last)
 }
 
 
-void CodecNull::loadStats(QStringList *hdrs,QStringList *values)
+void CodecNull::loadStats(QStringList *hdrs,QStringList *values,bool is_first)
 {
 }

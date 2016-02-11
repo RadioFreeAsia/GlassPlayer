@@ -89,7 +89,7 @@ class Connector : public QObject
   void setScriptUp(const QString &cmd);
   QString scriptDown() const;
   void setScriptDown(const QString &cmd);
-  virtual void getStats(QStringList *hdrs,QStringList *values);
+  virtual void getStats(QStringList *hdrs,QStringList *values,bool is_first);
   static QString serverTypeText(Connector::ServerType);
   static QString optionKeyword(Connector::ServerType type);
   static Connector::ServerType serverType(const QString &key);
@@ -123,7 +123,7 @@ class Connector : public QObject
   //  void setError(QAbstractSocket::SocketError err);
   virtual void connectToHostConnector()=0;
   virtual void disconnectFromHostConnector()=0;
-  virtual void loadStats(QStringList *hdrs,QStringList *values)=0;
+  virtual void loadStats(QStringList *hdrs,QStringList *values,bool is_first)=0;
 
  private:
   QString conn_server_username;
@@ -147,7 +147,9 @@ class Connector : public QObject
   QString conn_script_up;
   QString conn_script_down;
   bool conn_connected;
+  bool conn_connected_changed;
   unsigned conn_dropouts;
+  bool conn_dropouts_changed;
   QString conn_content_type;
   unsigned conn_audio_channels;
   unsigned conn_audio_samplerate;
