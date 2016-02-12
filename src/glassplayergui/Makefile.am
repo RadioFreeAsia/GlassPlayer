@@ -40,10 +40,14 @@ nodist_glassplayergui_SOURCES = audiodevice.cpp audiodevice.h\
                                 logging.cpp logging.h\
                                 metaevent.cpp metaevent.h\
                                 moc_audiodevice.cpp\
+                                ringbuffer.cpp ringbuffer.h\
+                                statsdialog.cpp statsdialog.h\
+                                statspanel.cpp statspanel.h\
                                 moc_codec.cpp\
                                 moc_connector.cpp\
                                 moc_glassplayergui.cpp\
-                                ringbuffer.cpp ringbuffer.h
+                                moc_statsdialog.cpp\
+                                moc_statspanel.cpp
 
 glassplayergui_LDADD = @GUILIBS@
 glassplayergui_LDFLAGS = @GUIFLAGS@

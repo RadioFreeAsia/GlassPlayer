@@ -58,6 +58,8 @@ MainWidget::MainWidget(QWidget *parent)
 
   setWindowTitle(QString("GlassPlayer - v")+VERSION);
 
+  gui_stats_dialog=new StatsDialog(this);
+
   //
   // Title
   //
@@ -103,6 +105,13 @@ MainWidget::MainWidget(QWidget *parent)
 
   gui_genre_text=new QLabel(this);
   gui_genre_text->setAlignment(Qt::AlignLeft|Qt::AlignVCenter);
+
+  //
+  // Stats Button
+  //
+  gui_stats_button=new QPushButton(tr("Show Stats"),this);
+  gui_stats_button->setFont(bold_font);
+  connect(gui_stats_button,SIGNAL(clicked()),gui_stats_dialog,SLOT(show()));
 
   //
   // Logo
@@ -197,15 +206,14 @@ void MainWidget::processErrorData(QProcess::ProcessError err)
 void MainWidget::logoProcessFinishedData(int exit_code,QProcess::ExitStatus status)
 {
   if(status!=QProcess::NormalExit) {
-    QMessageBox::critical(this,"GlassPlayer",tr("Logo download crashed!"));
-    exit(256);
+    fprintf(stderr,"glassplayergui: %s\n",
+	    (const char *)tr("logo download process crashed").toUtf8());
   }
   else {
     if(exit_code!=0) {
-      QMessageBox::critical(this,"GlassPlayer",
-		  tr("Logo download process exited with non-zero exit code")+
-			    QString().sprintf(" [%d]!",exit_code));
-      exit(256);
+      fprintf(stderr,"glassplayergui: %s\n",(const char *)
+	      (tr("logo download process exited with non-zero exit code")+
+	       QString().sprintf(" [%d]!",exit_code)).toUtf8());
     }
     else {
       QPixmap *pix=new QPixmap();
@@ -304,6 +312,8 @@ void MainWidget::resizeEvent(QResizeEvent *e)
     ypos+=22;
   }
 
+  gui_stats_button->setGeometry(10,size().height()-40,110,35);
+
   gui_logo_label->
     setGeometry(size().width()-edge-10,size().height()-edge-10,edge,edge);
 }
@@ -329,7 +339,7 @@ void MainWidget::ProcessStats(const QString &str)
       f0.erase(f0.begin());
       value=f0.join(": ");
 
-      UpdateStat(category.toLower(),param.toLower(),value);
+      UpdateStat(category,param,value);
     }
   }
 }
@@ -340,14 +350,10 @@ void MainWidget::UpdateStat(const QString &category,const QString &param,
 {
   QString misc;
 
-  if(category=="metadata") {
-    /*
-    if(!value.isEmpty()) {
-      printf("%s: %s\n",(const char *)param.toUtf8(),
-	     (const char *)value.toUtf8());
-    }
-    */
-    if(param=="streamtitle") {
+  gui_stats_dialog->update(category,param,value);
+
+  if(category=="Metadata") {
+    if(param=="StreamTitle") {
       if(value.isEmpty()) {
 	gui_title_text->setText(tr("The GlassPlayer"));
       }
@@ -355,23 +361,23 @@ void MainWidget::UpdateStat(const QString &category,const QString &param,
 	gui_title_text->setText(value);
       }
     }
-    if(param=="name") {
+    if(param=="Name") {
       gui_name_text->setText(value);
       resizeEvent(NULL);
     }
-    if(param=="description") {
+    if(param=="Description") {
       gui_description_text->setText(value);
       resizeEvent(NULL);
     }
-    if(param=="channelurl") {
+    if(param=="ChannelUrl") {
       gui_channelurl_text->setText(value);
       resizeEvent(NULL);
     }
-    if(param=="genre") {
+    if(param=="Genre") {
       gui_genre_text->setText(value);
       resizeEvent(NULL);
     }
-    if(param=="streamurl") {
+    if(param=="StreamUrl") {
       GetLogo(value);
     }
   }

@@ -24,6 +24,9 @@
 #include <QLabel>
 #include <QMainWindow>
 #include <QProcess>
+#include <QPushButton>
+
+#include "statsdialog.h"
 
 #define GLASSPLAYERGUI_USAGE "[options]\n"
 
@@ -65,6 +68,8 @@ class MainWidget : public QMainWindow
   QProcess *gui_logo_process;
   QString gui_stats_buffer;
   QString gui_url;
+  StatsDialog *gui_stats_dialog;
+  QPushButton *gui_stats_button;
 };
 
 

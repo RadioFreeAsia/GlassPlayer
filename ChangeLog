@@ -202,3 +202,5 @@
 	static as well as dynamic fields.
 2016-02-12 Fred Gleason <fredg@paravelsystems.com>
 	* Implemented metadata display in glassplayergui(1).
+2016-02-12 Fred Gleason <fredg@paravelsystems.com>
+	* Added stats dialog to glassplayergui(1).
