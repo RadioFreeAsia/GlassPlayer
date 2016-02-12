@@ -59,26 +59,9 @@ class Connector : public QObject
   void setAudioBitrate(unsigned rate);
   std::vector<unsigned> *audioBitrates();
   void setAudioBitrates(std::vector<unsigned> *rates);
-  QString streamName() const;
-  void setStreamName(const QString &str);
-  QString streamDescription() const;
-  void setStreamDescription(const QString &str);
-  QString streamUrl() const;
-  void setStreamUrl(const QString &str);
-  QString streamIrc() const;
-  void setStreamIrc(const QString &str);
-  QString streamIcq() const;
-  void setStreamIcq(const QString &str);
-  QString streamAim() const;
-  void setStreamAim(const QString &str);
-  QString streamGenre() const;
-  void setStreamGenre(const QString &str);
   bool streamMetadataEnabled() const;
   void setStreamMetadataEnabled(bool state);
-  QString streamMetadata() const;
-  void setStreamMetadata(const QString &str);
-  bool streamPublic() const;
-  void setStreamPublic(bool state);
+  MetaEvent *metadataEvent();
   Codec::Type codecType() const;
   QString contentType() const;
   bool isConnected() const;
@@ -120,7 +103,8 @@ class Connector : public QObject
   void setAudioSamplerate(unsigned samprate);
   void setCodecType(Codec::Type type);
   void setConnected(bool state);
-  //  void setError(QAbstractSocket::SocketError err);
+  void setMetadataField(uint64_t bytes,MetaEvent::Field field,
+			const QVariant &value);
   virtual void connectToHostConnector()=0;
   virtual void disconnectFromHostConnector()=0;
   virtual void loadStats(QStringList *hdrs,QStringList *values,bool is_first)=0;
@@ -153,6 +137,7 @@ class Connector : public QObject
   QString conn_content_type;
   unsigned conn_audio_channels;
   unsigned conn_audio_samplerate;
+  MetaEvent conn_metadata;
 };
 
 

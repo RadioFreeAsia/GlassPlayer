@@ -23,19 +23,26 @@
 
 #include <stdint.h>
 
+#include <QString>
 #include <QVariant>
 
 class MetaEvent
 {
  public:
-  enum Field {Title=0,Url=1,LastField=2};
+  enum Field {Name=0,Description=1,Genre=2,Url=3,Irc=4,Aim=5,Icq=6,
+	      Public=7,StreamTitle=8,StreamUrl=9,LastField=10};
   MetaEvent();
   MetaEvent(const MetaEvent &e);
   QVariant field(Field f) const;
   void setField(Field f,const QVariant v);
+  bool isChanged(Field f) const;
+  bool isChanged() const;
+  void processed();
+  static QString fieldText(Field f);
 
  private:
   QVariant meta_fields[MetaEvent::LastField];
+  bool meta_changed[MetaEvent::LastField];
 };
 
 

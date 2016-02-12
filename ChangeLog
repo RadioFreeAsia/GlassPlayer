@@ -197,3 +197,6 @@
 2016-02-11 Fred Gleason <fredg@paravelsystems.com>
 	* Optimized the stats interface to send updates only when values
 	change.
+2016-02-12 Fred Gleason <fredg@paravelsystems.com>
+	* Refactored the metadata system in glassplayer(1) to include
+	static as well as dynamic fields.

@@ -170,90 +170,6 @@ void Connector::setAudioBitrates(std::vector<unsigned> *rates)
 }
 
 
-QString Connector::streamName() const
-{
-  return conn_stream_name;
-}
-
-
-void Connector::setStreamName(const QString &str)
-{
-  conn_stream_name=str;
-}
-
-
-QString Connector::streamDescription() const
-{
-  return conn_stream_description;
-}
-
-
-void Connector::setStreamDescription(const QString &str)
-{
-  conn_stream_description=str;
-}
-
-
-QString Connector::streamUrl() const
-{
-  return conn_stream_url;
-}
-
-
-void Connector::setStreamUrl(const QString &str)
-{
-  conn_stream_url=str;
-}
-
-
-QString Connector::streamIrc() const
-{
-  return conn_stream_irc;
-}
-
-
-void Connector::setStreamIrc(const QString &str)
-{
-  conn_stream_irc=str;
-}
-
-
-QString Connector::streamIcq() const
-{
-  return conn_stream_icq;
-}
-
-
-void Connector::setStreamIcq(const QString &str)
-{
-  conn_stream_icq=str;
-}
-
-
-QString Connector::streamAim() const
-{
-  return conn_stream_aim;
-}
-
-
-void Connector::setStreamAim(const QString &str)
-{
-  conn_stream_aim=str;
-}
-
-
-QString Connector::streamGenre() const
-{
-  return conn_stream_genre;
-}
-
-
-void Connector::setStreamGenre(const QString &str)
-{
-  conn_stream_genre=str;
-}
-
-
 bool Connector::streamMetadataEnabled() const
 {
   return conn_stream_metadata_enabled;
@@ -266,21 +182,9 @@ void Connector::setStreamMetadataEnabled(bool state)
 }
 
 
-QString Connector::streamMetadata() const
+MetaEvent *Connector::metadataEvent()
 {
-  return conn_stream_metadata;
-}
-
-
-bool Connector::streamPublic() const
-{
-  return conn_stream_public;
-}
-
-
-void Connector::setStreamPublic(bool state)
-{
-  conn_stream_public=state;
+  return &conn_metadata;
 }
 
 
@@ -619,6 +523,20 @@ void Connector::setConnected(bool state)
     conn_connected=state;
     conn_connected_changed=true;
     emit connected(conn_connected);
+    if(conn_connected) {
+      emit metadataReceived(0,&conn_metadata);
+    }
+  }
+}
+
+
+void Connector::setMetadataField(uint64_t bytes,MetaEvent::Field field,
+				 const QVariant &value)
+{
+  conn_metadata.setField(field,value);
+  if(conn_connected) {
+    emit metadataReceived(bytes,&conn_metadata);
+    conn_metadata.processed();
   }
 }
 

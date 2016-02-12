@@ -18,10 +18,15 @@
 //   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 //
 
+#include <QObject>
+
 #include "metaevent.h"
 
 MetaEvent::MetaEvent()
 {
+  for(unsigned i=0;i<MetaEvent::LastField;i++) {
+    meta_changed[i]=false;
+  }
 }
 
 
@@ -29,6 +34,7 @@ MetaEvent::MetaEvent(const MetaEvent &e)
 {
   for(unsigned i=0;i<MetaEvent::LastField;i++) {
     meta_fields[i]=e.meta_fields[i];
+    meta_changed[i]=e.meta_changed[i];
   }
 }
 
@@ -42,4 +48,83 @@ QVariant MetaEvent::field(MetaEvent::Field f) const
 void MetaEvent::setField(MetaEvent::Field f,const QVariant v)
 {
   meta_fields[f]=v;
+  meta_changed[f]=true;
+}
+
+
+bool MetaEvent::isChanged(MetaEvent::Field f) const
+{
+  return meta_changed[f];
+}
+
+
+bool MetaEvent::isChanged() const
+{
+  for(unsigned i=0;i<MetaEvent::LastField;i++) {
+    if(meta_changed[i]) {
+      return true;
+    }
+  }
+  return false;
+}
+
+
+void MetaEvent::processed()
+{
+  for(unsigned i=0;i<MetaEvent::LastField;i++) {
+    meta_changed[i]=false;
+  }
+}
+
+
+QString MetaEvent::fieldText(Field f)
+{
+  QString ret=QObject::tr("Unknown");
+
+  switch(f) {
+  case MetaEvent::Name:
+    ret=QObject::tr("Name");
+    break;
+
+  case MetaEvent::Description:
+    ret=QObject::tr("Description");
+    break;
+
+  case MetaEvent::Genre:
+    ret=QObject::tr("Genre");
+    break;
+
+  case MetaEvent::Url:
+    ret=QObject::tr("ChannelUrl");
+    break;
+
+  case MetaEvent::Irc:
+    ret=QObject::tr("Irc");
+    break;
+
+  case MetaEvent::Aim:
+    ret=QObject::tr("Aim");
+    break;
+
+  case MetaEvent::Icq:
+    ret=QObject::tr("Icq");
+    break;
+
+  case MetaEvent::Public:
+    ret=QObject::tr("Public");
+    break;
+
+  case MetaEvent::StreamTitle:
+    ret=QObject::tr("StreamTitle");
+    break;
+
+  case MetaEvent::StreamUrl:
+    ret=QObject::tr("StreamUrl");
+    break;
+
+  case MetaEvent::LastField:
+    break;
+  }
+
+  return ret;
 }

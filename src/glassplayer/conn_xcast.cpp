@@ -257,22 +257,22 @@ void XCast::ProcessHeader(const QString &str)
 	setAudioBitrate(value.toInt());
       }
       if(hdr=="icy-description") {
-	setStreamDescription(value);
+	setMetadataField(xcast_byte_counter,MetaEvent::Description,value);
       }
       if(hdr=="icy-genre") {
-	setStreamGenre(value);
+	setMetadataField(xcast_byte_counter,MetaEvent::Genre,value);
       }
       if(hdr=="icy-metaint") {
 	xcast_metadata_interval=value.toInt();
       }
       if(hdr=="icy-name") {
-	setStreamName(value);
+	setMetadataField(xcast_byte_counter,MetaEvent::Name,value);
       }
       if(hdr=="icy-public") {
-	setStreamPublic(value.toInt()!=0);
+	setMetadataField(xcast_byte_counter,MetaEvent::Public,value.toInt()!=0);
       }
       if(hdr=="icy-url") {
-	setStreamUrl(value);
+	setMetadataField(xcast_byte_counter,MetaEvent::Url,value);
       }
     }
   }
@@ -282,26 +282,20 @@ void XCast::ProcessHeader(const QString &str)
 void XCast::ProcessMetadata(const QByteArray &mdata)
 {
   if(mdata.length()>0) {
-    //fprintf(stderr,"METADATA: %s\n",(const char *)f0[i].toUtf8());
-    MetaEvent *e=new MetaEvent();
     QStringList f0=QString(mdata).split(";",QString::SkipEmptyParts);
     for(int i=0;i<f0.size();i++) {
       QStringList f1=f0[i].split("=");
       if(f1[0]=="StreamTitle") {
-	f1.erase(f1.begin());
 	QString title=f1.join("=");
-	e->setField(MetaEvent::Title,title.mid(1,title.length()-2));
-	continue;
+	setMetadataField(xcast_byte_counter,MetaEvent::StreamTitle,
+			 title.mid(13,title.length()-14));
       }
       if(f1[0]=="StreamUrl") {
-	f1.erase(f1.begin());
 	QString url=f1.join("=");
-	e->setField(MetaEvent::Url,url.mid(1,url.length()-2));
-	continue;
+	setMetadataField(xcast_byte_counter,MetaEvent::StreamUrl,
+			 url.mid(11,url.length()-12));
       }
     }
-    emit metadataReceived(xcast_byte_counter,e);
-    delete e;
   }
 }
 

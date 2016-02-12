@@ -295,12 +295,29 @@ void MainObject::codecFramedData(unsigned chans,unsigned samprate,
 
 void MainObject::metadataReceivedData(MetaEvent *e)
 {
+  QStringList hdrs;
+  QStringList values;
+
   sir_meta_event=*e;
-  if(!e->field(MetaEvent::Title).isNull()) {
-    Log(LOG_INFO,"Title Update: "+e->field(MetaEvent::Title).toString());
+  for(unsigned i=0;i<MetaEvent::LastField;i++) {
+    MetaEvent::Field f=(MetaEvent::Field)i;
+    if(e->isChanged(f)) {
+      if(global_log_verbose) {
+	Log(LOG_INFO,e->fieldText(f)+": "+e->field(f).toString());
+      }
+    }
+    if(sir_stats_out) {
+      hdrs.push_back("Metadata"+e->fieldText(f));
+      values.push_back(e->field(f).toString());
+    }
   }
-  if(!e->field(MetaEvent::Url).isNull()) {
-    Log(LOG_INFO,"URL Update: "+e->field(MetaEvent::Url).toString());
+  if(hdrs.size()>0) {
+    for(int i=0;i<hdrs.size();i++) {
+      printf("%s: %s\n",(const char *)hdrs[i].toUtf8(),
+	     (const char *)values[i].toUtf8());
+    }
+    printf("\n");
+    fflush(stdout);
   }
 }
 
@@ -328,14 +345,6 @@ void MainObject::statsData()
   QStringList hdrs;
   QStringList values;
 
-  if(!sir_meta_event.field(MetaEvent::Title).isNull()) {
-    hdrs.push_back("Metadata|Title");
-    values.push_back(sir_meta_event.field(MetaEvent::Title).toString());
-  }
-  if(!sir_meta_event.field(MetaEvent::Url).isNull()) {
-    hdrs.push_back("Metadata|Url");
-    values.push_back(sir_meta_event.field(MetaEvent::Url).toString());
-  }
   if(sir_connector!=NULL) {
     sir_connector->getStats(&hdrs,&values,sir_first_stats);
   }
