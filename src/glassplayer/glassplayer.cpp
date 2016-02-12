@@ -286,6 +286,7 @@ void MainObject::codecFramedData(unsigned chans,unsigned samprate,
     Log(LOG_ERR,err);
     exit(GLASS_EXIT_GENERAL_DEVICE_ERROR);
   }
+  sir_connector->startMetadata();
   if(sir_stats_out) {
     sir_stats_timer->start(2000);
   }
@@ -305,10 +306,10 @@ void MainObject::metadataReceivedData(MetaEvent *e)
       if(global_log_verbose) {
 	Log(LOG_INFO,e->fieldText(f)+": "+e->field(f).toString());
       }
-    }
-    if(sir_stats_out) {
-      hdrs.push_back("Metadata"+e->fieldText(f));
-      values.push_back(e->field(f).toString());
+      if(sir_stats_out) {
+	hdrs.push_back("Metadata|"+e->fieldText(f));
+	values.push_back(e->field(f).toString());
+      }
     }
   }
   if(hdrs.size()>0) {

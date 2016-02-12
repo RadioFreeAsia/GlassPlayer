@@ -52,6 +52,7 @@ Connector::Connector(const QString &mimetype,QObject *parent)
   conn_dropouts=0;
   conn_dropouts_changed=true;
   conn_content_type=mimetype;
+  conn_start_metadata=false;
 
   for(unsigned i=0;i<Codec::TypeLast;i++) {
     if(Codec::acceptsContentType((Codec::Type)i,mimetype)) {
@@ -179,6 +180,14 @@ bool Connector::streamMetadataEnabled() const
 void Connector::setStreamMetadataEnabled(bool state)
 {
   conn_stream_metadata_enabled=state;
+}
+
+
+void Connector::startMetadata()
+{
+  emit metadataReceived(0,&conn_metadata);
+  conn_metadata.processed();
+  conn_start_metadata=true;
 }
 
 
@@ -519,13 +528,11 @@ void Connector::setConnected(bool state)
     if(!state) {
       conn_dropouts++;
       conn_dropouts_changed=true;
+      conn_start_metadata=false;
     }
     conn_connected=state;
     conn_connected_changed=true;
     emit connected(conn_connected);
-    if(conn_connected) {
-      emit metadataReceived(0,&conn_metadata);
-    }
   }
 }
 
@@ -534,7 +541,8 @@ void Connector::setMetadataField(uint64_t bytes,MetaEvent::Field field,
 				 const QVariant &value)
 {
   conn_metadata.setField(field,value);
-  if(conn_connected) {
+
+  if(conn_start_metadata) {
     emit metadataReceived(bytes,&conn_metadata);
     conn_metadata.processed();
   }

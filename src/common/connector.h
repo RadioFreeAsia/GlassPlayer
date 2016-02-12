@@ -61,6 +61,7 @@ class Connector : public QObject
   void setAudioBitrates(std::vector<unsigned> *rates);
   bool streamMetadataEnabled() const;
   void setStreamMetadataEnabled(bool state);
+  void startMetadata();
   MetaEvent *metadataEvent();
   Codec::Type codecType() const;
   QString contentType() const;
@@ -138,6 +139,7 @@ class Connector : public QObject
   unsigned conn_audio_channels;
   unsigned conn_audio_samplerate;
   MetaEvent conn_metadata;
+  bool conn_start_metadata;
 };
 
 

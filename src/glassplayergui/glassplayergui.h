@@ -21,6 +21,7 @@
 #ifndef GLASSGUIPLAYER_H
 #define GLASSGUIPLAYER_H
 
+#include <QLabel>
 #include <QMainWindow>
 #include <QProcess>
 
@@ -38,6 +39,8 @@ class MainWidget : public QMainWindow
   void processReadyReadData();
   void processFinishedData(int exit_code,QProcess::ExitStatus status);
   void processErrorData(QProcess::ProcessError err);
+  void logoProcessFinishedData(int exit_code,QProcess::ExitStatus status);
+  void logoProcessErrorData(QProcess::ProcessError err);
 
  protected:
   void closeEvent(QCloseEvent *e);
@@ -45,7 +48,21 @@ class MainWidget : public QMainWindow
 
  private:
   void ProcessStats(const QString &str);
-  QProcess *gui_process;
+  void UpdateStat(const QString &category,const QString &param,
+		  const QString &value);
+  void GetLogo(const QString &url);
+  QLabel *gui_title_text;
+  QLabel *gui_name_label;
+  QLabel *gui_name_text;
+  QLabel *gui_description_label;
+  QLabel *gui_description_text;
+  QLabel *gui_channelurl_label;
+  QLabel *gui_channelurl_text;
+  QLabel *gui_genre_label;
+  QLabel *gui_genre_text;
+  QLabel *gui_logo_label;
+  QProcess *gui_player_process;
+  QProcess *gui_logo_process;
   QString gui_stats_buffer;
   QString gui_url;
 };
