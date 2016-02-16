@@ -219,3 +219,8 @@
 	'src/glassplayer/dev_stdout.cpp' and 'src/glassplayer/serverid.cpp'.
 	* Reworked 'src/glassplayer/serverid.cpp' so as not to rely upon
 	the presence of the 'QUrl::isLocalFile()' method.
+2016-02-16 Fred Gleason <fredg@paravelsystems.com>
+	* Added an '#include <stdlib.h>' statement in
+	'src/glassplayer/codec_fdk.cpp'.
+	* Fixed a bug in 'src/glassplayer/codec_fdk.h' that broke the
+	build under RHEL 6.

@@ -65,7 +65,7 @@ class CodecFdk : public Codec
   CStreamInfo* (*aacDecoder_GetStreamInfo)(HANDLE_AACDECODER);
   INT (*aacDecoder_GetLibInfo)(LIB_INFO *);
   HANDLE_AACDECODER fdk_decoder;
-  CStreamInfo *fdk_cinfo=NULL;
+  CStreamInfo *fdk_cinfo;
 #endif  // HAVE_FDKAAC
 };
 
