@@ -18,9 +18,10 @@
 //   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 //
 
-#include "dev_stdout.h"
-
+#include <stdlib.h>
 #include <unistd.h>
+
+#include "dev_stdout.h"
 
 DevStdout::DevStdout(Codec *codec,QObject *parent)
   : AudioDevice(codec,parent)

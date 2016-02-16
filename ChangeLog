@@ -213,3 +213,9 @@
 	* Added a 'gui' subpackage in 'glassplayer.spec.in'.
 2016-02-16 Fred Gleason <fredg@paravelsystems.com>
 	* Added a man page for glassplayergui(1).
+2016-02-16 Fred Gleason <fredg@paravelsystems.com>
+	* Added an '#include <stdlib.h>' statement in
+	'src/glassplayer/codec_null.cpp', 'src/glassplayer/dev_file.cpp',
+	'src/glassplayer/dev_stdout.cpp' and 'src/glassplayer/serverid.cpp'.
+	* Reworked 'src/glassplayer/serverid.cpp' so as not to rely upon
+	the presence of the 'QUrl::isLocalFile()' method.

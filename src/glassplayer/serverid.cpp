@@ -66,7 +66,8 @@ void ServerId::connectToServer(const QUrl &url)
       M3uPlaylist *playlist=new M3uPlaylist();
       if(playlist->parseFile(id_url)) {
 	if(playlist->segmentQuantity()>0) {
-	  if(playlist->segmentUrl(0).isLocalFile()) {
+	  if(playlist->segmentUrl(0).scheme().isEmpty()||
+	     (playlist->segmentUrl(0).scheme().toLower()=="file")) {
 	    emit typeFound(Connector::FileServer,"",playlist->segmentUrl(0));
 	  }
 	  else {
