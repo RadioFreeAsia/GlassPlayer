@@ -86,6 +86,7 @@ rm -rf $RPM_BUILD_ROOT
 %files gui
 %defattr(-,root,root)
 %{_bindir}/glassplayergui
+%{_mandir}/man1/glassplayergui.1.gz
 
 
 %changelog

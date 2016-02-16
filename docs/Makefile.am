@@ -26,12 +26,16 @@
 %.1:	%.xml
 	xsltproc $(DOCBOOK_STYLESHEETS)/manpages/docbook.xsl $<
 
-all-local:	glassplayer.1
+all-local:	glassplayer.1\
+                glassplayergui.1
 
-man_MANS = glassplayer.1
+man_MANS = glassplayer.1\
+           glassplayergui.1
 
 EXTRA_DIST = glassplayer.1\
-             glassplayer.xml
+             glassplayer.xml\
+             glassplayergui.1\
+             glassplayergui.xml
 
 CLEANFILES = *~
 DISTCLEANFILES = moc_*

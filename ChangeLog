@@ -211,3 +211,5 @@
 	* Tuned the layout of the 'Statistics' dialog.
 2016-02-16 Fred Gleason <fredg@paravelsystems.com>
 	* Added a 'gui' subpackage in 'glassplayer.spec.in'.
+2016-02-16 Fred Gleason <fredg@paravelsystems.com>
+	* Added a man page for glassplayergui(1).
