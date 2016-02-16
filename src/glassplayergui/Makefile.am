@@ -30,7 +30,9 @@ moc_%.cpp:	%.h
 
 bin_PROGRAMS = glassplayergui
 
-dist_glassplayergui_SOURCES = glassplayergui.cpp glassplayergui.h
+dist_glassplayergui_SOURCES = glassplayergui.cpp glassplayergui.h\
+                              statsdialog.cpp statsdialog.h\
+                              statspanel.cpp statspanel.h
 
 nodist_glassplayergui_SOURCES = audiodevice.cpp audiodevice.h\
                                 cmdswitch.cpp cmdswitch.h\
@@ -41,8 +43,6 @@ nodist_glassplayergui_SOURCES = audiodevice.cpp audiodevice.h\
                                 metaevent.cpp metaevent.h\
                                 moc_audiodevice.cpp\
                                 ringbuffer.cpp ringbuffer.h\
-                                statsdialog.cpp statsdialog.h\
-                                statspanel.cpp statspanel.h\
                                 moc_codec.cpp\
                                 moc_connector.cpp\
                                 moc_glassplayergui.cpp\

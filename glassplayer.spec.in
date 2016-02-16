@@ -38,6 +38,17 @@ It is controlled completely from the command-line, with no configuration
 files or GUI required.
 
 
+%package gui
+Summary: GlassPlayerGui control applet for GlassPlayer
+Group: Productivity/Multimedia/Other
+Requires: glassplayer
+
+%description gui
+GlassPlayerGui is a control applet for driving the GlassPlayer audio stream
+player.  It provides a convenient readout of all GlassPlayer statistics
+as well as displaying current stream and channel metadata.
+
+
 %prep
 
 
@@ -70,6 +81,11 @@ rm -rf $RPM_BUILD_ROOT
 %doc COPYING 
 %doc NEWS 
 %doc README 
+
+
+%files gui
+%defattr(-,root,root)
+%{_bindir}/glassplayergui
 
 
 %changelog
