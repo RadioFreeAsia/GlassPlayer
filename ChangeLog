@@ -224,3 +224,5 @@
 	'src/glassplayer/codec_fdk.cpp'.
 	* Fixed a bug in 'src/glassplayer/codec_fdk.h' that broke the
 	build under RHEL 6.
+2016-02-16 Fred Gleason <fredg@paravelsystems.com>
+	* Incremented the package version to 0.6.4.
