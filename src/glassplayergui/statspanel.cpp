@@ -31,6 +31,7 @@ StatsPanel::StatsPanel(const QString &category,QWidget *parent)
 
   stats_category_label=new QLabel(category,this);
   stats_category_label->setFont(label_font);
+  stats_category_label->setAlignment(Qt::AlignBottom|Qt::AlignLeft);
 
   stats_text=new QTextEdit(this);
 }
@@ -49,7 +50,7 @@ void StatsPanel::update(const QString &param,const QString &value)
 
   for(std::map<QString,QString>::const_iterator it=stats_values.begin();
       it!=stats_values.end();it++) {
-    text+=it->first+": "+it->second+"\n";
+    text+="<strong>"+it->first+": </strong>"+it->second+"<br>";
   }
   stats_text->setText(text);
 }
@@ -57,6 +58,6 @@ void StatsPanel::update(const QString &param,const QString &value)
 
 void StatsPanel::resizeEvent(QResizeEvent *e)
 {
-  stats_category_label->setGeometry(0,0,size().width(),20);
-  stats_text->setGeometry(0,20,size().width(),size().height()-20);
+  stats_category_label->setGeometry(10,0,size().width()-20,25);
+  stats_text->setGeometry(0,25,size().width(),size().height()-25);
 }

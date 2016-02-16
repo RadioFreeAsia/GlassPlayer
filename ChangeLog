@@ -207,3 +207,5 @@
 2016-02-16 Fred Gleason <fredg@paravelsystems.com>
 	* Modified the 'Show Stats' to toggle between showing and hiding
 	the 'Stats' dialog'.
+2016-02-16 Fred Gleason <fredg@paravelsystems.com>
+	* Tuned the layout of the 'Statistics' dialog.

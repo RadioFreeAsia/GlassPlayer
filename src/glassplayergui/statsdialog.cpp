@@ -23,12 +23,15 @@
 StatsDialog::StatsDialog(QWidget *parent)
   : QDialog(parent)
 {
+  setWindowTitle("GlassPlayer - "+tr("Stream Statistics"));
+
+  setMinimumSize(sizeHint());
 }
 
 
 QSize StatsDialog::sizeHint() const
 {
-  return QSize(400,600);
+  return QSize(400,480);
 }
 
 
