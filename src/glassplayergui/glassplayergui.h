@@ -38,6 +38,7 @@ class MainWidget : public QMainWindow
   QSize sizeHint() const;
 
  private slots:
+  void showStatsData();
   void processStart(const QString &url);
   void processReadyReadData();
   void processFinishedData(int exit_code,QProcess::ExitStatus status);

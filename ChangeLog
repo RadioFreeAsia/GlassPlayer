@@ -204,3 +204,6 @@
 	* Implemented metadata display in glassplayergui(1).
 2016-02-12 Fred Gleason <fredg@paravelsystems.com>
 	* Added stats dialog to glassplayergui(1).
+2016-02-16 Fred Gleason <fredg@paravelsystems.com>
+	* Modified the 'Show Stats' to toggle between showing and hiding
+	the 'Stats' dialog'.

@@ -111,7 +111,7 @@ MainWidget::MainWidget(QWidget *parent)
   //
   gui_stats_button=new QPushButton(tr("Show Stats"),this);
   gui_stats_button->setFont(bold_font);
-  connect(gui_stats_button,SIGNAL(clicked()),gui_stats_dialog,SLOT(show()));
+  connect(gui_stats_button,SIGNAL(clicked()),this,SLOT(showStatsData()));
 
   //
   // Logo
@@ -132,6 +132,19 @@ MainWidget::MainWidget(QWidget *parent)
 QSize MainWidget::sizeHint() const
 {
   return QSize(500,175);
+}
+
+
+void MainWidget::showStatsData()
+{
+  if(gui_stats_dialog->isVisible()) {
+    gui_stats_dialog->hide();
+    gui_stats_button->setText(tr("Show Stats"));
+  }
+  else {
+    gui_stats_dialog->show();
+    gui_stats_button->setText(tr("Hide Stats"));
+  }
 }
 
 
@@ -273,7 +286,7 @@ void MainWidget::resizeEvent(QResizeEvent *e)
     gui_name_text->show();
     gui_name_label->setGeometry(10,ypos,120,20);
     gui_name_text->setGeometry(135,ypos,size().width()-225,20);
-    ypos+=22;
+    ypos+=20;
   }
 
   if(gui_description_text->text().isEmpty()) {
@@ -285,7 +298,7 @@ void MainWidget::resizeEvent(QResizeEvent *e)
     gui_description_text->show();
     gui_description_label->setGeometry(10,ypos,120,20);
     gui_description_text->setGeometry(135,ypos,size().width()-225,20);
-    ypos+=22;
+    ypos+=20;
   }
 
   if(gui_channelurl_text->text().isEmpty()) {
@@ -297,7 +310,7 @@ void MainWidget::resizeEvent(QResizeEvent *e)
     gui_channelurl_text->show();
     gui_channelurl_label->setGeometry(10,ypos,120,20);
     gui_channelurl_text->setGeometry(135,ypos,size().width()-225,20);
-    ypos+=22;
+    ypos+=20;
   }
 
   if(gui_genre_text->text().isEmpty()) {
@@ -309,7 +322,7 @@ void MainWidget::resizeEvent(QResizeEvent *e)
     gui_genre_text->show();
     gui_genre_label->setGeometry(10,ypos,120,20);
     gui_genre_text->setGeometry(135,ypos,right,20);
-    ypos+=22;
+    ypos+=20;
   }
 
   gui_stats_button->setGeometry(10,size().height()-40,110,35);
