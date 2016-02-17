@@ -142,7 +142,7 @@ void File::loadStats(QStringList *hdrs,QStringList *values,bool is_first)
     hdrs->push_back("Connector|Type");
     values->push_back("File");
 
-    hdrs->push_back("Connector|ContentType");
+    hdrs->push_back("Connector|Content Type");
     values->push_back(contentType());
   }
 }

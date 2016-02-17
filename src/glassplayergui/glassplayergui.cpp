@@ -112,6 +112,7 @@ MainWidget::MainWidget(QWidget *parent)
   gui_stats_button=new QPushButton(tr("Show Stats"),this);
   gui_stats_button->setFont(bold_font);
   connect(gui_stats_button,SIGNAL(clicked()),this,SLOT(showStatsData()));
+  connect(gui_stats_dialog,SIGNAL(closeClicked()),this,SLOT(showStatsData()));
 
   //
   // Logo

@@ -177,7 +177,7 @@ void XCast::loadStats(QStringList *hdrs,QStringList *values,bool is_first)
       values->push_back(xcast_server);
     }
 
-    hdrs->push_back("Connector|ContentType");
+    hdrs->push_back("Connector|Content Type");
     values->push_back(xcast_content_type);
   }
 }

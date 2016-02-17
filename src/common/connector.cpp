@@ -265,11 +265,11 @@ void Connector::getStats(QStringList *hdrs,QStringList *values,bool is_first)
   }
 
   if(is_first) {
-    hdrs->push_back("Connector|Url");
+    hdrs->push_back("Connector|URL");
     values->push_back(conn_public_url.toString());
 
     if(conn_public_url.path()!=conn_server_url.path()) {
-      hdrs->push_back("Connector|InternalUrl");
+      hdrs->push_back("Connector|Internal URL");
       values->push_back(conn_server_url.toString());
     }
   }

@@ -63,7 +63,7 @@ void AudioDevice::stop()
 void AudioDevice::getStats(QStringList *hdrs,QStringList *values,bool is_first)
 {
   if(audio_play_position_changed) {
-    hdrs->push_back("Device|FramesPlayed");
+    hdrs->push_back("Device|Frames Played");
     values->push_back(QString().sprintf("%lu",audio_play_position));
     audio_play_position_changed=false;
   }
@@ -72,7 +72,7 @@ void AudioDevice::getStats(QStringList *hdrs,QStringList *values,bool is_first)
 
   unsigned space=codec()->ring()->readSpace();
   if(space!=audio_ring_read_space_prev) {
-    hdrs->push_back("Device|PLLCurrentFrames");
+    hdrs->push_back("Device|PLL Current Frames");
     values->push_back(QString().sprintf("%u",space));
     audio_ring_read_space_prev=space;
   }

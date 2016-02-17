@@ -226,3 +226,8 @@
 	build under RHEL 6.
 2016-02-16 Fred Gleason <fredg@paravelsystems.com>
 	* Incremented the package version to 0.6.4.
+2016-02-17 Fred Gleason <fredg@paravelsystems.com>
+	* Modified stat tag names to include spaces.
+	* Fixed a bug in 'src/glassplayergui/statsdialog.cpp' that caused
+	the label of the 'Show Stats' button to fail to update when the
+	dialog was closed by means of the WM-provided close button.

@@ -46,6 +46,12 @@ void StatsDialog::update(const QString &category,const QString &param,
 }
 
 
+void StatsDialog::closeEvent(QCloseEvent *e)
+{
+  emit closeClicked();
+}
+
+
 void StatsDialog::resizeEvent(QResizeEvent *e)
 {
   int count=0;

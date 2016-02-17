@@ -387,19 +387,19 @@ void DevAlsa::loadStats(QStringList *hdrs,QStringList *values,bool is_first)
     hdrs->push_back("Device|Channels");
     values->push_back(QString().sprintf("%u",alsa_channels));
 
-    hdrs->push_back("Device|SampleRate");
+    hdrs->push_back("Device|Samplerate");
     values->push_back(QString().sprintf("%u",alsa_samplerate));
 
-    hdrs->push_back("Device|BufferSize");
+    hdrs->push_back("Device|Buffer Size");
     values->push_back(QString().sprintf("%lu",alsa_buffer_size));
 
-    hdrs->push_back("Device|PeriodQuantity");
+    hdrs->push_back("Device|Period Quantity");
     values->push_back(QString().sprintf("%u",alsa_period_quantity));
   }
 
-  hdrs->push_back("Device|PllOffset");
+  hdrs->push_back("Device|PLL Offset");
   values->push_back(QString().sprintf("%8.6lf",alsa_pll_offset));
 
-  hdrs->push_back("Device|PllSetpointFrames");
+  hdrs->push_back("Device|PLL Setpoint Frames");
   values->push_back(QString().sprintf("%u",alsa_pll_setpoint_frames));
 }

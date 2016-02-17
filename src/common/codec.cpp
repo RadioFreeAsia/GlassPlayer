@@ -143,12 +143,12 @@ void Codec::getStats(QStringList *hdrs,QStringList *values,bool is_first)
     hdrs->push_back("Codec|Channels");
     values->push_back(QString().sprintf("%u",codec_channels));
 
-    hdrs->push_back("Codec|SampleRate");
+    hdrs->push_back("Codec|Samplerate");
     values->push_back(QString().sprintf("%u",codec_samplerate));
   }
 
   if(codec_bytes_processed_changed) {
-    hdrs->push_back("Codec|BytesProcessed");
+    hdrs->push_back("Codec|Bytes Processed");
     values->push_back(QString().sprintf("%lu",codec_bytes_processed));
     codec_bytes_processed_changed=false;
   }

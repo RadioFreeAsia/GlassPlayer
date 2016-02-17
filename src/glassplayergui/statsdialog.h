@@ -40,7 +40,11 @@ class StatsDialog : public QDialog
   void update(const QString &category,const QString &param,
 	      const QString &value);
 
+ signals:
+  void closeClicked();
+
  protected:
+  void closeEvent(QCloseEvent *e);
   void resizeEvent(QResizeEvent *e);
 
  private:
