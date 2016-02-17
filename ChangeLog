@@ -231,3 +231,6 @@
 	* Fixed a bug in 'src/glassplayergui/statsdialog.cpp' that caused
 	the label of the 'Show Stats' button to fail to update when the
 	dialog was closed by means of the WM-provided close button.
+2016-02-17 Fred Gleason <fredg@paravelsystems.com>
+	* Set the statistics display panels to be read-only in
+	'src/glassplayergui/statspanel.cpp'.

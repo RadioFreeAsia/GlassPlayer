@@ -34,6 +34,7 @@ StatsPanel::StatsPanel(const QString &category,QWidget *parent)
   stats_category_label->setAlignment(Qt::AlignBottom|Qt::AlignLeft);
 
   stats_text=new QTextEdit(this);
+  stats_text->setReadOnly(true);
 }
 
 
