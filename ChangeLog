@@ -234,3 +234,5 @@
 2016-02-17 Fred Gleason <fredg@paravelsystems.com>
 	* Set the statistics display panels to be read-only in
 	'src/glassplayergui/statspanel.cpp'.
+2016-02-18 Fred Gleason <fredg@paravelsystems.com>
+	* Incremented the package version to 0.6.5.
