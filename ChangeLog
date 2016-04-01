@@ -236,3 +236,5 @@
 	'src/glassplayergui/statspanel.cpp'.
 2016-02-18 Fred Gleason <fredg@paravelsystems.com>
 	* Incremented the package version to 0.6.5.
+2016-04-01 Fred Gleason <fredg@paravelsystems.com>
+	* Added support for JACK.

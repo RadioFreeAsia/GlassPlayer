@@ -61,7 +61,6 @@ AC_ARG_ENABLE(file,[  --disable-file          disable FILE sound support],
 AC_ARG_ENABLE(jack,[  --disable-jack          disable JACK sound support],
 		      [JACK_DISABLED=yes],[])
 AC_ARG_ENABLE(docbook,[  --disable-docbook       disable building of DocBook documentation],[DOCBOOK_DISABLED=yes],[])
-
 #AC_ARG_ENABLE(opus,[  --disable-opus          disable Opus support],
 #	      [OPUS_DISABLED=yes],[]) 
 
@@ -356,12 +355,12 @@ AC_MSG_NOTICE("|                       Save to File (FILE) ... No    |")
 else
 AC_MSG_NOTICE("|                       Save to File (FILE) ... Yes   |")
 fi
+if test -z $USING_JACK ; then
+AC_MSG_NOTICE("|          Jack Audio Connection Kit (JACK) ... No    |")
+else
+AC_MSG_NOTICE("|          Jack Audio Connection Kit (JACK) ... Yes   |")
+fi
 AC_MSG_NOTICE("|                  Standard Output (STDOUT) ... Yes   |")
-#if test -z $USING_JACK ; then
-#AC_MSG_NOTICE("|          Jack Audio Connection Kit (JACK) ... No    |")
-#else
-#AC_MSG_NOTICE("|          Jack Audio Connection Kit (JACK) ... Yes   |")
-#fi
 AC_MSG_NOTICE("|                                                     |")
 AC_MSG_NOTICE("| Miscellaneous:                                      |")
 if test -z $USING_DOCBOOK ; then

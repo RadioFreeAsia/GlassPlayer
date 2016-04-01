@@ -42,6 +42,7 @@ dist_glassplayer_SOURCES = audiodevicefactory.cpp audiodevicefactory.h\
                            connectorfactory.cpp connectorfactory.h\
                            dev_alsa.cpp dev_alsa.h\
                            dev_file.cpp dev_file.h\
+                           dev_jack.cpp dev_jack.h\
                            dev_stdout.cpp dev_stdout.h\
                            glassplayer.cpp glassplayer.h\
                            m3uplaylist.cpp m3uplaylist.h\
@@ -66,6 +67,7 @@ nodist_glassplayer_SOURCES = audiodevice.cpp audiodevice.h\
                              moc_connector.cpp\
                              moc_dev_alsa.cpp\
                              moc_dev_file.cpp\
+                             moc_dev_jack.cpp\
                              moc_dev_stdout.cpp\
                              moc_glassplayer.cpp\
                              moc_serverid.cpp\

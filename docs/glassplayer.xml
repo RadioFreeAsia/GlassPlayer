@@ -108,7 +108,7 @@
 	    </varlistentry>
 	  </variablelist>
 	</blockquote>
-<!--
+
 	<blockquote remap='RS'>
 	  <variablelist remap='TP'>
 	    <varlistentry>
@@ -123,7 +123,7 @@
 	    </varlistentry>
 	  </variablelist>
 	</blockquote>
--->
+
 	<blockquote remap='RS'>
 	  <variablelist remap='TP'>
 	    <varlistentry>
@@ -669,7 +669,7 @@
       </variablelist>
     </listitem>
   </varlistentry>
-<!--
+
   <varlistentry>
     <term>
       <emphasis remap='B'>The Jack Audio Connection Kit</emphasis>
@@ -701,7 +701,6 @@
       </variablelist>
     </listitem>
   </varlistentry>
--->
 
   <varlistentry>
     <term>

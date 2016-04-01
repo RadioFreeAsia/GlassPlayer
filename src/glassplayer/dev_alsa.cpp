@@ -23,10 +23,6 @@
 #include "dev_alsa.h"
 #include "logging.h"
 
-#define PLL_SETTLE_INTERVAL 100
-#define PLL_CORRECTION 0.00001
-#define PLL_CORRECTION_LIMIT 0.001
-
 void *AlsaCallback(void *ptr)
 {
 #ifdef ALSA

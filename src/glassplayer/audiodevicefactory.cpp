@@ -20,6 +20,7 @@
 
 #include "dev_alsa.h"
 #include "dev_file.h"
+#include "dev_jack.h"
 #include "dev_stdout.h"
 #include "audiodevicefactory.h"
 
@@ -44,6 +45,7 @@ AudioDevice *AudioDeviceFactory(AudioDevice::Type type,Codec *codec,QObject *par
     break;
 
   case AudioDevice::Jack:
+    audiodevice=new DevJack(codec,parent);
     break;
 
   case AudioDevice::LastType:
