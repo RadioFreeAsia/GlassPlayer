@@ -671,13 +671,13 @@
   <varlistentry>
     <term>
       <emphasis remap='B'>The Jack Audio Connection Kit</emphasis>
-      (<option>- -audio-device=</option><userinput>JACK</userinput>)
+      (<option>--audio-device=</option><userinput>JACK</userinput>)
     </term>
     <listitem>
       <variablelist>
 	<varlistentry>
 	  <term>
-	    <option>- -jack-server-name=</option><replaceable>name</replaceable>
+	    <option>--jack-server-name=</option><replaceable>name</replaceable>
 	  </term>
 	  <listitem>
 	    <para>
@@ -687,7 +687,7 @@
 	</varlistentry>
 	<varlistentry>
 	  <term>
-	    <option>- -jack-client-name=</option><replaceable>name</replaceable>
+	    <option>--jack-client-name=</option><replaceable>name</replaceable>
 	  </term>
 	  <listitem>
 	    <para>

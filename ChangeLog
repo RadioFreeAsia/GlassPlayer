@@ -241,3 +241,6 @@
 2016-04-04 Fred Gleason <fredg@paravelsystems.com>
 	* Added '--server-script-up=' and '--server-script-down=' switches
 	to glassplayer(1).
+2016-04-04 Fred Gleason <fredg@paravelsystems.com>
+	* Fixed typos in the 'DEVICE OPTIONS' section of
+	'docs/glassplayer.xml'.
