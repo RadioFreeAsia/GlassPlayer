@@ -270,20 +270,7 @@
 
     <varlistentry>
       <term>
-	<option>--stats-data</option>
-      </term>
-      <listitem>
-	<para>
-	  Output realtime operating statistics on STDOUT. Useful for 
-	  updating an external control system.
-	</para>
-      </listitem>
-    </varlistentry>
-
-<!--
-    <varlistentry>
-      <term>
-	<option>- -server-script-down=</option><replaceable>cmd</replaceable>
+	<option>--server-script-down=</option><replaceable>cmd</replaceable>
       </term>
       <listitem>
 	<para>
@@ -296,7 +283,7 @@
 
     <varlistentry>
       <term>
-	<option>- -server-script-up=</option><replaceable>cmd</replaceable>
+	<option>--server-script-up=</option><replaceable>cmd</replaceable>
       </term>
       <listitem>
 	<para>
@@ -305,7 +292,18 @@
 	</para>	
       </listitem>
     </varlistentry>
--->
+
+    <varlistentry>
+      <term>
+	<option>--stats-data</option>
+      </term>
+      <listitem>
+	<para>
+	  Output realtime operating statistics on STDOUT. Useful for 
+	  updating an external control system.
+	</para>
+      </listitem>
+    </varlistentry>
 
     <varlistentry>
       <term>

@@ -100,6 +100,14 @@ MainObject::MainObject(QObject *parent)
       list_devices=true;
       cmd->setProcessed(i,true);
     }
+    if(cmd->key(i)=="--server-script-down") {
+      sir_server_script_down=cmd->value(i);
+      cmd->setProcessed(i,true);
+    }
+    if(cmd->key(i)=="--server-script-up") {
+      sir_server_script_up=cmd->value(i);
+      cmd->setProcessed(i,true);
+    }
     if(cmd->key(i)=="--stats-out") {
       sir_stats_out=true;
       cmd->setProcessed(i,true);
@@ -237,6 +245,9 @@ void MainObject::serverConnectedData(bool state)
     connect(sir_codec,SIGNAL(framed(unsigned,unsigned,unsigned,Ringbuffer *)),
 	    this,
 	    SLOT(codecFramedData(unsigned,unsigned,unsigned,Ringbuffer *)));
+    if(!sir_server_script_up.isEmpty()) {
+      RunScript(sir_server_script_up);
+    }
   }
   else {
     sir_starvation_timer->stop();
@@ -247,6 +258,9 @@ void MainObject::serverConnectedData(bool state)
     if(sir_codec!=NULL) {
       delete sir_codec;
       sir_codec=NULL;
+    }
+    if(!sir_server_script_down.isEmpty()) {
+      RunScript(sir_server_script_down);
     }
   }
 }
@@ -368,6 +382,11 @@ void MainObject::statsData()
 void MainObject::exitData()
 {
   if(global_exiting) {
+    if((sir_connector!=NULL)&&(!sir_server_script_down.isEmpty())) {
+      if(sir_connector->isConnected()) {
+	RunScript(sir_server_script_down);
+      }
+    }
     if(sir_audio_device!=NULL) {
       sir_audio_device->stop();
       delete sir_audio_device;
@@ -409,6 +428,22 @@ void MainObject::ListDevices()
       printf("%s\n",(const char *)AudioDevice::optionKeyword((AudioDevice::Type)i).toUtf8());
     }
   }
+}
+
+
+void MainObject::RunScript(const QString &cmd)
+{
+  QStringList args;
+  QString prog;
+  QProcess *proc;
+
+  args=cmd.split(" ");
+  prog=args[0];
+  args.erase(args.begin());
+  proc=new QProcess(this);
+  proc->start(prog,args);
+  proc->waitForFinished();
+  delete proc;
 }
 
 

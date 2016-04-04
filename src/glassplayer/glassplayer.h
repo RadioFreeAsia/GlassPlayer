@@ -23,6 +23,7 @@
 #define GLASSPLAYER_H
 
 #include <QObject>
+#include <QProcess>
 #include <QTimer>
 #include <QUrl>
 
@@ -54,12 +55,15 @@ class MainObject : public QObject
  private:
   void ListCodecs();
   void ListDevices();
+  void RunScript(const QString &cmd);
   Connector::ServerType server_type;
   AudioDevice::Type audio_device_type;
   QUrl server_url;
   bool disable_stream_metadata;
   bool dump_bitstream;
   bool sir_stats_out;
+  QString sir_server_script_up;
+  QString sir_server_script_down;
   QStringList device_keys;
   QStringList device_values;
   bool list_codecs;
