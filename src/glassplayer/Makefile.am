@@ -46,6 +46,7 @@ dist_glassplayer_SOURCES = audiodevicefactory.cpp audiodevicefactory.h\
                            dev_stdout.cpp dev_stdout.h\
                            glassplayer.cpp glassplayer.h\
                            m3uplaylist.cpp m3uplaylist.h\
+                           meteraverage.cpp meteraverage.h\
                            serverid.cpp serverid.h
 
 nodist_glassplayer_SOURCES = audiodevice.cpp audiodevice.h\

@@ -29,6 +29,7 @@
 #include <QTimer>
 
 #include "audiodevice.h"
+#include "meteraverage.h"
 
 #define ALSA_DEFAULT_DEVICE "hw:0"
 #define ALSA_PERIOD_QUANTITY 4
@@ -46,6 +47,7 @@ class DevAlsa : public AudioDevice
 
  private slots:
   void playPositionData();
+  void meterData();
 
  protected:
   void loadStats(QStringList *hdrs,QStringList *values,bool is_first);
@@ -62,8 +64,8 @@ class DevAlsa : public AudioDevice
   float *alsa_pcm_buffer;
   pthread_t alsa_pthread;
   bool alsa_stopping;
-  //  MeterAverage *alsa_meter_avg[MAX_AUDIO_CHANNELS];
-  //  QTimer *alsa_meter_timer;
+  MeterAverage *alsa_meter_avg[MAX_AUDIO_CHANNELS];
+  QTimer *alsa_meter_timer;
   QTimer *alsa_play_position_timer;
   friend void *AlsaCallback(void *ptr);
   double alsa_pll_offset;

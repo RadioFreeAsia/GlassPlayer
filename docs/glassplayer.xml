@@ -254,10 +254,10 @@
 	</para>
       </listitem>
     </varlistentry>
-<!--
+
     <varlistentry>
       <term>
-	<option>- -meter-data</option>
+	<option>--meter-data</option>
       </term>
       <listitem>
 	<para>
@@ -266,7 +266,6 @@
 	</para>
       </listitem>
     </varlistentry>
--->
 
     <varlistentry>
       <term>

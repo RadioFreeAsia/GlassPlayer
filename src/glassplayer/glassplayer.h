@@ -50,6 +50,7 @@ class MainObject : public QObject
   void metadataReceivedData(MetaEvent *e);
   void starvationData();
   void statsData();
+  void meterData();
   void exitData();
 
  private:
@@ -77,6 +78,8 @@ class MainObject : public QObject
   QTimer *sir_stats_timer;
   MetaEvent sir_meta_event;
   bool sir_first_stats;
+  bool sir_meter_data;
+  QTimer *sir_meter_timer;
 };
 
 

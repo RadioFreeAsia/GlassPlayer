@@ -246,3 +246,5 @@
 	'docs/glassplayer.xml'.
 2016-04-04 Fred Gleason <fredg@paravelsystems.com>
 	* Fixed a bug in 'src/glassplayer/dev_jack.cpp' that caused xruns.
+2016-04-04 Fred Gleason <fredg@paravelsystems.com>
+	* Added a '--meter-data' switch	to glassplayer(1).

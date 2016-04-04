@@ -53,6 +53,7 @@ MainObject::MainObject(QObject *parent)
   sir_codec=NULL;
   sir_ring=NULL;
   sir_audio_device=NULL;
+  sir_meter_data=false;
   sir_server_id=NULL;
   sir_first_stats=true;
   disable_stream_metadata=false;
@@ -98,6 +99,10 @@ MainObject::MainObject(QObject *parent)
     }
     if(cmd->key(i)=="--list-devices") {
       list_devices=true;
+      cmd->setProcessed(i,true);
+    }
+    if(cmd->key(i)=="--meter-data") {
+      sir_meter_data=true;
       cmd->setProcessed(i,true);
     }
     if(cmd->key(i)=="--server-script-down") {
@@ -304,6 +309,11 @@ void MainObject::codecFramedData(unsigned chans,unsigned samprate,
   if(sir_stats_out) {
     sir_stats_timer->start(2000);
   }
+  sir_meter_timer=new QTimer(this);
+  connect(sir_meter_timer,SIGNAL(timeout()),this,SLOT(meterData()));
+  if(sir_meter_data) {
+    sir_meter_timer->start(AUDIO_METER_INTERVAL);
+  }
   sir_starvation_timer->start(1000);
 }
 
@@ -376,6 +386,24 @@ void MainObject::statsData()
   printf("\n");
   fflush(stdout);
   sir_first_stats=false;
+}
+
+
+void MainObject::meterData()
+{
+  int lvls[MAX_AUDIO_CHANNELS];
+
+  sir_audio_device->meterLevels(lvls);
+  switch(sir_codec->channels()) {
+  case 1:
+    printf("ME %04X%04X\n",lvls[0],lvls[0]);
+    break;
+
+  case 2:
+    printf("ME %04X%04X\n",lvls[0],lvls[1]);
+    break;
+  }
+  fflush(stdout);
 }
 
 

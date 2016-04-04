@@ -40,6 +40,8 @@ void *AlsaCallback(void *ptr)
   static unsigned count=0;
   static bool show_xrun=false;
   static double pll_setpoint_ratio;
+  static float lvls[MAX_AUDIO_CHANNELS];
+  static unsigned i;
 
   dev=(DevAlsa *)ptr;
   src=NULL;
@@ -150,6 +152,11 @@ void *AlsaCallback(void *ptr)
       case AudioDevice::LastFormat:
 	break;
       }
+      dev->peakLevels(lvls,pcm_s3,n,dev->codec()->channels());
+      for(i=0;i<dev->codec()->channels();i++) {
+	dev->alsa_meter_avg[i]->addValue(lvls[i]);
+      }
+      dev->setMeterLevels(lvls);
     }
   }
 
@@ -179,6 +186,12 @@ DevAlsa::DevAlsa(Codec *codec,QObject *parent)
   alsa_pcm_buffer=NULL;
   alsa_stopping=false;
 
+  for(int i=0;i<MAX_AUDIO_CHANNELS;i++) {
+    alsa_meter_avg[i]=new MeterAverage(8);
+  }
+  alsa_meter_timer=new QTimer(this);
+  connect(alsa_meter_timer,SIGNAL(timeout()),this,SLOT(meterData()));
+
   alsa_play_position_timer=new QTimer(this);
   connect(alsa_play_position_timer,SIGNAL(timeout()),
 	  this,SLOT(playPositionData()));
@@ -189,10 +202,15 @@ DevAlsa::DevAlsa(Codec *codec,QObject *parent)
 DevAlsa::~DevAlsa()
 {
   stop();
+  for(int i=0;i<MAX_AUDIO_CHANNELS;i++) {
+    delete alsa_meter_avg[i];
+  }
+  delete alsa_meter_timer;
   if(alsa_pcm_buffer!=NULL) {
     delete alsa_pcm_buffer;
   }
   delete alsa_play_position_timer;
+
 }
 
 
@@ -350,6 +368,7 @@ bool DevAlsa::start(QString *err)
   //  alsa_meter_timer->start(AUDIO_METER_INTERVAL);
 
   alsa_play_position_timer->start(50);
+  alsa_meter_timer->start(AUDIO_METER_INTERVAL);
 
   return true;
 #else
@@ -368,6 +387,17 @@ void DevAlsa::stop()
 void DevAlsa::playPositionData()
 {
   updatePlayPosition(alsa_play_position);
+}
+
+
+void DevAlsa::meterData()
+{
+  float lvls[MAX_AUDIO_CHANNELS];
+
+  for(unsigned i=0;i<codec()->channels();i++) {
+    lvls[i]=alsa_meter_avg[i]->average();
+  }
+  setMeterLevels(lvls);
 }
 
 
