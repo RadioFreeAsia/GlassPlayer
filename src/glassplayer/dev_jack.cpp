@@ -100,11 +100,10 @@ int JackProcess(jack_nframes_t nframes, void *arg)
     //
     dev->jack_data.data_in=pcm_s1;
     dev->jack_data.input_frames=n;
-    dev->jack_data.data_out=pcm_s2+pcm_start;
+    dev->jack_data.data_out=pcm_s2+pcm_start*dev->codec()->channels();
     dev->jack_data.output_frames=
       MAX_AUDIO_CHANNELS*RINGBUFFER_SIZE/dev->codec()->channels()-pcm_start;
     dev->jack_play_position+=n;
-    //    printf("N1: %u  ",n);
     if((err=src_process(dev->jack_src,&dev->jack_data))<0) {
       fprintf(stderr,"SRC processing error [%s]\n",src_strerror(err));
       exit(GLASS_EXIT_SRC_ERROR);
@@ -137,18 +136,12 @@ int JackProcess(jack_nframes_t nframes, void *arg)
     else {
       pcm_start=0;
     }
-    if(pcm_start>1) {
-      pcm_offset=-1;
+    if(pcm_start<2) {
+      pcm_offset=1;
     }
     else {
-      if(pcm_start<1) {
-	pcm_offset=1;
-      }
-      else {
-	pcm_offset=0;
-      }
+      pcm_offset=0;
     }
-    //    printf("N2: %u  OFFSET: %d  START: %u\n",n,pcm_offset,pcm_start);
   }
 
   return 0;
@@ -300,6 +293,7 @@ bool DevJack::start(QString *err)
     fprintf(stderr,"SRC initialization error [%s]\n",src_strerror(srcerr));
     exit(GLASS_EXIT_SRC_ERROR);
   }
+  jack_play_position=0;
   jack_pll_setpoint_frames=0;
   jack_pll_offset=0.0;
 
@@ -325,6 +319,9 @@ void DevJack::loadStats(QStringList *hdrs,QStringList *values,bool is_first)
     hdrs->push_back("Device|Buffer Size");
     values->push_back(QString().sprintf("%u",jack_buffer_size));
   }
+  hdrs->push_back("Device|Frames Played");
+  values->push_back(QString().sprintf("%lu",jack_play_position));
+
   hdrs->push_back("Device|PLL Offset");
   values->push_back(QString().sprintf("%8.6lf",jack_pll_offset));
 
