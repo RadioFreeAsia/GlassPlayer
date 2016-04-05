@@ -30,6 +30,7 @@
 #include <QTimer>
 
 #include "audiodevice.h"
+#include "meteraverage.h"
 
 #define DEFAULT_JACK_CLIENT_NAME "glassplayer"
 
@@ -45,6 +46,9 @@ class DevJack : public AudioDevice
   bool start(QString *err);
   void loadStats(QStringList *hdrs,QStringList *values,bool is_first);
 
+ private slots:
+  void meterData();
+
  private:
 #ifdef JACK
   QString jack_server_name;
@@ -53,7 +57,7 @@ class DevJack : public AudioDevice
   jack_nframes_t jack_jack_sample_rate;
   jack_nframes_t jack_buffer_size;
   jack_port_t *jack_jack_ports[MAX_AUDIO_CHANNELS];
-  //  MeterAverage *jack_meter_avg[MAX_AUDIO_CHANNELS];
+  MeterAverage *jack_meter_avg[MAX_AUDIO_CHANNELS];
   QTimer *jack_meter_timer;
   friend int JackBufferSizeChanged(jack_nframes_t frames, void *arg);
   friend int JackProcess(jack_nframes_t nframes, void *arg);

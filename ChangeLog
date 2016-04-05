@@ -250,3 +250,6 @@
 	* Added a '--meter-data' switch	to glassplayer(1).
 2016-04-05 Fred Gleason <fredg@paravelsystems.com>
 	* Added level meters to glassplayergui(1).
+2016-04-05 Fred Gleason <fredg@paravelsystems.com>
+	* Implemented support for the '--meter-data' switch for JACK
+	devices.

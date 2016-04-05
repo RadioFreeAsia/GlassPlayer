@@ -51,7 +51,7 @@ int JackProcess(jack_nframes_t nframes, void *arg)
   static int err;
   static unsigned pcm_start=0;
   static int pcm_offset=0;
-  //  static float lvls[MAX_AUDIO_CHANNELS];
+  static float lvls[MAX_AUDIO_CHANNELS];
 
   //
   // Wait for PCM Buffer to Fill
@@ -111,7 +111,7 @@ int JackProcess(jack_nframes_t nframes, void *arg)
     n=dev->jack_data.output_frames_gen+pcm_start;
 
     //
-    // De-interleave Channels
+    // De-interleave Channels and Write to Jack Buffers
     //
     for(i=0;i<dev->codec()->channels();i++) {
       if(jack_cb_buffers[i]!=NULL) {
@@ -120,6 +120,15 @@ int JackProcess(jack_nframes_t nframes, void *arg)
 	}
       }
     }
+
+    //
+    // Update Meters
+    //
+    dev->peakLevels(lvls,pcm_s2,nframes,dev->codec()->channels());
+    for(i=0;i<dev->codec()->channels();i++) {
+      dev->jack_meter_avg[i]->addValue(lvls[i]);
+    }
+    dev->setMeterLevels(lvls);
 
     //
     // Move left-overs to start of buffer
@@ -156,6 +165,15 @@ DevJack::DevJack(Codec *codec,QObject *parent)
   jack_server_name="";
   jack_client_name=DEFAULT_JACK_CLIENT_NAME;
   jack_started=false;
+
+  //
+  // Metering
+  //
+  for(int i=0;i<MAX_AUDIO_CHANNELS;i++) {
+    jack_meter_avg[i]=new MeterAverage(8);
+  }
+  jack_meter_timer=new QTimer(this);
+  connect(jack_meter_timer,SIGNAL(timeout()),this,SLOT(meterData()));
 #endif  // JACK
 }
 
@@ -297,6 +315,8 @@ bool DevJack::start(QString *err)
   jack_pll_setpoint_frames=0;
   jack_pll_offset=0.0;
 
+  jack_meter_timer->start(AUDIO_METER_INTERVAL);
+
   return true;
 
 #endif  // JACK
@@ -327,4 +347,15 @@ void DevJack::loadStats(QStringList *hdrs,QStringList *values,bool is_first)
 
   hdrs->push_back("Device|PLL Setpoint Frames");
   values->push_back(QString().sprintf("%u",jack_pll_setpoint_frames));
+}
+
+
+void DevJack::meterData()
+{
+  float lvls[MAX_AUDIO_CHANNELS];
+
+  for(unsigned i=0;i<codec()->channels();i++) {
+    lvls[i]=jack_meter_avg[i]->average();
+  }
+  setMeterLevels(lvls);
 }
