@@ -253,3 +253,6 @@
 2016-04-05 Fred Gleason <fredg@paravelsystems.com>
 	* Implemented support for the '--meter-data' switch for JACK
 	devices.
+2016-04-05 Fred Gleason <fredg@paravelsystems.com>
+	* Fixed a bug in 'src/glassplayer/glassplayer.cpp' that caused
+	invalid meter levels to be emitted.

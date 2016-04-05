@@ -396,11 +396,11 @@ void MainObject::meterData()
   sir_audio_device->meterLevels(lvls);
   switch(sir_codec->channels()) {
   case 1:
-    printf("ME %04X%04X\n",lvls[0],lvls[0]);
+    printf("ME %04X%04X\n",0xFFFF&lvls[0],0xFFFF&lvls[0]);
     break;
 
   case 2:
-    printf("ME %04X%04X\n",lvls[0],lvls[1]);
+    printf("ME %04X%04X\n",0xFFFF&lvls[0],0xFFFF&lvls[1]);
     break;
   }
   fflush(stdout);
