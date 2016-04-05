@@ -47,6 +47,7 @@ class DevJack : public AudioDevice
   void loadStats(QStringList *hdrs,QStringList *values,bool is_first);
 
  private slots:
+  void playPositionData();
   void meterData();
 
  private:
@@ -67,6 +68,7 @@ class DevJack : public AudioDevice
   double jack_pll_setpoint_ratio;
   unsigned jack_pll_setpoint_frames;
   uint64_t jack_play_position;
+  QTimer *jack_play_position_timer;
   bool jack_started;
 #endif  // JACK
 };

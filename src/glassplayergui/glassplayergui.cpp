@@ -383,8 +383,6 @@ void MainWidget::ProcessStats(const QStringList &stats)
 
 void MainWidget::ProcessMeterUpdates(const QString &values)
 {
-  printf("%s\n",(const char *)values.toUtf8());
-
   int level;
   bool ok=false;
 

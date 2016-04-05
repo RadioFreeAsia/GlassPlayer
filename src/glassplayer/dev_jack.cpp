@@ -174,6 +174,10 @@ DevJack::DevJack(Codec *codec,QObject *parent)
   }
   jack_meter_timer=new QTimer(this);
   connect(jack_meter_timer,SIGNAL(timeout()),this,SLOT(meterData()));
+
+  jack_play_position_timer=new QTimer(this);
+  connect(jack_play_position_timer,SIGNAL(timeout()),
+	  this,SLOT(playPositionData()));
 #endif  // JACK
 }
 
@@ -192,7 +196,6 @@ bool DevJack::isAvailable() const
 bool DevJack::processOptions(QString *err,const QStringList &keys,
 			     const QStringList &values)
 {
-  printf("JACK\n");
 #ifdef JACK
   for(int i=0;i<keys.size();i++) {
     bool processed=false;
@@ -315,6 +318,7 @@ bool DevJack::start(QString *err)
   jack_pll_setpoint_frames=0;
   jack_pll_offset=0.0;
 
+  jack_play_position_timer->start(50);
   jack_meter_timer->start(AUDIO_METER_INTERVAL);
 
   return true;
@@ -347,6 +351,12 @@ void DevJack::loadStats(QStringList *hdrs,QStringList *values,bool is_first)
 
   hdrs->push_back("Device|PLL Setpoint Frames");
   values->push_back(QString().sprintf("%u",jack_pll_setpoint_frames));
+}
+
+
+void DevJack::playPositionData()
+{
+  updatePlayPosition(jack_play_position);
 }
 
 
