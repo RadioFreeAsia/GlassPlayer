@@ -25,7 +25,10 @@
 #include <QMainWindow>
 #include <QProcess>
 #include <QPushButton>
+#include <QStringList>
 
+#include "glasslimits.h"
+#include "playmeter.h"
 #include "statsdialog.h"
 
 #define GLASSPLAYERGUI_USAGE "[options]\n"
@@ -51,7 +54,8 @@ class MainWidget : public QMainWindow
   void resizeEvent(QResizeEvent *e);
 
  private:
-  void ProcessStats(const QString &str);
+  void ProcessStats(const QStringList &stats);
+  void ProcessMeterUpdates(const QString &values);
   void UpdateStat(const QString &category,const QString &param,
 		  const QString &value);
   void GetLogo(const QString &url);
@@ -67,8 +71,9 @@ class MainWidget : public QMainWindow
   QLabel *gui_logo_label;
   QProcess *gui_player_process;
   QProcess *gui_logo_process;
-  QString gui_stats_buffer;
+  QStringList gui_stats_list;
   QString gui_url;
+  PlayMeter *gui_meters[MAX_AUDIO_CHANNELS];
   StatsDialog *gui_stats_dialog;
   QPushButton *gui_stats_button;
 };

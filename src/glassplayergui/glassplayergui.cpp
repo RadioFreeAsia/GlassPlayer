@@ -22,7 +22,6 @@
 #include <QCloseEvent>
 #include <QMessageBox>
 #include <QPixmap>
-#include <QStringList>
 
 #include "cmdswitch.h"
 #include "connector.h"
@@ -121,6 +120,19 @@ MainWidget::MainWidget(QWidget *parent)
   gui_logo_label->setAlignment(Qt::AlignCenter);
   gui_logo_label->setScaledContents(true);
 
+  //
+  // Meters
+  //
+  for(int i=0;i<MAX_AUDIO_CHANNELS;i++) {
+    gui_meters[i]=new PlayMeter(SegMeter::Up,this);
+    gui_meters[i]->setRange(-3000,0);
+    gui_meters[i]->setHighThreshold(-800);
+    gui_meters[i]->setClipThreshold(-100);
+    gui_meters[i]->setMode(SegMeter::Peak);
+  }
+  gui_meters[0]->setLabel(tr("L"));
+  gui_meters[1]->setLabel(tr("R"));
+
   if(!gui_url.isEmpty()) {
     processStart(gui_url);
   }
@@ -132,7 +144,7 @@ MainWidget::MainWidget(QWidget *parent)
 
 QSize MainWidget::sizeHint() const
 {
-  return QSize(500,175);
+  return QSize(540,175);
 }
 
 
@@ -153,6 +165,7 @@ void MainWidget::processStart(const QString &url)
 {
   QStringList args;
 
+  args.push_back("--meter-data");
   args.push_back("--stats-out");
   args.push_back(url);
   if(gui_player_process!=NULL) {
@@ -172,18 +185,25 @@ void MainWidget::processStart(const QString &url)
 
 void MainWidget::processReadyReadData()
 {
-  QByteArray data;
-  int ptr=-1;
+  QString line;
+  QStringList f0;
 
-  while(gui_player_process->bytesAvailable()>0) {
-    data=gui_player_process->read(1024);
-    QString line(data);
-    if((ptr=line.indexOf("\n\n"))>=0) {
-      ProcessStats(gui_stats_buffer+line.left(ptr+1));
-      gui_stats_buffer=line.right(line.length()-ptr-2);
+  while(gui_player_process->canReadLine()) {
+    line=gui_player_process->readLine().trimmed();
+    if(line.isEmpty()) {
+      ProcessStats(gui_stats_list);
+      gui_stats_list.clear();
     }
     else {
-      gui_stats_buffer+=line;
+      f0=line.split(" ");
+      if(f0[0]=="ME") {
+	if(f0.size()==2) {
+	  ProcessMeterUpdates(f0[1]);
+	}
+      }
+      else {
+	gui_stats_list.push_back(line);
+      }
     }
   }
 }
@@ -329,22 +349,24 @@ void MainWidget::resizeEvent(QResizeEvent *e)
   gui_stats_button->setGeometry(10,size().height()-40,110,35);
 
   gui_logo_label->
-    setGeometry(size().width()-edge-10,size().height()-edge-10,edge,edge);
+    setGeometry(size().width()-edge-MAX_AUDIO_CHANNELS*10-15,size().height()-edge-10,edge,edge);
+
+  for(int i=0;i<MAX_AUDIO_CHANNELS;i++) {
+    gui_meters[i]->setGeometry(size().width()-10*(MAX_AUDIO_CHANNELS-i)-10,
+			       30,10,size().height()-40);
+  }
 }
 
 
-void MainWidget::ProcessStats(const QString &str)
+void MainWidget::ProcessStats(const QStringList &stats)
 {
-  //    printf("STATS: %s\n",(const char *)str.toUtf8());
-
   QString category;
   QString param;
   QString value;
 
-  QStringList lines=str.split("\n",QString::KeepEmptyParts);
-  for(int i=0;i<lines.size();i++) {
-    if(!lines[i].isEmpty()) {
-      QStringList f0=lines[i].split(": ");
+  for(int i=0;i<stats.size();i++) {
+    if(!stats[i].isEmpty()) {
+      QStringList f0=stats[i].split(": ");
       QStringList f1=f0[0].split("|",QString::KeepEmptyParts);
       category=f1[0];
       if(f1.size()==2) {
@@ -355,6 +377,24 @@ void MainWidget::ProcessStats(const QString &str)
 
       UpdateStat(category,param,value);
     }
+  }
+}
+
+
+void MainWidget::ProcessMeterUpdates(const QString &values)
+{
+  printf("%s\n",(const char *)values.toUtf8());
+
+  int level;
+  bool ok=false;
+
+  level=values.left(4).toInt(&ok,16);
+  if(ok) {
+    gui_meters[0]->setPeakBar(-level);
+  }
+  level=values.right(4).toInt(&ok,16);
+  if(ok) {
+    gui_meters[1]->setPeakBar(-level);
   }
 }
 

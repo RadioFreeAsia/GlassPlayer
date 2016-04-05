@@ -248,3 +248,5 @@
 	* Fixed a bug in 'src/glassplayer/dev_jack.cpp' that caused xruns.
 2016-04-04 Fred Gleason <fredg@paravelsystems.com>
 	* Added a '--meter-data' switch	to glassplayer(1).
+2016-04-05 Fred Gleason <fredg@paravelsystems.com>
+	* Added level meters to glassplayergui(1).
