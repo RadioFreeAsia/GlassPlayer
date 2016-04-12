@@ -256,6 +256,7 @@ void MainObject::serverConnectedData(bool state)
   }
   else {
     sir_starvation_timer->stop();
+    sir_meter_timer->stop();
     if(sir_audio_device!=NULL) {
       delete sir_audio_device;
       sir_audio_device=NULL;

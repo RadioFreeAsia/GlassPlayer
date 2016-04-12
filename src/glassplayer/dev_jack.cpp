@@ -41,9 +41,9 @@ int JackBufferSizeChanged(jack_nframes_t frames,void *arg)
 
 int JackProcess(jack_nframes_t nframes, void *arg)
 {
+  DevJack *dev=(DevJack *)arg;
   static unsigned i;
   static jack_nframes_t j;
-  static DevJack *dev=(DevJack *)arg;
   static float pcm_s1[MAX_AUDIO_CHANNELS*RINGBUFFER_SIZE];
   static float pcm_s2[MAX_AUDIO_CHANNELS*RINGBUFFER_SIZE];
   static unsigned ring_frames;
@@ -162,6 +162,8 @@ DevJack::DevJack(Codec *codec,QObject *parent)
   : AudioDevice(codec,parent)
 {
 #ifdef JACK
+  jack_jack_client=NULL;
+  jack_src=NULL;
   jack_server_name="";
   jack_client_name=DEFAULT_JACK_CLIENT_NAME;
   jack_started=false;
@@ -184,6 +186,21 @@ DevJack::DevJack(Codec *codec,QObject *parent)
 
 DevJack::~DevJack()
 {
+#ifdef JACK
+  if(jack_jack_client!=NULL) {
+    jack_deactivate(jack_jack_client);
+    jack_client_close(jack_jack_client);
+  }
+  delete jack_play_position_timer;
+  delete jack_meter_timer;
+  for(int i=0;i<MAX_AUDIO_CHANNELS;i++) {
+    delete jack_meter_avg[i];
+  }
+  if(jack_src!=NULL) {
+    src_delete(jack_src);
+  }
+  
+#endif  // JACK
 }
 
 
@@ -275,6 +292,7 @@ bool DevJack::start(QString *err)
       *err=tr("JACK general failure");
     }
     *err=tr("no connection to JACK server");
+  printf("~DevJack::start() Ends FALSE 1\n");
     return false;
   }
   jack_set_buffer_size_callback(jack_jack_client,JackBufferSizeChanged,this);
@@ -285,6 +303,7 @@ bool DevJack::start(QString *err)
   //
   if(jack_activate(jack_jack_client)) {
     *err=tr("unable to join JACK graph");
+  printf("~DevJack::start() Ends FALSE 2\n");
     return false;
   }
   jack_jack_sample_rate=jack_get_sample_rate(jack_jack_client);

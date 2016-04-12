@@ -258,3 +258,6 @@
 	invalid meter levels to be emitted.
 2016-04-05 Fred Gleason <fredg@paravelsystems.com>
 	* Implemented metadata updates for JACK devices.
+2016-04-12 Fred Gleason <fredg@paravelsystems.com>
+	* Fixed a bug in 'src/glassplayer/dev_jack.cpp' that threw segfaults
+	when recovering from a dropped server connection.
