@@ -264,3 +264,5 @@
 2016-05-02 Fred Gleason <fredg@paravelsystems.com>
 	* Fixed bugs in 'glassplayer/dev_jack.cpp' and
 	'glassplayer/dev_jack.h' that broke the build on RHEL 6.
+2016-05-02 Fred Gleason <fredg@paravelsystems.com>
+	* Incremented the package version to 0.6.6.
