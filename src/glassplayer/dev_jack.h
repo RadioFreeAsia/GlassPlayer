@@ -62,7 +62,7 @@ class DevJack : public AudioDevice
   QTimer *jack_meter_timer;
   friend int JackBufferSizeChanged(jack_nframes_t frames, void *arg);
   friend int JackProcess(jack_nframes_t nframes, void *arg);
-  SRC_STATE *jack_src=NULL;
+  SRC_STATE *jack_src;
   SRC_DATA jack_data;
   double jack_pll_offset;
   double jack_pll_setpoint_ratio;

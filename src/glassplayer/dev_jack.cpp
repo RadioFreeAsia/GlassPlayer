@@ -19,6 +19,7 @@
 //
 
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "dev_jack.h"
 #include "logging.h"

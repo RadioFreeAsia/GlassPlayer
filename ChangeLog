@@ -261,3 +261,6 @@
 2016-04-12 Fred Gleason <fredg@paravelsystems.com>
 	* Fixed a bug in 'src/glassplayer/dev_jack.cpp' that threw segfaults
 	when recovering from a dropped server connection.
+2016-05-02 Fred Gleason <fredg@paravelsystems.com>
+	* Fixed bugs in 'glassplayer/dev_jack.cpp' and
+	'glassplayer/dev_jack.h' that broke the build on RHEL 6.
