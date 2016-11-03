@@ -54,9 +54,10 @@ ServerId::~ServerId()
 }
 
 
-void ServerId::connectToServer(const QUrl &url)
+void ServerId::connectToServer(const QUrl &url,const QString &post_data)
 {
   id_url=url;
+  id_post_data=post_data;
   if(id_url.path().isEmpty()) {
     id_url.setPath("/");
   }
@@ -101,13 +102,21 @@ void ServerId::connectedData()
   id_location="";
   id_restarting=false;
   id_icy=false;
-  SendHeader("GET "+id_url.path()+" HTTP/1.1");
+  if(id_post_data.isEmpty()) {
+    SendHeader("GET "+id_url.path()+" HTTP/1.1");
+  }
+  else {
+    SendHeader("POST "+id_url.path()+" HTTP/1.1");
+  }
   SendHeader("Host: "+id_url.host()+":"+QString().sprintf("%u",id_url.port(80)));
   SendHeader("Accept: */*");
   SendHeader("User-Agent: glassplayer/"+QString(VERSION));
   SendHeader("Cache-control: no-cache");
   SendHeader("Connection: close");
+  SendHeader(QString().sprintf("Content-Length: %d",id_post_data.toUtf8().length()));
   SendHeader("");
+  //  printf("POST: %s\n",(const char *)id_post_data.toUtf8());
+  id_socket->write(id_post_data.toUtf8(),id_post_data.toUtf8().length());
 }
 
 

@@ -40,10 +40,12 @@ class Connector : public QObject
 {
   Q_OBJECT;
  public:
-  enum ServerType {XCastServer=1,HlsServer=2,FileServer=3,LastServer=4};
+  enum ServerType {XCastServer=1,HlsServer=2,FileServer=3,LastServer=5};
   Connector(const QString &mimetype,QObject *parent=0);
   ~Connector();
   virtual Connector::ServerType serverType() const=0;
+  QString postData() const;
+  void setPostData(const QString &str);
   QString serverUsername() const;
   void setServerUsername(const QString &str);
   QString serverPassword() const;
@@ -115,6 +117,7 @@ class Connector : public QObject
   QString conn_server_password;
   QUrl conn_server_url;
   QUrl conn_public_url;
+  QString conn_post_data;
   std::vector<unsigned> conn_audio_bitrates;
   QString conn_stream_name;
   QString conn_stream_description;

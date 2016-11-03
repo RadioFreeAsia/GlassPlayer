@@ -105,6 +105,10 @@ MainObject::MainObject(QObject *parent)
       sir_meter_data=true;
       cmd->setProcessed(i,true);
     }
+    if(cmd->key(i)=="--post-data") {
+      post_data=cmd->value(i);
+      cmd->setProcessed(i,true);
+    }
     if(cmd->key(i)=="--server-script-down") {
       sir_server_script_down=cmd->value(i);
       cmd->setProcessed(i,true);
@@ -199,7 +203,7 @@ MainObject::MainObject(QObject *parent)
 	  this,
 	  SLOT(serverTypeFoundData(Connector::ServerType,const QString &,
 				   const QUrl &)));
-  sir_server_id->connectToServer(server_url);
+  sir_server_id->connectToServer(server_url,post_data);
 }
 
 

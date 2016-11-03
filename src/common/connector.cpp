@@ -67,6 +67,18 @@ Connector::~Connector()
 }
 
 
+QString Connector::postData() const
+{
+  return conn_post_data;
+}
+
+
+void Connector::setPostData(const QString &str)
+{
+  conn_post_data=str;
+}
+
+
 QString Connector::serverUsername() const
 {
   return conn_server_username;

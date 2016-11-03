@@ -266,3 +266,7 @@
 	'glassplayer/dev_jack.h' that broke the build on RHEL 6.
 2016-05-02 Fred Gleason <fredg@paravelsystems.com>
 	* Incremented the package version to 0.6.6.
+2016-11-03 Fred Gleason <fredg@paravelsystems.com>
+	* Added the 'audio/x-mpeg' mimetype to the Codec::TypeMpeg1 codec
+	in 'src/common/codec.cpp'.
+	* Implemented a '--post-data=' parameter in glassplayer(1).

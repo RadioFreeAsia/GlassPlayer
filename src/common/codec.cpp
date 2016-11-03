@@ -168,7 +168,8 @@ bool Codec::acceptsContentType(Type type,const QString &mimetype)
     break;
 
   case Codec::TypeMpeg1:
-    ret=(mime=="audio/mpeg")||(mime=="audio/mpeg3")||(mime=="audio/x-mpeg3");
+    ret=(mime=="audio/mpeg")||(mime=="audio/mpeg3")||(mime=="audio/x-mpeg3")||
+      (mime=="audio/x-mpeg");
     break;
  
   case Codec::TypeVorbis:

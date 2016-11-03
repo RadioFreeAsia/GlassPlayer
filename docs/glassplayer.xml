@@ -269,6 +269,18 @@
 
     <varlistentry>
       <term>
+	<option>--post-data=</option><replaceable>data</replaceable>
+      </term>
+      <listitem>
+	<para>
+	  Connect to the specified URL using the POST method (rather than
+	  GET) and then send <replaceable>data</replaceable>.
+	</para>
+      </listitem>
+    </varlistentry>
+
+    <varlistentry>
+      <term>
 	<option>--server-script-down=</option><replaceable>cmd</replaceable>
       </term>
       <listitem>

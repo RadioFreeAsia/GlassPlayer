@@ -62,6 +62,7 @@ class MainObject : public QObject
   QUrl server_url;
   bool disable_stream_metadata;
   bool dump_bitstream;
+  QString post_data;
   bool sir_stats_out;
   QString sir_server_script_up;
   QString sir_server_script_down;
