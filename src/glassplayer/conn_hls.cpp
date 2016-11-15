@@ -136,6 +136,10 @@ void Hls::indexProcessStartData()
 
   args.push_back("-D");
   args.push_back("-");
+  if((!serverUsername().isEmpty())||(!serverPassword().isEmpty())) {
+    args.push_back("--user");
+    args.push_back(serverUsername()+":"+serverPassword());
+  }
   args.push_back(serverUrl().toString());
   if(hls_index_process!=NULL) {
     delete hls_index_process;
@@ -210,6 +214,10 @@ void Hls::mediaProcessStartData()
   if(segno<hls_index_playlist->segmentQuantity()) {
     hls_current_media_segment=hls_index_playlist->segmentUrl(segno);
     QStringList args;
+    if((!serverUsername().isEmpty())||(!serverPassword().isEmpty())) {
+      args.push_back("--user");
+      args.push_back(serverUsername()+":"+serverPassword());
+    }
     args.push_back(hls_current_media_segment.toString());
     if(hls_media_process!=NULL) {
       delete hls_media_process;

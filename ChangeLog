@@ -273,3 +273,6 @@
 2016-11-15 Fred Gleason <fredg@paravelsystems.com>
 	* Implemented authentication support for Shoutcast and Icecast
 	servers in 'src/glassplayer/conn_xcast.cpp'.
+2016-11-15 Fred Gleason <fredg@paravelsystems.com>
+	* Implemented authentication support for HLS servers in
+	'src/glassplayer/conn_hls.cpp'.
