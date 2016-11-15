@@ -54,10 +54,13 @@ ServerId::~ServerId()
 }
 
 
-void ServerId::connectToServer(const QUrl &url,const QString &post_data)
+void ServerId::connectToServer(const QUrl &url,const QString &post_data,
+			       const QString &username,const QString &passwd)
 {
   id_url=url;
   id_post_data=post_data;
+  id_username=username;
+  id_password=passwd;
   if(id_url.path().isEmpty()) {
     id_url.setPath("/");
   }
@@ -114,6 +117,10 @@ void ServerId::connectedData()
   SendHeader("Cache-control: no-cache");
   SendHeader("Connection: close");
   SendHeader(QString().sprintf("Content-Length: %d",id_post_data.toUtf8().length()));
+  if((!id_username.isEmpty())||(!id_password.isEmpty())) {
+    SendHeader("Authorization: basic "+
+	       Connector::base64Encode(id_username+":"+id_password));
+  }
   SendHeader("");
   //  printf("POST: %s\n",(const char *)id_post_data.toUtf8());
   id_socket->write(id_post_data.toUtf8(),id_post_data.toUtf8().length());

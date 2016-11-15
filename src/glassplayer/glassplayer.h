@@ -66,6 +66,8 @@ class MainObject : public QObject
   bool sir_stats_out;
   QString sir_server_script_up;
   QString sir_server_script_down;
+  QString sir_user;
+  QString sir_password;
   QStringList device_keys;
   QStringList device_values;
   bool list_codecs;

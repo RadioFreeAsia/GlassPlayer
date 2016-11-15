@@ -88,7 +88,12 @@ void XCast::connectedData()
   xcast_metadata_counter=0;
   xcast_byte_counter=0;
   xcast_is_shoutcast=false;
-  SendHeader("GET "+serverMountpoint()+" HTTP/1.1");
+  if(postData().isEmpty()) {
+    SendHeader("GET "+serverMountpoint()+" HTTP/1.1");
+  }
+  else {
+    SendHeader("POST "+serverMountpoint()+" HTTP/1.1");
+  }
   SendHeader("Host: "+serverUrl().host()+":"+
 	     QString().sprintf("%u",serverUrl().port(80)));
   SendHeader(QString().sprintf("icy-metadata: %d",streamMetadataEnabled()));
@@ -96,7 +101,18 @@ void XCast::connectedData()
   SendHeader("User-Agent: glassplayer/"+QString(VERSION));
   SendHeader("Cache-control: no-cache");
   SendHeader("Connection: close");
+  if((!serverUsername().isEmpty())||(!serverPassword().isEmpty())) {
+    SendHeader("Authorization: basic "+
+	       Connector::base64Encode(serverUsername()+":"+serverPassword()));
+  }
+  if(!postData().isEmpty()) {
+    SendHeader(QString().sprintf("Content-length: %d",postData().toUtf8().
+				 length()));
+  }
   SendHeader("");
+  if(!postData().isEmpty()) {
+    xcast_socket->write(postData().toUtf8());
+  }
 }
 
 
@@ -264,6 +280,7 @@ void XCast::ProcessHeader(const QString &str)
       }
       if(hdr=="icy-metaint") {
 	xcast_metadata_interval=value.toInt();
+	printf("metaint: %d\n",value.toInt());
       }
       if(hdr=="icy-name") {
 	setMetadataField(xcast_byte_counter,MetaEvent::Name,value);

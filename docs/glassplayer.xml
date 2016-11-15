@@ -6,7 +6,7 @@
   <refmeta>
     <refentrytitle>glassplayer</refentrytitle>
     <manvolnum>1</manvolnum>
-    <refmiscinfo class='source'>January 2016</refmiscinfo>
+    <refmiscinfo class='source'>November 2016</refmiscinfo>
     <refmiscinfo class='manual'>Linux Audio Manual</refmiscinfo>
   </refmeta>
   <refnamediv>
@@ -40,13 +40,16 @@
   <para>
     <command>glassplayer</command><manvolnum>1</manvolnum> is an audio player
     that is capable of capturing and playing live streams from IceCast or
-    ShoutCast streaming servers.
+    ShoutCast streaming servers as well as HTTP Live Streams [HLS] streams.
   </para>
 
   <para>
-    <command>glassplayer</command><manvolnum>1</manvolnum> has no GUI or
-    configuration file components at all; its sole 'user interface' is its
-    command-line invocation.
+    <command>glassplayer</command><manvolnum>1</manvolnum> is minimal in the
+    sense that it has no GUI or configuration file components at all; its
+    sole 'user interface' being its command-line invocation. As such, it is
+    particularly well suited for being driven by an external process or
+    controller such as
+    <command>glassplayergui</command><manvolnum>1</manvolnum>.
   </para>
   </refsect1>
 
@@ -313,6 +316,18 @@
 	  Output realtime operating statistics on STDOUT. Useful for 
 	  updating an external control system.
 	</para>
+      </listitem>
+    </varlistentry>
+
+    <varlistentry>
+      <term>
+	<option>--user=</option><replaceable class="option">username</replaceable>:<replaceable class="option">password</replaceable>
+      </term>
+      <listitem>
+	<para>
+	  Authenticate using the specified credentials. Default is to perform
+	  no authentication.
+	</para>	
       </listitem>
     </varlistentry>
 

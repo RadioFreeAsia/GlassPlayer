@@ -121,7 +121,15 @@ MainObject::MainObject(QObject *parent)
       sir_stats_out=true;
       cmd->setProcessed(i,true);
     }
-   if(cmd->key(i)=="--verbose") {
+    if(cmd->key(i)=="--user") {
+      QStringList f0=cmd->value(i).split(":");
+      sir_user=f0.at(0);
+      if(f0.size()>1) {
+	sir_password=f0.at(1);
+      }
+      cmd->setProcessed(i,true);
+    }
+    if(cmd->key(i)=="--verbose") {
       global_log_verbose=true;
       cmd->setProcessed(i,true);
     }
@@ -203,7 +211,7 @@ MainObject::MainObject(QObject *parent)
 	  this,
 	  SLOT(serverTypeFoundData(Connector::ServerType,const QString &,
 				   const QUrl &)));
-  sir_server_id->connectToServer(server_url,post_data);
+  sir_server_id->connectToServer(server_url,post_data,sir_user,sir_password);
 }
 
 
@@ -215,7 +223,10 @@ void MainObject::serverTypeFoundData(Connector::ServerType type,
   connect(sir_connector,SIGNAL(connected(bool)),
 	  this,SLOT(serverConnectedData(bool)));
   sir_connector->setServerUrl(url);
+  sir_connector->setServerUsername(sir_user);
+  sir_connector->setServerPassword(sir_password);
   sir_connector->setPublicUrl(server_url);
+  sir_connector->setPostData(post_data);
   sir_connector->connectToServer();
 }
 

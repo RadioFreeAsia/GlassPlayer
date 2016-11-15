@@ -34,7 +34,8 @@ class ServerId : public QObject
  public:
   ServerId(QObject *parent=0);
   ~ServerId();
-  void connectToServer(const QUrl &url,const QString &post_data);
+  void connectToServer(const QUrl &url,const QString &post_data,
+		       const QString &username,const QString &passwd);
 
  signals:
   void typeFound(Connector::ServerType type,const QString &mimetype,
@@ -57,6 +58,8 @@ class ServerId : public QObject
   QTimer *id_kill_timer;
   QUrl id_url;
   QString id_post_data;
+  QString id_username;
+  QString id_password;
   QString id_header;
   QString id_content_type;
   QString id_location;

@@ -270,3 +270,5 @@
 	* Added the 'audio/x-mpeg' mimetype to the Codec::TypeMpeg1 codec
 	in 'src/common/codec.cpp'.
 	* Implemented a '--post-data=' parameter in glassplayer(1).
+	* Implemented authentication support for Shoutcast and Icecast
+	servers in 'src/glassplayer/conn_xcast.cpp'.
