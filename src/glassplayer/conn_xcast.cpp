@@ -280,7 +280,6 @@ void XCast::ProcessHeader(const QString &str)
       }
       if(hdr=="icy-metaint") {
 	xcast_metadata_interval=value.toInt();
-	printf("metaint: %d\n",value.toInt());
       }
       if(hdr=="icy-name") {
 	setMetadataField(xcast_byte_counter,MetaEvent::Name,value);
