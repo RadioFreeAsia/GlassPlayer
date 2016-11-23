@@ -37,7 +37,7 @@ Codec *CodecFactory(Codec::Type type,unsigned bitrate,QObject *parent)
     codec=new CodecMpeg1(bitrate,parent);
     break;
  
-  case Codec::TypeVorbis:
+  case Codec::TypeOgg:
     break;
 
   case Codec::TypeNull:

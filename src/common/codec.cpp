@@ -172,8 +172,8 @@ bool Codec::acceptsContentType(Type type,const QString &mimetype)
       (mime=="audio/x-mpeg");
     break;
  
-  case Codec::TypeVorbis:
-    ret=mime=="audio/ogg";
+  case Codec::TypeOgg:
+    ret=(mime=="audio/ogg")||(mime=="application/ogg");
     break;
 
   case Codec::TypeAac:
@@ -184,8 +184,7 @@ bool Codec::acceptsContentType(Type type,const QString &mimetype)
     ret=(mime=="audio/x-wav")||(mime=="audio/wav")||(mime=="audio/wave")||
       (mime=="audio/vnd.wave")||(mime=="audio/aiff")||(mime=="audio/x-aiff")||
       (mime=="audio/basic")||(mime=="audio/x-au")||(mime=="audio/voc")||
-      (mime=="audio/x-voc")||(mime=="audio/x-adpcm")||(mime=="audio/x-flac")||
-      (mime=="application/ogg");
+      (mime=="audio/x-voc")||(mime=="audio/x-adpcm")||(mime=="audio/x-flac");
     break;
 
   case Codec::TypeLast:
@@ -209,7 +208,7 @@ bool Codec::acceptsFormatIdentifier(Type type,const QString &fmt_id)
     ret=(fmt_id=="mp4a.40.32")||(fmt_id=="mp4a.40.33")||(fmt_id=="mp4a.40.34");
     break;
  
-  case Codec::TypeVorbis:
+  case Codec::TypeOgg:
     break;
 
   case Codec::TypeAac:
@@ -240,7 +239,7 @@ bool Codec::acceptsExtension(Type type,const QString &ext)
     ret=(ext.toLower()=="mp2")||(ext.toLower()=="mp3");
     break;
  
-  case Codec::TypeVorbis:
+  case Codec::TypeOgg:
     break;
 
   case Codec::TypeAac:
@@ -272,8 +271,8 @@ QString Codec::typeText(Codec::Type type)
     ret=tr("MPEG-1");
     break;
  
-  case Codec::TypeVorbis:
-    ret=tr("Ogg Vorbis");
+  case Codec::TypeOgg:
+    ret=tr("Ogg Bitstream");
     break;
 
   case Codec::TypeNull:
@@ -305,8 +304,8 @@ QString Codec::optionKeyword(Codec::Type type)
     ret="mpeg";
     break;
  
-  case Codec::TypeVorbis:
-    ret="vorbis";
+  case Codec::TypeOgg:
+    ret="ogg";
     break;
  
   case Codec::TypePassthrough:

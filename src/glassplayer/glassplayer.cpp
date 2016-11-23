@@ -249,7 +249,7 @@ void MainObject::serverConnectedData(bool state)
     }
     if((sir_codec==NULL)||(!sir_codec->isAvailable())) {
       Log(LOG_ERR,tr("codec unavailable")+
-	  "["+Codec::typeText(sir_connector->codecType())+"]");
+	  " ["+Codec::typeText(sir_connector->codecType())+"]");
       exit(GLASS_EXIT_UNSUPPORTED_CODEC_ERROR);
     }
     sir_codec->setChannels(sir_connector->audioChannels());

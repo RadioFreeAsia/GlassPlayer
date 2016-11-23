@@ -278,3 +278,5 @@
 	'src/glassplayer/conn_hls.cpp'.
 2016-11-15 Fred Gleason <fredg@paravelsystems.com>
 	* Removed debugging printf from 'src/glassplayer/conn_xcast.cpp'.
+2016-11-23 Fred Gleason <fredg@paravelsystems.com>
+	* Renamed Codec::Vorbis to Codec::Ogg in 'src/common/codec.h'.

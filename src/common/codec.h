@@ -43,7 +43,7 @@ class Codec : public QObject
 {
   Q_OBJECT;
  public:
-  enum Type {TypeNull=0,TypeMpeg1=1,TypeVorbis=2,TypeAac=3,TypePassthrough=4,
+  enum Type {TypeNull=0,TypeMpeg1=1,TypeOgg=2,TypeAac=3,TypePassthrough=4,
 	     TypeLast=5};
   Codec(Codec::Type type,unsigned bitrate,QObject *parent=0);
   ~Codec();
