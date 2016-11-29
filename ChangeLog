@@ -286,3 +286,5 @@
 2016-11-29 Fred Gleason <fredg@paravelsystems.com>
 	* Added OggOpus support in 'src/glassplayer/codec_ogg.cpp' and
 	'src/glassplayer/codec_ogg.h'.
+2016-11-29 Fred Gleason <fredg@paravelsystems.com>
+	* Cleaned up error logging in 'src/glassplayer/codec_ogg.cpp'.

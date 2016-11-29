@@ -23,6 +23,7 @@
 #include <QStringList>
 
 #include "codec_ogg.h"
+#include "logging.h"
 
 CodecOgg::CodecOgg(unsigned bitrate,QObject *parent)
   : Codec(Codec::TypeOgg,bitrate,parent)
@@ -30,8 +31,7 @@ CodecOgg::CodecOgg(unsigned bitrate,QObject *parent)
 #ifdef HAVE_OGG
   ogg_codec_type=CodecOgg::Unknown;
   ogg_istate=0;
-  page_granule=0;
-  ogg_sync_init(&oy);
+  ogg_sync_init(&ogg_oy);
   vorbis_info_init(&vi);
   vorbis_comment_init(&vc);
 #endif  // HAVE_OGG
@@ -71,32 +71,32 @@ void CodecOgg::process(const QByteArray &data,bool is_last)
   if(data.size()==0) {
     return;
   }
-  os_buffer=ogg_sync_buffer(&oy,data.length());
+  os_buffer=ogg_sync_buffer(&ogg_oy,data.length());
   memcpy(os_buffer,data,data.length());
-  ogg_sync_wrote(&oy,data.length());
-  while(ogg_sync_pageout(&oy,&og)) {
+  ogg_sync_wrote(&ogg_oy,data.length());
+  while(ogg_sync_pageout(&ogg_oy,&ogg_og)) {
     switch(ogg_istate) {
     case 0:  // OGG: Stream Startup
-      ogg_stream_init(&os,ogg_page_serialno(&og));
-      if(ogg_stream_pagein(&os,&og)<0) {
-	fprintf(stderr,"stream version mismatch!\n");
-	return;
+      ogg_stream_init(&ogg_os,ogg_page_serialno(&ogg_og));
+      if(ogg_stream_pagein(&ogg_os,&ogg_og)<0) {
+	Log(LOG_ERR,"Ogg stream version mismatch");
+	exit(3);
       }
-      page_granule=ogg_page_granulepos(&og);
-      if(!ogg_stream_packetout(&os,&op)) {
-	fprintf(stderr,"error reading initial header packet\n");
-	return;
+      if(!ogg_stream_packetout(&ogg_os,&ogg_op)) {
+	Log(LOG_ERR,"Ogg stream error reading initial header packet");
+	exit(3);
       }
-      if((op.bytes>=7)&&(memcmp(op.packet+1,"vorbis",6)==0)) {
+      if((ogg_op.bytes>=7)&&(memcmp(ogg_op.packet+1,"vorbis",6)==0)) {
 	ogg_codec_type=CodecOgg::Vorbis;
-	if(vorbis_synthesis_headerin(&vi,&vc,&op)) {
+	if(vorbis_synthesis_headerin(&vi,&vc,&ogg_op)) {
 	  ogg_istate=1;
 	}
       }
-      if((op.bytes>=8)&&(memcmp(op.packet,"OpusHead",8)==0)) {
+      if((ogg_op.bytes>=8)&&(memcmp(ogg_op.packet,"OpusHead",8)==0)) {
 	ogg_codec_type=CodecOgg::Opus;
 	if((ogg_opus_decoder=opus_decoder_create(48000,2,&err))==NULL) {
-	  fprintf(stderr,"Opus decoder error: %d\n",err);
+	  Log(LOG_ERR,QString().sprintf("OggOpus decoder error %d",err));
+	  exit(3);
 	}
 	setFramed(2,48000,0);
 	ogg_istate=10;
@@ -108,10 +108,9 @@ void CodecOgg::process(const QByteArray &data,bool is_last)
       // *********************************************************************
     case 1:  // VORBIS: Read info/comment headers
     case 2:
-      ogg_stream_pagein(&os,&og);
-      if(TriState(ogg_stream_packetout(&os,&op),"Corrupt header packet")) {
-	TriState(vorbis_synthesis_headerin(&vi,&vc,&op),"Corrupt header");
-	PrintVorbisComments();
+      ogg_stream_pagein(&ogg_os,&ogg_og);
+      if(TriState(ogg_stream_packetout(&ogg_os,&ogg_op),"Corrupt header packet")) {
+	TriState(vorbis_synthesis_headerin(&vi,&vc,&ogg_op),"Corrupt header");
 	ogg_istate++;
       }
       break;
@@ -125,9 +124,9 @@ void CodecOgg::process(const QByteArray &data,bool is_last)
       break;
 
     case 4:    // VORBIS: Decode Loop
-      ogg_stream_pagein(&os,&og);
-      while(ogg_stream_packetout(&os,&op)) {
-	if(vorbis_synthesis(&vb,&op)==0) {
+      ogg_stream_pagein(&ogg_os,&ogg_og);
+      while(ogg_stream_packetout(&ogg_os,&ogg_op)) {
+	if(vorbis_synthesis(&vb,&ogg_op)==0) {
 	  vorbis_synthesis_blockin(&vd,&vb);
 	  while((frames=vorbis_synthesis_pcmout(&vd,&pcm))>0) {
 	    int bout=(frames<4096?frames:4096);
@@ -143,9 +142,9 @@ void CodecOgg::process(const QByteArray &data,bool is_last)
       // * OPUS Decode
       // *********************************************************************
     case 10:
-      ogg_stream_pagein(&os,&og);
-      while(ogg_stream_packetout(&os,&op)) {
-	if((frames=opus_decode_float(ogg_opus_decoder,op.packet,op.bytes,ipcm,5760,0))>0) {
+      ogg_stream_pagein(&ogg_os,&ogg_og);
+      while(ogg_stream_packetout(&ogg_os,&ogg_op)) {
+	if((frames=opus_decode_float(ogg_opus_decoder,ogg_op.packet,ogg_op.bytes,ipcm,5760,0))>0) {
 	  writePcm(ipcm,frames,false);
 	}
       }
@@ -177,6 +176,11 @@ void CodecOgg::loadStats(QStringList *hdrs,QStringList *values,bool is_first)
 
     hdrs->push_back("Codec|Channels");
     values->push_back(QString().sprintf("%u",channels()));
+
+    if(!QString(vc.vendor).isEmpty()) {
+      hdrs->push_back("Codec|Encoder");
+      values->push_back(vc.vendor);
+    }
   }
 #endif  // HAVE_OGG
 }
@@ -185,23 +189,8 @@ void CodecOgg::loadStats(QStringList *hdrs,QStringList *values,bool is_first)
 bool CodecOgg::TriState(int result,const QString &err_msg)
 {
   if(result<0) {
-    fprintf(stderr,"Ogg Initialization Error: %s\n",
-	    (const char *)err_msg.toUtf8());
-    exit(256);
+    Log(LOG_ERR,"Ogg Initialization Error: "+err_msg);
+    exit(3);
   }
   return result;
-}
-
-
-void CodecOgg::PrintVorbisComments() const
-{
-#ifdef HAVE_OGG
-  char **ptr=vc.user_comments;
-  while(*ptr){
-    fprintf(stderr,"%s\n",*ptr);
-    ++ptr;
-  }
-  fprintf(stderr,"\nBitstream is %d channel, %ldHz\n",vi.channels,vi.rate);
-  fprintf(stderr,"Encoded by: %s\n\n",vc.vendor);
-#endif  // HAVE_OGG
 }

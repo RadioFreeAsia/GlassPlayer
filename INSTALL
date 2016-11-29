@@ -27,8 +27,14 @@ MPEG-4 HE-AAC+ streams.  Available at https://github.com/mstorsjo/fdk-aac.
 LibMad - A library for decoding MPEG-1 bitstreams.  Available at
 http://www.underbit.com/products/mad/.
 
-OggVorbis -  A free, patent-clear audio codec.  Both 'libogg' and 'libvorbis'
-libraries are required.  Available at http://www.xiph.org.
+OggOpus and OggVorbis -  Free, patent-clear audio codecs. 
+The following libraries are required:
+
+    libogg
+    libopus
+    libvorbis
+
+Available at http://www.xiph.org.
 
 
 AUDIO SOURCES

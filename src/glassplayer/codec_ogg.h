@@ -47,14 +47,11 @@ class CodecOgg : public Codec
   OggCodecType ogg_codec_type;
 #ifdef HAVE_OGG
   bool TriState(int result,const QString &err_msg);
-  void PrintVorbisComments() const;
   int ogg_istate;
-
-  ogg_sync_state oy;
-  ogg_stream_state os;
-  ogg_page og;
-  ogg_packet op;
-  ogg_int64_t page_granule;
+  ogg_sync_state ogg_oy;
+  ogg_stream_state ogg_os;
+  ogg_page ogg_og;
+  ogg_packet ogg_op;
 
   vorbis_info vi;
   vorbis_comment vc;

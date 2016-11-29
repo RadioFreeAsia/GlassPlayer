@@ -6,7 +6,8 @@ details.
 See the file 'INSTALL' for instructions on building GlassCoder from source.
 
 GlassPlayer is a minimalist audio stream player for IceCast and Shoutcast
-streaming servers. It supports the following audio output types:
+streaming servers as well as HLS streams. It supports the following audio
+output types:
 
   Advanced Linux Sound Architeture (ALSA)
   File Streaming (FILE)
@@ -19,6 +20,8 @@ the player is completely driven by an external system or script.
 
 The following audio codecs are supported:
 
+   OggOpus
+   OggVorbis
    MPEG-1/2 Layer 2 ('MP2')
    MPEG-1/2 Layer 3 ('MP3')
    MPEG-4 Advanced Audio Coding, High Efficiency Profile ('HE-AAC+')
