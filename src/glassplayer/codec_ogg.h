@@ -43,6 +43,8 @@ class CodecOgg : public Codec
   void loadStats(QStringList *hdrs,QStringList *values,bool is_first);
 
  private:
+  enum OggCodecType {Unknown=0,Vorbis=1,Opus=2};
+  OggCodecType ogg_codec_type;
 #ifdef HAVE_OGG
   bool TriState(int result,const QString &err_msg);
   void PrintVorbisComments() const;
@@ -52,10 +54,15 @@ class CodecOgg : public Codec
   ogg_stream_state os;
   ogg_page og;
   ogg_packet op;
+  ogg_int64_t page_granule;
+
   vorbis_info vi;
   vorbis_comment vc;
   vorbis_dsp_state vd;
   vorbis_block vb;
+
+  OpusDecoder *ogg_opus_decoder;
+
 #endif  // HAVE_OGG
 };
 
