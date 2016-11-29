@@ -62,6 +62,8 @@ class Codec : public QObject
   virtual void getStats(QStringList *hdrs,QStringList *values,bool is_first);
   virtual bool isAvailable() const=0;
   virtual QString defaultExtension() const=0;
+  static void interleave(float *pcm_out,float **pcm_in,
+			 unsigned chans,unsigned frames);
   static bool acceptsContentType(Type type,const QString &mimetype);
   static bool acceptsFormatIdentifier(Type type,const QString &fmt_id);
   static bool acceptsExtension(Type type,const QString &ext);

@@ -50,8 +50,8 @@ AC_ARG_ENABLE(libmad,[  --disable-libmad        disable MPEG-1 support],
 		      [LIBMAD_DISABLED=yes],[])
 AC_ARG_ENABLE(fdkaac,[  --disable-fdkaac        disable MPEG-2/4 support],
 	      [FDKAAC_DISABLED=yes],[]) 
-AC_ARG_ENABLE(vorbis,[  --disable-vorbis        disable Ogg Vorbis support],
-	      [VORBIS_DISABLED=yes],[]) 
+AC_ARG_ENABLE(ogg,[  --disable-ogg           disable Ogg Opus/Vorbis support],
+	      [OGG_DISABLED=yes],[]) 
 AC_ARG_ENABLE(alsa,[  --disable-alsa          disable ALSA sound support],
 		      [ALSA_DISABLED=yes],[])
 AC_ARG_ENABLE(asihpi,[  --disable-asihpi        disable AudioScience HPI sound support],
@@ -131,22 +131,12 @@ AC_CHECK_HEADER(samplerate.h,[],[AC_MSG_ERROR([*** libsamplerate not found ***])
 #
 # Check for Ogg and friends (Optional, required for Vorbis and Opus support)
 #
-AC_CHECK_HEADER(ogg/ogg.h,[OGG_FOUND=yes],[])
+PKG_CHECK_MODULES(OGG,ogg opus vorbis,[OGG_FOUND=y],[OGG_FAILED=y])
 if test $OGG_FOUND ; then
-  AC_CHECK_HEADER(vorbis/vorbisfile.h,[VORBIS_FOUND=yes],[])
-  if test $VORBIS_FOUND ; then
-    if test -z $VORBIS_DISABLED ; then
-      AC_DEFINE(HAVE_VORBIS)
-      USING_VORBIS=yes
-    fi
+  if test -z $OGG_DISABLED ; then
+    AC_DEFINE(HAVE_OGG,yes)
+    USING_OGG=yes
   fi
-#  AC_CHECK_HEADER(opus/opus.h,[OPUS_FOUND=yes],[])
-#  if test $OPUS_FOUND ; then
-#    if test -z $OPUS_DISABLED ; then
-#      AC_DEFINE(HAVE_OPUS)
-#      USING_OPUS=yes
-#    fi
-#  fi
 fi
 
 #
@@ -323,16 +313,13 @@ AC_MSG_NOTICE("|               MPEG-4 HE-AAC+ (via FDKAAC) ... No    |")
 else
 AC_MSG_NOTICE("|               MPEG-4 HE-AAC+ (via FDKAAC) ... Yes   |")
 fi
-#if test -z $USING_OPUS ; then
-#AC_MSG_NOTICE("|         Ogg Opus (via libogg and libopus) ... No    |")
-#else
-#AC_MSG_NOTICE("|         Ogg Opus (via libogg and libopus) ... Yes   |")
-#fi
-#if test -z $USING_VORBIS ; then
-#AC_MSG_NOTICE("|     Ogg Vorbis (via libogg and libvorbis) ... No    |")
-#else
-#AC_MSG_NOTICE("|     Ogg Vorbis (via libogg and libvorbis) ... Yes   |")
-#fi
+if test -z $USING_OGG ; then
+AC_MSG_NOTICE("|         Ogg Opus (via libogg and libopus) ... No    |")
+AC_MSG_NOTICE("|     Ogg Vorbis (via libogg and libvorbis) ... No    |")
+else
+AC_MSG_NOTICE("|         Ogg Opus (via libogg and libopus) ... Yes   |")
+AC_MSG_NOTICE("|     Ogg Vorbis (via libogg and libvorbis) ... Yes   |")
+fi
 #if test -z $USING_SNDFILE ; then
 #AC_MSG_NOTICE("|                    PCM16 (via libsndfile) ... No    |")
 #else

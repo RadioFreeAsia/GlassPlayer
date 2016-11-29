@@ -21,6 +21,7 @@
 #include "codec_fdk.h"
 #include "codec_mpeg1.h"
 #include "codec_null.h"
+#include "codec_ogg.h"
 #include "codec_pass.h"
 #include "codecfactory.h"
 
@@ -38,6 +39,7 @@ Codec *CodecFactory(Codec::Type type,unsigned bitrate,QObject *parent)
     break;
  
   case Codec::TypeOgg:
+    codec=new CodecOgg(bitrate,parent);
     break;
 
   case Codec::TypeNull:

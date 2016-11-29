@@ -157,6 +157,17 @@ void Codec::getStats(QStringList *hdrs,QStringList *values,bool is_first)
 }
 
 
+void Codec::interleave(float *pcm_out,float **pcm_in,
+		       unsigned chans,unsigned frames)
+{
+  for(unsigned i=0;i<frames;i++) {
+    for(unsigned j=0;j<chans;j++) {
+      pcm_out[i*chans+j]=pcm_in[j][i];
+    }
+  }
+}
+
+
 bool Codec::acceptsContentType(Type type,const QString &mimetype)
 {
   bool ret=false;
