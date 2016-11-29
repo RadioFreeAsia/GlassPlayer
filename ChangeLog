@@ -288,3 +288,5 @@
 	'src/glassplayer/codec_ogg.h'.
 2016-11-29 Fred Gleason <fredg@paravelsystems.com>
 	* Cleaned up error logging in 'src/glassplayer/codec_ogg.cpp'.
+2016-11-29 Fred Gleason <fredg@paravelsystems.com>
+	* Added new exit code '14' ['Invalid channel count'].

@@ -47,6 +47,7 @@ class CodecOgg : public Codec
   OggCodecType ogg_codec_type;
 #ifdef HAVE_OGG
   bool TriState(int result,const QString &err_msg);
+  bool ParseOpusHeader(unsigned *samprate,unsigned *chans,ogg_packet *op);
   int ogg_istate;
   ogg_sync_state ogg_oy;
   ogg_stream_state ogg_os;

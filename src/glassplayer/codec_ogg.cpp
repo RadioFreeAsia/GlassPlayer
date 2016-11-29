@@ -67,6 +67,8 @@ void CodecOgg::process(const QByteArray &data,bool is_last)
   float **pcm;
   int frames;
   float ipcm[11520];
+  unsigned chans=0;
+  unsigned samprate=0;
 
   if(data.size()==0) {
     return;
@@ -93,8 +95,12 @@ void CodecOgg::process(const QByteArray &data,bool is_last)
 	}
       }
       if((ogg_op.bytes>=8)&&(memcmp(ogg_op.packet,"OpusHead",8)==0)) {
+	if(!ParseOpusHeader(&samprate,&chans,&ogg_op)) {
+	  Log(LOG_ERR,"Invalid OggOpus header");
+	  exit(3);
+	}
 	ogg_codec_type=CodecOgg::Opus;
-	if((ogg_opus_decoder=opus_decoder_create(48000,2,&err))==NULL) {
+	if((ogg_opus_decoder=opus_decoder_create(samprate,chans,&err))==NULL) {
 	  Log(LOG_ERR,QString().sprintf("OggOpus decoder error %d",err));
 	  exit(3);
 	}
@@ -141,7 +147,7 @@ void CodecOgg::process(const QByteArray &data,bool is_last)
       // *********************************************************************
       // * OPUS Decode
       // *********************************************************************
-    case 10:
+    case 10:   // OPUS: Decode Loop
       ogg_stream_pagein(&ogg_os,&ogg_og);
       while(ogg_stream_packetout(&ogg_os,&ogg_op)) {
 	if((frames=opus_decode_float(ogg_opus_decoder,ogg_op.packet,ogg_op.bytes,ipcm,5760,0))>0) {
@@ -193,4 +199,24 @@ bool CodecOgg::TriState(int result,const QString &err_msg)
     exit(3);
   }
   return result;
+}
+
+
+bool CodecOgg::ParseOpusHeader(unsigned *samprate,unsigned *chans,
+			       ogg_packet *op)
+{
+  if(op->bytes<18) {
+    Log(LOG_ERR,"Invalid/truncated OggOpus header");
+    exit(3);
+  }
+  *chans=0xFF&op->packet[9];
+  *samprate=((0xFF&op->packet[15])<<24)+
+    ((0xFF&op->packet[14])<<16)+
+    ((0xFF&op->packet[13])<<8)+
+    (0xFF&op->packet[12]);
+  if((0xFF&op->packet[18])!=0) {
+    Log(LOG_ERR,"Unsupported channel count");
+    exit(14);
+  }
+  return true;
 }

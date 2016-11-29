@@ -901,6 +901,11 @@
       <computeroutput>13</computeroutput> General network error
     </term>
   </varlistentry>
+  <varlistentry>
+    <term>
+      <computeroutput>14</computeroutput> Unsupported channel count
+    </term>
+  </varlistentry>
 
 </variablelist>
 </refsect1>
