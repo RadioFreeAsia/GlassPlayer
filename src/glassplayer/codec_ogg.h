@@ -48,6 +48,7 @@ class CodecOgg : public Codec
 #ifdef HAVE_OGG
   bool TriState(int result,const QString &err_msg);
   bool ParseOpusHeader(unsigned *samprate,unsigned *chans,ogg_packet *op);
+  QString CommentString(const unsigned char *str) const;
   int ogg_istate;
   ogg_sync_state ogg_oy;
   ogg_stream_state ogg_os;
@@ -60,7 +61,7 @@ class CodecOgg : public Codec
   vorbis_block vb;
 
   OpusDecoder *ogg_opus_decoder;
-
+  QString ogg_vendor_string;
 #endif  // HAVE_OGG
 };
 

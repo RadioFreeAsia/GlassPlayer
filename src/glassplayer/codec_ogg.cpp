@@ -104,7 +104,7 @@ void CodecOgg::process(const QByteArray &data,bool is_last)
 	  Log(LOG_ERR,QString().sprintf("OggOpus decoder error %d",err));
 	  exit(3);
 	}
-	setFramed(2,48000,0);
+	setFramed(chans,samprate,0);
 	ogg_istate=10;
       }
       break;
@@ -122,6 +122,7 @@ void CodecOgg::process(const QByteArray &data,bool is_last)
       break;
 
     case 3:   // VORBIS: Initialize DSP decoder
+      ogg_vendor_string=vc.vendor;
       if(vorbis_synthesis_init(&vd,&vi)==0) {
 	vorbis_block_init(&vd,&vb);
 	setFramed(vi.channels,vi.rate,0);
@@ -147,7 +148,15 @@ void CodecOgg::process(const QByteArray &data,bool is_last)
       // *********************************************************************
       // * OPUS Decode
       // *********************************************************************
-    case 10:   // OPUS: Decode Loop
+    case 10:   // OPUS: Get comment header
+      ogg_stream_pagein(&ogg_os,&ogg_og);
+      if(ogg_stream_packetout(&ogg_os,&ogg_op)) {
+	ogg_vendor_string=CommentString(ogg_op.packet+8);
+	ogg_istate=11;
+      }
+      break;
+
+    case 11:   // OPUS: Decode Loop
       ogg_stream_pagein(&ogg_os,&ogg_og);
       while(ogg_stream_packetout(&ogg_os,&ogg_op)) {
 	if((frames=opus_decode_float(ogg_opus_decoder,ogg_op.packet,ogg_op.bytes,ipcm,5760,0))>0) {
@@ -183,9 +192,9 @@ void CodecOgg::loadStats(QStringList *hdrs,QStringList *values,bool is_first)
     hdrs->push_back("Codec|Channels");
     values->push_back(QString().sprintf("%u",channels()));
 
-    if(!QString(vc.vendor).isEmpty()) {
+    if(!QString(ogg_vendor_string).isEmpty()) {
       hdrs->push_back("Codec|Encoder");
-      values->push_back(vc.vendor);
+      values->push_back(ogg_vendor_string);
     }
   }
 #endif  // HAVE_OGG
@@ -219,4 +228,12 @@ bool CodecOgg::ParseOpusHeader(unsigned *samprate,unsigned *chans,
     exit(14);
   }
   return true;
+}
+
+
+QString CodecOgg::CommentString(const unsigned char *str) const
+{
+  uint32_t len=(0xFF&str[0])+((0xFF&str[1])<<8)+
+    ((0xFF&str[2])<<16)+((0xFF&str[3])<<24);
+  return QString::fromUtf8((const char *)str+4,len);
 }

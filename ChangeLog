@@ -290,3 +290,7 @@
 	* Cleaned up error logging in 'src/glassplayer/codec_ogg.cpp'.
 2016-11-29 Fred Gleason <fredg@paravelsystems.com>
 	* Added new exit code '14' ['Invalid channel count'].
+2016-12-01 Fred Gleason <fredg@paravelsystems.com>
+	* Fixed a bug in 'src/glassplayer/codec_ogg.cpp' that caused
+	incorrect framing parameters to be set when receiving Opus
+	streams.
