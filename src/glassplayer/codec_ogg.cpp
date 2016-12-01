@@ -29,11 +29,10 @@ CodecOgg::CodecOgg(unsigned bitrate,QObject *parent)
   : Codec(Codec::TypeOgg,bitrate,parent)
 {
 #ifdef HAVE_OGG
-  ogg_codec_type=CodecOgg::Unknown;
-  ogg_istate=0;
-  ogg_sync_init(&ogg_oy);
-  vorbis_info_init(&vi);
-  vorbis_comment_init(&vc);
+  ogg_ogg_handle=NULL;
+  ogg_vorbis_handle=NULL;
+  ogg_opus_handle=NULL;
+  LoadOgg();
 #endif  // HAVE_OGG
 }
 
@@ -46,7 +45,7 @@ CodecOgg::~CodecOgg()
 bool CodecOgg::isAvailable() const
 {
 #ifdef HAVE_OGG
-  return true;
+  return ogg_vorbis_handle!=NULL;
 #else
   return false;
 #endif  // HAVE_OGG
@@ -236,6 +235,82 @@ bool CodecOgg::TriState(int result,const QString &err_msg)
 }
 
 
+QString CodecOgg::CommentString(const unsigned char *str) const
+{
+  uint32_t len=(0xFF&str[0])+((0xFF&str[1])<<8)+
+    ((0xFF&str[2])<<16)+((0xFF&str[3])<<24);
+  return QString::fromUtf8((const char *)str+4,len);
+}
+
+
+bool CodecOgg::LoadOgg()
+{
+#ifdef HAVE_OGG
+  //
+  // Initialize Libogg
+  //
+  if((ogg_ogg_handle=dlopen("libogg.so.0",RTLD_NOW))!=NULL) {
+    *(void **)(&ogg_sync_init)=dlsym(ogg_ogg_handle,"ogg_sync_init");
+    *(void **)(&ogg_sync_clear)=dlsym(ogg_ogg_handle,"ogg_sync_clear");
+    *(void **)(&ogg_sync_reset)=dlsym(ogg_ogg_handle,"ogg_sync_reset");
+    *(void **)(&ogg_sync_buffer)=dlsym(ogg_ogg_handle,"ogg_sync_buffer");
+    *(void **)(&ogg_sync_pageout)=dlsym(ogg_ogg_handle,"ogg_sync_pageout");
+    *(void **)(&ogg_sync_pagein)=dlsym(ogg_ogg_handle,"ogg_sync_pagein");
+    *(void **)(&ogg_sync_wrote)=dlsym(ogg_ogg_handle,"ogg_sync_wrote");
+    *(void **)(&ogg_stream_init)=dlsym(ogg_ogg_handle,"ogg_stream_init");
+    *(void **)(&ogg_stream_pagein)=dlsym(ogg_ogg_handle,"ogg_stream_pagein");
+    *(void **)(&ogg_stream_packetout)=
+      dlsym(ogg_ogg_handle,"ogg_stream_packetout");
+    *(void **)(&ogg_page_serialno)=dlsym(ogg_ogg_handle,"ogg_page_serialno");
+
+  //
+  // Initialize Libvorbis
+  //
+    if((ogg_vorbis_handle=dlopen("libvorbis.so.0",RTLD_NOW))!=NULL) {
+      *(void **)(&vorbis_info_init)=
+	dlsym(ogg_vorbis_handle,"vorbis_info_init");
+      *(void **)(&vorbis_info_clear)=
+	dlsym(ogg_vorbis_handle,"vorbis_info_clear");
+      *(void **)(&vorbis_comment_init)=
+	dlsym(ogg_vorbis_handle,"vorbis_comment_init");
+      *(void **)(&vorbis_comment_clear)=
+	dlsym(ogg_vorbis_handle,"vorbis_comment_clear");
+      *(void **)(&vorbis_block_init)=
+	dlsym(ogg_vorbis_handle,"vorbis_block_init");
+      *(void **)(&vorbis_synthesis)=dlsym(ogg_vorbis_handle,"vorbis_synthesis");
+      *(void **)(&vorbis_synthesis_headerin)=
+	dlsym(ogg_vorbis_handle,"vorbis_synthesis_headerin");
+      *(void **)(&vorbis_synthesis_init)=
+	dlsym(ogg_vorbis_handle,"vorbis_synthesis_init");
+      *(void **)(&vorbis_synthesis_blockin)=
+	dlsym(ogg_vorbis_handle,"vorbis_synthesis_blockin");
+      *(void **)(&vorbis_synthesis_pcmout)=
+	dlsym(ogg_vorbis_handle,"vorbis_synthesis_pcmout");
+      *(void **)(&vorbis_synthesis_read)=
+	dlsym(ogg_vorbis_handle,"vorbis_synthesis_read");
+
+      if((ogg_opus_handle=dlopen("libopus.so.0",RTLD_NOW))!=NULL) {
+	*(void **)(&opus_decoder_create)=
+	  dlsym(ogg_opus_handle,"opus_decoder_create");
+	*(void **)(&opus_decode_float)=
+	  dlsym(ogg_opus_handle,"opus_decode_float");
+
+	ogg_codec_type=CodecOgg::Unknown;
+	ogg_istate=0;
+	ogg_sync_init(&ogg_oy);
+	vorbis_info_init(&vi);
+	vorbis_comment_init(&vc);
+	return true;
+      }
+    }
+  }
+  return false;
+#endif  // HAVE_OGG
+  return false;
+}
+
+
+#ifdef HAVE_OGG
 bool CodecOgg::ParseOpusHeader(unsigned *samprate,unsigned *chans,
 			       ogg_packet *op)
 {
@@ -254,11 +329,4 @@ bool CodecOgg::ParseOpusHeader(unsigned *samprate,unsigned *chans,
   }
   return true;
 }
-
-
-QString CodecOgg::CommentString(const unsigned char *str) const
-{
-  uint32_t len=(0xFF&str[0])+((0xFF&str[1])<<8)+
-    ((0xFF&str[2])<<16)+((0xFF&str[3])<<24);
-  return QString::fromUtf8((const char *)str+4,len);
-}
+#endif  // HAVE_OGG

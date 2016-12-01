@@ -45,10 +45,23 @@ class CodecOgg : public Codec
  private:
   enum OggCodecType {Unknown=0,Vorbis=1,Opus=2};
   OggCodecType ogg_codec_type;
-#ifdef HAVE_OGG
   bool TriState(int result,const QString &err_msg);
-  bool ParseOpusHeader(unsigned *samprate,unsigned *chans,ogg_packet *op);
   QString CommentString(const unsigned char *str) const;
+  bool LoadOgg();
+#ifdef HAVE_OGG
+  bool ParseOpusHeader(unsigned *samprate,unsigned *chans,ogg_packet *op);
+  void *ogg_ogg_handle;
+  int (*ogg_sync_init)(ogg_sync_state *);
+  int (*ogg_sync_clear)(ogg_sync_state *);
+  int (*ogg_sync_reset)(ogg_sync_state *);
+  char *(*ogg_sync_buffer)(ogg_sync_state *,long);
+  int (*ogg_sync_pageout)(ogg_sync_state *,ogg_page *);
+  int (*ogg_sync_pagein)(ogg_stream_state *,ogg_page *);
+  int (*ogg_stream_init)(ogg_stream_state *,int);
+  int (*ogg_stream_pagein)(ogg_stream_state *,ogg_page *);
+  int (*ogg_stream_packetout)(ogg_stream_state *,ogg_packet *);
+  int (*ogg_sync_wrote)(ogg_sync_state *,long);
+  int (*ogg_page_serialno)(const ogg_page *og);
   int ogg_istate;
   ogg_sync_state ogg_oy;
   ogg_stream_state ogg_os;
@@ -56,11 +69,28 @@ class CodecOgg : public Codec
   ogg_packet ogg_op;
   QString ogg_vendor_string;
 
+  void *ogg_vorbis_handle;
+  void (*vorbis_info_init)(vorbis_info *);
+  void (*vorbis_info_clear)(vorbis_info *);
+  void (*vorbis_comment_init)(vorbis_comment *);
+  void (*vorbis_comment_clear)(vorbis_comment *);
+  int (*vorbis_block_init)(vorbis_dsp_state *,vorbis_block *);
+  int (*vorbis_synthesis)(vorbis_block *,ogg_packet *);
+  int (*vorbis_synthesis_headerin)(vorbis_info *,vorbis_comment *,
+				    ogg_packet *);
+  int (*vorbis_synthesis_init)(vorbis_dsp_state *,vorbis_info *);
+  int (*vorbis_synthesis_blockin)(vorbis_dsp_state *,vorbis_block *);
+  int (*vorbis_synthesis_pcmout)(vorbis_dsp_state *,float ***pcm);
+  int (*vorbis_synthesis_read)(vorbis_dsp_state *,int);
   vorbis_info vi;
   vorbis_comment vc;
   vorbis_dsp_state vd;
   vorbis_block vb;
 
+  void *ogg_opus_handle;
+  OpusDecoder *(*opus_decoder_create)(opus_int32,int,int *);
+  int (*opus_decode_float)(OpusDecoder *,const unsigned char *,opus_int32,
+			   float *,int,int);
   OpusDecoder *ogg_opus_decoder;
 #endif  // HAVE_OGG
 };

@@ -297,3 +297,5 @@
 2016-12-01 Fred Gleason <fredg@paravelsystems.com>
 	* Fixed a bug that caused an infinite loop when attempting to
 	start a non-supported Ogg codec.
+2016-12-01 Fred Gleason <fredg@paravelsystems.com>
+	* Modified the Ogg codec to use dynamic library loading.
