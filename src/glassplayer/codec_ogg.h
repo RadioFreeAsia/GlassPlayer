@@ -54,6 +54,7 @@ class CodecOgg : public Codec
   ogg_stream_state ogg_os;
   ogg_page ogg_og;
   ogg_packet ogg_op;
+  QString ogg_vendor_string;
 
   vorbis_info vi;
   vorbis_comment vc;
@@ -61,7 +62,6 @@ class CodecOgg : public Codec
   vorbis_block vb;
 
   OpusDecoder *ogg_opus_decoder;
-  QString ogg_vendor_string;
 #endif  // HAVE_OGG
 };
 

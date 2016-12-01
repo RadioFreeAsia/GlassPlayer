@@ -294,3 +294,6 @@
 	* Fixed a bug in 'src/glassplayer/codec_ogg.cpp' that caused
 	incorrect framing parameters to be set when receiving Opus
 	streams.
+2016-12-01 Fred Gleason <fredg@paravelsystems.com>
+	* Fixed a bug that caused an infinite loop when attempting to
+	start a non-supported Ogg codec.

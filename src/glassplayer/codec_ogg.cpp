@@ -79,6 +79,7 @@ void CodecOgg::process(const QByteArray &data,bool is_last)
   while(ogg_sync_pageout(&ogg_oy,&ogg_og)) {
     switch(ogg_istate) {
     case 0:  // OGG: Stream Startup
+    case 1:
       ogg_stream_init(&ogg_os,ogg_page_serialno(&ogg_og));
       if(ogg_stream_pagein(&ogg_os,&ogg_og)<0) {
 	Log(LOG_ERR,"Ogg stream version mismatch");
@@ -91,7 +92,7 @@ void CodecOgg::process(const QByteArray &data,bool is_last)
       if((ogg_op.bytes>=7)&&(memcmp(ogg_op.packet+1,"vorbis",6)==0)) {
 	ogg_codec_type=CodecOgg::Vorbis;
 	if(vorbis_synthesis_headerin(&vi,&vc,&ogg_op)) {
-	  ogg_istate=1;
+	  ogg_istate=10;
 	}
       }
       if((ogg_op.bytes>=8)&&(memcmp(ogg_op.packet,"OpusHead",8)==0)) {
@@ -105,15 +106,39 @@ void CodecOgg::process(const QByteArray &data,bool is_last)
 	  exit(3);
 	}
 	setFramed(chans,samprate,0);
-	ogg_istate=10;
+	ogg_istate=20;
       }
+      if(ogg_istate<10) {
+	ogg_istate++;
+      }
+      break;
+
+      // *********************************************************************
+      // * ERROR HANDLER - We found no info header that we recognized
+      // *********************************************************************
+    case 2:
+      for(int i=0;i<ogg_op.bytes;i++) {
+	if(isprint(0xFF&ogg_op.packet[i])) {
+	  for(int j=i;j<ogg_op.bytes;j++) {
+	    if(!isprint(0xFF&ogg_op.packet[j])) {
+	      QByteArray str((const char *)ogg_op.packet+i,j-i);
+	      Log(LOG_ERR,
+		  QString().sprintf("Unsupported Ogg-encoded codec [%s]",
+				    str.constData()));
+	      exit(1);
+	    }
+	  }
+	}
+      }
+      Log(LOG_ERR,"Unsupported Ogg-encoded codec");
+      exit(1);
       break;
 
       // *********************************************************************
       // * VORBIS Decode
       // *********************************************************************
-    case 1:  // VORBIS: Read info/comment headers
-    case 2:
+    case 10:  // VORBIS: Read info/comment headers
+    case 11:
       ogg_stream_pagein(&ogg_os,&ogg_og);
       if(TriState(ogg_stream_packetout(&ogg_os,&ogg_op),"Corrupt header packet")) {
 	TriState(vorbis_synthesis_headerin(&vi,&vc,&ogg_op),"Corrupt header");
@@ -121,16 +146,16 @@ void CodecOgg::process(const QByteArray &data,bool is_last)
       }
       break;
 
-    case 3:   // VORBIS: Initialize DSP decoder
+    case 12:   // VORBIS: Initialize DSP decoder
       ogg_vendor_string=vc.vendor;
       if(vorbis_synthesis_init(&vd,&vi)==0) {
 	vorbis_block_init(&vd,&vb);
 	setFramed(vi.channels,vi.rate,0);
       }
-      ogg_istate=4;
+      ogg_istate=13;
       break;
 
-    case 4:    // VORBIS: Decode Loop
+    case 13:    // VORBIS: Decode Loop
       ogg_stream_pagein(&ogg_os,&ogg_og);
       while(ogg_stream_packetout(&ogg_os,&ogg_op)) {
 	if(vorbis_synthesis(&vb,&ogg_op)==0) {
@@ -148,15 +173,15 @@ void CodecOgg::process(const QByteArray &data,bool is_last)
       // *********************************************************************
       // * OPUS Decode
       // *********************************************************************
-    case 10:   // OPUS: Get comment header
+    case 20:   // OPUS: Get comment header
       ogg_stream_pagein(&ogg_os,&ogg_og);
       if(ogg_stream_packetout(&ogg_os,&ogg_op)) {
 	ogg_vendor_string=CommentString(ogg_op.packet+8);
-	ogg_istate=11;
+	ogg_istate=21;
       }
       break;
 
-    case 11:   // OPUS: Decode Loop
+    case 21:   // OPUS: Decode Loop
       ogg_stream_pagein(&ogg_os,&ogg_og);
       while(ogg_stream_packetout(&ogg_os,&ogg_op)) {
 	if((frames=opus_decode_float(ogg_opus_decoder,ogg_op.packet,ogg_op.bytes,ipcm,5760,0))>0) {
