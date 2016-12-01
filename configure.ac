@@ -129,7 +129,7 @@ fi
 AC_CHECK_HEADER(samplerate.h,[],[AC_MSG_ERROR([*** libsamplerate not found ***])])
 
 #
-# Check for Ogg and friends (Optional, required for Vorbis and Opus support)
+# Check for Ogg and friends (Optional, required for Opus and Vorbis support)
 #
 PKG_CHECK_MODULES(OGG,ogg opus vorbis,[OGG_FOUND=y],[OGG_FAILED=y])
 if test $OGG_FOUND ; then
@@ -300,7 +300,7 @@ ln -s ../../src/common/glasslimits.h src/glassplayergui/glasslimits.h
 
 AC_MSG_NOTICE()
 AC_MSG_NOTICE("|-----------------------------------------------------|")
-AC_MSG_NOTICE("|       *** GLASSPLAYER CONFIGURATION SUMMARY ***      |")
+AC_MSG_NOTICE("|      *** GLASSPLAYER CONFIGURATION SUMMARY ***      |")
 AC_MSG_NOTICE("|-----------------------------------------------------|")
 AC_MSG_NOTICE("| Decoding Formats:                                   |")
 if test -z $USING_LIBMAD ; then
