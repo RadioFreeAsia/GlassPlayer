@@ -301,3 +301,5 @@
 	* Modified the Ogg codec to use dynamic library loading.
 2016-12-01 Fred Gleason <fredg@paravelsystems.com>
 	* Fixed typos in 'configure.ac'.
+2016-12-02 Fred Gleason <fredg@paravelsystems.com>
+	* Fixed a memory leak in 'src/glassplayergui/playmeter.cpp'.
