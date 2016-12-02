@@ -303,3 +303,5 @@
 	* Fixed typos in 'configure.ac'.
 2016-12-02 Fred Gleason <fredg@paravelsystems.com>
 	* Fixed a memory leak in 'src/glassplayergui/playmeter.cpp'.
+2016-12-02 Fred Gleason <fredg@paravelsystems.com>
+	* Altered dynamic library targets to include major version numbers.

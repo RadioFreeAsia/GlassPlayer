@@ -35,7 +35,7 @@ CodecFdk::CodecFdk(unsigned bitrate,QObject *parent)
   //
   // Load Library
   //
-  if((fdk_fdkaac_handle=dlopen("libfdk-aac.so",RTLD_NOW))!=NULL) {
+  if((fdk_fdkaac_handle=dlopen("libfdk-aac.so.1",RTLD_NOW))!=NULL) {
     *(void **)(&aacDecoder_AncDataInit)=
       dlsym(fdk_fdkaac_handle,"aacDecoder_AncDataInit");
     *(void **)(&aacDecoder_AncDataGet)=

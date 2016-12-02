@@ -211,7 +211,7 @@ void CodecMpeg1::Reset()
 bool CodecMpeg1::LoadLibmad()
 {
 #ifdef HAVE_LIBMAD
-  if((mpeg1_mad_handle=dlopen("libmad.so",RTLD_NOW))!=NULL) {
+  if((mpeg1_mad_handle=dlopen("libmad.so.0",RTLD_NOW))!=NULL) {
     //
     // Initialize Library
     //
