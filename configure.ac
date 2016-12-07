@@ -67,25 +67,10 @@ AC_ARG_ENABLE(docbook,[  --disable-docbook       disable building of DocBook doc
 #
 # Check for Qt (Mandatory)
 #
-PKG_CHECK_MODULES(QT4,QtGui QtCore QtNetwork,[],[AC_MSG_ERROR([*** Qt4 not found ***])])
+PKG_CHECK_MODULES(QT4CLI,QtCore QtNetwork,[],[AC_MSG_ERROR([*** Qt4 not found ***])])
+PKG_CHECK_MODULES(QT4GUI,QtGui QtCore QtNetwork,[],[AC_MSG_ERROR([*** Qt4 not found ***])])
 AC_CHECK_PROG(MOC_NAME,moc-qt4,[moc-qt4],[moc])
 AC_SUBST(MOC,$MOC_NAME)
-
-#
-# Check for Jack Audio Connection Kit
-#
-AC_CHECK_HEADER(jack/jack.h,[JACK_FOUND=y],[])
-if test $JACK_FOUND ; then
-  if test -z $JACK_DISABLED ; then
-    AC_DEFINE(JACK,yes)
-    AC_SUBST(LIBJACK,-ljack)
-    USING_JACK=yes
-  else 
-    AC_SUBST(LIBJACK,"")
-  fi
-else 
-  AC_SUBST(LIBJACK,"")
-fi
 
 #
 # Check for libsndfile (needed for FILE support)
@@ -97,6 +82,11 @@ if test $SNDFILE_FOUND ; then
     USING_SNDFILE=yes
   fi
 fi
+
+#
+# Check for Secret Rabbit Code (Mandatory)
+#
+PKG_CHECK_MODULES(SAMPLERATE,samplerate,[SAMPLERATE_FOUND=y],[])
 
 #
 # Check for AudioScience HPI
@@ -124,9 +114,15 @@ if test $ALSA_FOUND ; then
 fi
 
 #
-# Check for Secret Rabbit Code (Mandatory)
+# Check for Jack Audio Connection Kit
 #
-AC_CHECK_HEADER(samplerate.h,[],[AC_MSG_ERROR([*** libsamplerate not found ***])])
+PKG_CHECK_MODULES(JACK,jack,[JACK_FOUND=y],[JACK_NOT_FOUND=y])
+if test $JACK_FOUND ; then
+  if test -z $JACK_DISABLED ; then
+    AC_DEFINE(JACK,yes)
+    USING_JACK=yes
+  fi
+fi
 
 #
 # Check for Ogg and friends (Optional, required for Opus and Vorbis support)
@@ -181,23 +177,6 @@ AC_SUBST(ARCH,$ar_gcc_arch)
 #
 AR_GET_DISTRO()
 AC_SUBST(DISTRO,$ar_gcc_distro)
-
-#
-# Linux vs. OS X Setup
-#
-if test $ar_gcc_os = "darwin10" ; then
-  AC_SUBST(SIRLIBS,"-lsamplerate")
-  AC_SUBST(SIRFLAGS,"-framework QtCore -framework QtNetwork")
-  AC_SUBST(GUILIBS,"-lsamplerate")
-  AC_SUBST(GUIFLAGS,"-framework QtCore -framework QtNetwork -framework QtGui")
-  AC_DEFINE(OSX)
-else
-  AC_SUBST(SIRLIBS,"-lsamplerate -ldl -lQtCore -lQtNetwork")
-  AC_SUBST(SIRFLAGS,"")
-  AC_SUBST(GUILIBS,"-lsamplerate -lQtCore -lQtNetwork -lQtGui")
-  AC_SUBST(GUIFLAGS,"")
-  AC_DEFINE(LINUX)
-fi
 
 #
 # Configure RPM Build

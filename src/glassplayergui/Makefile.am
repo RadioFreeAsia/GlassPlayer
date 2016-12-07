@@ -20,7 +20,7 @@
 ##
 ## Use automake to process this into a Makefile.in
 
-AM_CPPFLAGS = -Wall -DPREFIX=\"$(prefix)\" -Wno-strict-aliasing @QT4_CFLAGS@ @SNDFILE_CFLAGS@ @ALSA_CFLAGS@
+AM_CPPFLAGS = -Wall -DPREFIX=\"$(prefix)\" -Wno-strict-aliasing @QT4GUI_CFLAGS@ @SAMPLERATE_CFLAGS@
 MOC = @QT4_MOC@
 
 # The dependency for qt's Meta Object Compiler (moc)
@@ -53,8 +53,7 @@ nodist_glassplayergui_SOURCES = audiodevice.cpp audiodevice.h\
                                 moc_statsdialog.cpp\
                                 moc_statspanel.cpp
 
-glassplayergui_LDADD = @GUILIBS@
-glassplayergui_LDFLAGS = @GUIFLAGS@
+glassplayergui_LDADD = @QT4GUI_LIBS@ @SAMPLERATE_LIBS@
 
 CLEANFILES = *~\
              moc_*\
