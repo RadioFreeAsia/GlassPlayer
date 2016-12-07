@@ -350,6 +350,7 @@ bool DevJack::start(QString *err)
 
 void DevJack::loadStats(QStringList *hdrs,QStringList *values,bool is_first)
 {
+#ifdef JACK
   if(is_first) {
     hdrs->push_back("Device|Type");
     values->push_back("JACK");
@@ -371,21 +372,26 @@ void DevJack::loadStats(QStringList *hdrs,QStringList *values,bool is_first)
 
   hdrs->push_back("Device|PLL Setpoint Frames");
   values->push_back(QString().sprintf("%u",jack_pll_setpoint_frames));
+#endif  // JACK
 }
 
 
 void DevJack::playPositionData()
 {
+#ifdef JACK
   updatePlayPosition(jack_play_position);
+#endif  // JACK
 }
 
 
 void DevJack::meterData()
 {
+#ifdef JACK
   float lvls[MAX_AUDIO_CHANNELS];
 
   for(unsigned i=0;i<codec()->channels();i++) {
     lvls[i]=jack_meter_avg[i]->average();
   }
   setMeterLevels(lvls);
+#endif  // JACK
 }

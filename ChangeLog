@@ -308,3 +308,6 @@
 2016-12-07 Fred Gleason <fredg@paravelsystems.com>
 	* Fixed bugs in 'src/glassplayer/dev_alsa.cpp' that broke the
 	build when compiling without ALSA support.
+2016-12-07 Fred Gleason <fredg@paravelsystems.com>
+	* Fixed bugs in 'src/glassplayer/dev_jack.cpp' that broke the
+	build when compiling without JACK support.
