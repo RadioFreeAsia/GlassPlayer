@@ -201,6 +201,7 @@ DevAlsa::DevAlsa(Codec *codec,QObject *parent)
 
 DevAlsa::~DevAlsa()
 {
+#ifdef ALSA
   stop();
   for(int i=0;i<MAX_AUDIO_CHANNELS;i++) {
     delete alsa_meter_avg[i];
@@ -210,7 +211,7 @@ DevAlsa::~DevAlsa()
     delete alsa_pcm_buffer;
   }
   delete alsa_play_position_timer;
-
+#endif  // ALSA
 }
 
 
@@ -379,30 +380,37 @@ bool DevAlsa::start(QString *err)
 
 void DevAlsa::stop()
 {
+#ifdef ALSA
   alsa_stopping=true;
   pthread_join(alsa_pthread,NULL);
+#endif  // ALSA
 }
 
 
 void DevAlsa::playPositionData()
 {
+#ifdef ALSA
   updatePlayPosition(alsa_play_position);
+#endif  // ALSA
 }
 
 
 void DevAlsa::meterData()
 {
+#ifdef ALSA
   float lvls[MAX_AUDIO_CHANNELS];
 
   for(unsigned i=0;i<codec()->channels();i++) {
     lvls[i]=alsa_meter_avg[i]->average();
   }
   setMeterLevels(lvls);
+#endif  // ALSA
 }
 
 
 void DevAlsa::loadStats(QStringList *hdrs,QStringList *values,bool is_first)
 {
+#ifdef ALSA
   if(is_first) {
     hdrs->push_back("Device|Type");
     values->push_back("ALSA");
@@ -428,4 +436,5 @@ void DevAlsa::loadStats(QStringList *hdrs,QStringList *values,bool is_first)
 
   hdrs->push_back("Device|PLL Setpoint Frames");
   values->push_back(QString().sprintf("%u",alsa_pll_setpoint_frames));
+#endif  // ALSA
 }

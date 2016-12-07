@@ -305,3 +305,6 @@
 	* Fixed a memory leak in 'src/glassplayergui/playmeter.cpp'.
 2016-12-02 Fred Gleason <fredg@paravelsystems.com>
 	* Altered dynamic library targets to include major version numbers.
+2016-12-07 Fred Gleason <fredg@paravelsystems.com>
+	* Fixed bugs in 'src/glassplayer/dev_alsa.cpp' that broke the
+	build when compiling without ALSA support.
