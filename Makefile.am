@@ -34,6 +34,20 @@ rpm:	dist
 	rm $(HOME)/rpmbuild/SOURCES/glassplayer-$(VERSION).tar.gz
 	rm -rf $(HOME)/rpmbuild/BUILD/glassplayer-$(VERSION)
 
+install-win32:	
+	cp src/glassplayer/glassplayer.exe .
+	cp src/glassplayergui/glassplayergui.exe .
+	cp $(MINGW32_SYS_ROOT)/bin/QtCore4.dll .
+	cp $(MINGW32_SYS_ROOT)/bin/QtGui4.dll .
+	cp $(MINGW32_SYS_ROOT)/bin/QtNetwork4.dll .
+	cp $(MINGW32_SYS_ROOT)/bin/libgcc_s_sjlj-1.dll .
+	cp $(MINGW32_SYS_ROOT)/bin/libpng16-16.dll .
+	cp $(MINGW32_SYS_ROOT)/bin/libsamplerate-0.dll .
+	cp $(MINGW32_SYS_ROOT)/bin/libsndfile-1.dll .
+	cp $(MINGW32_SYS_ROOT)/bin/libstdc++-6.dll .
+	cp $(MINGW32_SYS_ROOT)/bin/libwinpthread-1.dll .
+	cp $(MINGW32_SYS_ROOT)/bin/zlib1.dll .
+
 EXTRA_DIST = glassplayer.spec.in\
              autogen.sh\
              get_distro.sh\
@@ -42,6 +56,8 @@ EXTRA_DIST = glassplayer.spec.in\
 
 CLEANFILES = *~\
              *.deb\
+             *.dll\
+             *.exe\
              *.mo\
              *.rpm\
              *.tar.gz\

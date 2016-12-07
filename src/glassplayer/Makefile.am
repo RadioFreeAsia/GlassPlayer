@@ -76,8 +76,7 @@ nodist_glassplayer_SOURCES = audiodevice.cpp audiodevice.h\
                              moc_serverid.cpp\
                              ringbuffer.cpp ringbuffer.h
 
-glassplayer_LDADD = @QT4CLI_LIBS@ @SNDFILE_LIBS@ @SAMPLERATE_LIBS@ @ALSA_LIBS@ @JACK_LIBS@ @ASIHPI_LIBS@ -ldl -lpthread
-#glassplayer_LDFLAGS = @SIRFLAGS@
+glassplayer_LDADD = @QT4CLI_LIBS@ @SNDFILE_LIBS@ @SAMPLERATE_LIBS@ @ALSA_LIBS@ @JACK_LIBS@ @ASIHPI_LIBS@ @PLATFORM_LIBS@
 
 CLEANFILES = *~\
              moc_*\

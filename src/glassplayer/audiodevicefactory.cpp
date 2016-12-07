@@ -34,7 +34,9 @@ AudioDevice *AudioDeviceFactory(AudioDevice::Type type,Codec *codec,QObject *par
     break;
 
   case AudioDevice::Alsa:
+#ifdef ALSA
     audiodevice=new DevAlsa(codec,parent);
+#endif  // ALSA
     break;
  
   case AudioDevice::AsiHpi:
@@ -45,7 +47,9 @@ AudioDevice *AudioDeviceFactory(AudioDevice::Type type,Codec *codec,QObject *par
     break;
 
   case AudioDevice::Jack:
+#ifdef JACK
     audiodevice=new DevJack(codec,parent);
+#endif  // JACK
     break;
 
   case AudioDevice::LastType:

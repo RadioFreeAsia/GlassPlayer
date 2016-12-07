@@ -24,9 +24,12 @@
 #include <queue>
 #include <vector>
 
+#ifndef WIN32
 #include <dlfcn.h>
-#include <stdint.h>
 #include <syslog.h>
+#endif  // WIN32
+
+#include <stdint.h>
 
 #include <samplerate.h>
 

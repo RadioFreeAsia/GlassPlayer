@@ -19,7 +19,6 @@
 //
 
 #include <stdio.h>
-#include <syslog.h>
 
 #include "logging.h"
 
@@ -30,12 +29,16 @@ void Log(int prio,const QString &msg)
 {
   switch(global_log_to) {
   case LOG_TO_SYSLOG:
+#ifndef WIN32
     syslog(prio,msg.toUtf8());
+#endif  // WIN32
     break;
 
   case LOG_TO_STDOUT:
     printf("ER %d %s\n",prio,(const char *)msg.toUtf8());
+#ifndef WIN32
     syslog(prio,msg.toUtf8());
+#endif  // WIN32
     break;
 
   default:

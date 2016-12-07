@@ -171,6 +171,13 @@ AM_CONDITIONAL([DOCBOOK_AM], [test "$USING_DOCBOOK" = yes])
 AR_GCC_TARGET()
 AC_SUBST(VENDOR,$ar_gcc_distro)
 AC_SUBST(ARCH,$ar_gcc_arch)
+if test $ar_gcc_arch = i686 ; then
+  USING_WIN32=yes
+  AC_DEFINE(WIN32)
+  AC_SUBST(PLATFORM_LIBS,"")
+else
+  AC_SUBST(PLATFORM_LIBS,"-ldl -lpthread")
+fi
 
 #
 # Determine Distro
@@ -329,6 +336,11 @@ fi
 AC_MSG_NOTICE("|                  Standard Output (STDOUT) ... Yes   |")
 AC_MSG_NOTICE("|                                                     |")
 AC_MSG_NOTICE("| Miscellaneous:                                      |")
+if test -z $USING_WIN32 ; then
+AC_MSG_NOTICE("|                                  Platform ... POSIX |")
+else
+AC_MSG_NOTICE("|                                  Platform ... Win32 |")
+fi
 if test -z $USING_DOCBOOK ; then
 AC_MSG_NOTICE("|                     DocBook Documentation ... No    |")
 else
