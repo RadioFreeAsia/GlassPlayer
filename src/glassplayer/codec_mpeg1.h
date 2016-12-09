@@ -44,7 +44,7 @@ class CodecMpeg1 : public Codec
   void Reset();
   bool LoadLibmad();
   void FreeLibmad();
-  void *mpeg1_mad_handle;
+  lt_dlhandle mpeg1_mad_handle;
 #ifdef HAVE_LIBMAD
   void (*mad_stream_init)(struct mad_stream *);
   void (*mad_frame_init)(struct mad_frame *);

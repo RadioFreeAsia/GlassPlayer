@@ -35,29 +35,30 @@ CodecFdk::CodecFdk(unsigned bitrate,QObject *parent)
   //
   // Load Library
   //
-  if((fdk_fdkaac_handle=dlopen("libfdk-aac.so.1",RTLD_NOW))!=NULL) {
+  lt_dlinit();
+  if((fdk_fdkaac_handle=lt_dlopen("libfdk-aac.so.1"))!=NULL) {
     *(void **)(&aacDecoder_AncDataInit)=
-      dlsym(fdk_fdkaac_handle,"aacDecoder_AncDataInit");
+      lt_dlsym(fdk_fdkaac_handle,"aacDecoder_AncDataInit");
     *(void **)(&aacDecoder_AncDataGet)=
-      dlsym(fdk_fdkaac_handle,"aacDecoder_AncDataGet");
+      lt_dlsym(fdk_fdkaac_handle,"aacDecoder_AncDataGet");
     *(void **)(&aacDecoder_SetParam)=
-      dlsym(fdk_fdkaac_handle,"");
+      lt_dlsym(fdk_fdkaac_handle,"");
     *(void **)(&aacDecoder_GetFreeBytes)=
-      dlsym(fdk_fdkaac_handle,"aacDecoder_GetFreeBytes");
+      lt_dlsym(fdk_fdkaac_handle,"aacDecoder_GetFreeBytes");
     *(void **)(&aacDecoder_Open)=
-      dlsym(fdk_fdkaac_handle,"aacDecoder_Open");
+      lt_dlsym(fdk_fdkaac_handle,"aacDecoder_Open");
     *(void **)(&aacDecoder_ConfigRaw)=
-      dlsym(fdk_fdkaac_handle,"aacDecoder_ConfigRaw");
+      lt_dlsym(fdk_fdkaac_handle,"aacDecoder_ConfigRaw");
     *(void **)(&aacDecoder_Fill)=
-      dlsym(fdk_fdkaac_handle,"aacDecoder_Fill");
+      lt_dlsym(fdk_fdkaac_handle,"aacDecoder_Fill");
     *(void **)(&aacDecoder_DecodeFrame)=
-      dlsym(fdk_fdkaac_handle,"aacDecoder_DecodeFrame");
+      lt_dlsym(fdk_fdkaac_handle,"aacDecoder_DecodeFrame");
     *(void **)(&aacDecoder_Close)=
-      dlsym(fdk_fdkaac_handle,"aacDecoder_Close");
+      lt_dlsym(fdk_fdkaac_handle,"aacDecoder_Close");
     *(void **)(&aacDecoder_GetStreamInfo)=
-      dlsym(fdk_fdkaac_handle,"aacDecoder_GetStreamInfo");
+      lt_dlsym(fdk_fdkaac_handle,"aacDecoder_GetStreamInfo");
     *(void **)(&aacDecoder_GetLibInfo)=
-      dlsym(fdk_fdkaac_handle,"aacDecoder_GetLibInfo");
+      lt_dlsym(fdk_fdkaac_handle,"aacDecoder_GetLibInfo");
 
     //
     // Initialize Decoder Instance

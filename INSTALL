@@ -11,6 +11,10 @@ Secret Rabbit Code
 A sample-rate converter library, written by Erik de Castro Lopo.  Included
 with most distros, or you can find it at http://www.mega-nerd.com/SRC/.
 
+GNU LibTool libltdl
+A script for generic shared library support.  Information is available at
+ https://www.gnu.org/software/libtool/manual/html_node/Using-libltdl.html#Using-libltdl.
+
 
 OPTIONAL PREREQUISITES
 ---------------------------------------------------------------------------

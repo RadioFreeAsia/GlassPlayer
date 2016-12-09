@@ -50,7 +50,7 @@ class CodecOgg : public Codec
   bool LoadOgg();
 #ifdef HAVE_OGG
   bool ParseOpusHeader(unsigned *samprate,unsigned *chans,ogg_packet *op);
-  void *ogg_ogg_handle;
+  lt_dlhandle ogg_ogg_handle;
   int (*ogg_sync_init)(ogg_sync_state *);
   int (*ogg_sync_clear)(ogg_sync_state *);
   int (*ogg_sync_reset)(ogg_sync_state *);
@@ -69,7 +69,7 @@ class CodecOgg : public Codec
   ogg_packet ogg_op;
   QString ogg_vendor_string;
 
-  void *ogg_vorbis_handle;
+  lt_dlhandle ogg_vorbis_handle;
   void (*vorbis_info_init)(vorbis_info *);
   void (*vorbis_info_clear)(vorbis_info *);
   void (*vorbis_comment_init)(vorbis_comment *);
@@ -87,7 +87,7 @@ class CodecOgg : public Codec
   vorbis_dsp_state vd;
   vorbis_block vb;
 
-  void *ogg_opus_handle;
+  lt_dlhandle ogg_opus_handle;
   OpusDecoder *(*opus_decoder_create)(opus_int32,int,int *);
   int (*opus_decode_float)(OpusDecoder *,const unsigned char *,opus_int32,
 			   float *,int,int);

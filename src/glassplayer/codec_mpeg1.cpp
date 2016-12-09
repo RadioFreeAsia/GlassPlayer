@@ -211,23 +211,27 @@ void CodecMpeg1::Reset()
 bool CodecMpeg1::LoadLibmad()
 {
 #ifdef HAVE_LIBMAD
-  if((mpeg1_mad_handle=dlopen("libmad.so.0",RTLD_NOW))!=NULL) {
+  lt_dlinit();
+  if((mpeg1_mad_handle=lt_dlopen("libmad.so.0"))!=NULL) {
     //
     // Initialize Library
     //
-    *(void **)(&mad_stream_init)=dlsym(mpeg1_mad_handle,"mad_stream_init");
-    *(void **)(&mad_frame_init)=dlsym(mpeg1_mad_handle,"mad_frame_init");
-    *(void **)(&mad_synth_init)=dlsym(mpeg1_mad_handle,"mad_synth_init");
-    *(void **)(&mad_stream_buffer)=dlsym(mpeg1_mad_handle,"mad_stream_buffer");
-    *(void **)(&mad_frame_decode)=dlsym(mpeg1_mad_handle,"mad_frame_decode");
-    *(void **)(&mad_header_decode)=dlsym(mpeg1_mad_handle,"mad_header_decode");
-    *(void **)(&mad_synth_frame)=dlsym(mpeg1_mad_handle,"mad_synth_frame");
-    *(void **)(&mad_frame_mute)=dlsym(mpeg1_mad_handle,"mad_frame_mute");
-    *(void **)(&mad_synth_mute)=dlsym(mpeg1_mad_handle,"mad_synth_mute");
-    *(void **)(&mad_stream_sync)=dlsym(mpeg1_mad_handle,"mad_stream_sync");
-    *(void **)(&mad_frame_finish)=dlsym(mpeg1_mad_handle,"mad_frame_finish");
-    *(void **)(&mad_stream_finish)=dlsym(mpeg1_mad_handle,"mad_stream_finish");
-    *(void **)(&mad_header_init)=dlsym(mpeg1_mad_handle,"mad_header_init");
+    *(void **)(&mad_stream_init)=lt_dlsym(mpeg1_mad_handle,"mad_stream_init");
+    *(void **)(&mad_frame_init)=lt_dlsym(mpeg1_mad_handle,"mad_frame_init");
+    *(void **)(&mad_synth_init)=lt_dlsym(mpeg1_mad_handle,"mad_synth_init");
+    *(void **)(&mad_stream_buffer)=
+      lt_dlsym(mpeg1_mad_handle,"mad_stream_buffer");
+    *(void **)(&mad_frame_decode)=lt_dlsym(mpeg1_mad_handle,"mad_frame_decode");
+    *(void **)(&mad_header_decode)=
+      lt_dlsym(mpeg1_mad_handle,"mad_header_decode");
+    *(void **)(&mad_synth_frame)=lt_dlsym(mpeg1_mad_handle,"mad_synth_frame");
+    *(void **)(&mad_frame_mute)=lt_dlsym(mpeg1_mad_handle,"mad_frame_mute");
+    *(void **)(&mad_synth_mute)=lt_dlsym(mpeg1_mad_handle,"mad_synth_mute");
+    *(void **)(&mad_stream_sync)=lt_dlsym(mpeg1_mad_handle,"mad_stream_sync");
+    *(void **)(&mad_frame_finish)=lt_dlsym(mpeg1_mad_handle,"mad_frame_finish");
+    *(void **)(&mad_stream_finish)=
+      lt_dlsym(mpeg1_mad_handle,"mad_stream_finish");
+    *(void **)(&mad_header_init)=lt_dlsym(mpeg1_mad_handle,"mad_header_init");
 
     //
     // Initialize Instance
@@ -250,6 +254,6 @@ void CodecMpeg1::FreeLibmad()
   mad_frame_finish(&mpeg1_mad_frame);
   mad_synth_finish(&mpeg1_mad_synth);
   mad_stream_finish(&mpeg1_mad_stream);
-  dlclose(mpeg1_mad_handle);
+  lt_dlclose(mpeg1_mad_handle);
 #endif  // HAVE_LIBMAD
 }

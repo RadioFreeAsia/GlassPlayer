@@ -89,6 +89,11 @@ fi
 PKG_CHECK_MODULES(SAMPLERATE,samplerate,[SAMPLERATE_FOUND=y],[])
 
 #
+# Check for LibTool libltdl
+#
+AC_CHECK_HEADER(ltdl.h,[],[AC_MSG_ERROR([*** Libtool ltdl not found ***])])
+
+#
 # Check for AudioScience HPI
 #
 AC_CHECK_HEADER(asihpi/hpi.h,[ASIHPI_FOUND=yes],[])

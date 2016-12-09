@@ -24,8 +24,9 @@
 #include <queue>
 #include <vector>
 
+#include <ltdl.h>
+
 #ifndef WIN32
-#include <dlfcn.h>
 #include <syslog.h>
 #endif  // WIN32
 

@@ -246,54 +246,57 @@ QString CodecOgg::CommentString(const unsigned char *str) const
 bool CodecOgg::LoadOgg()
 {
 #ifdef HAVE_OGG
+  lt_dlinit();
+
   //
   // Initialize Libogg
   //
-  if((ogg_ogg_handle=dlopen("libogg.so.0",RTLD_NOW))!=NULL) {
-    *(void **)(&ogg_sync_init)=dlsym(ogg_ogg_handle,"ogg_sync_init");
-    *(void **)(&ogg_sync_clear)=dlsym(ogg_ogg_handle,"ogg_sync_clear");
-    *(void **)(&ogg_sync_reset)=dlsym(ogg_ogg_handle,"ogg_sync_reset");
-    *(void **)(&ogg_sync_buffer)=dlsym(ogg_ogg_handle,"ogg_sync_buffer");
-    *(void **)(&ogg_sync_pageout)=dlsym(ogg_ogg_handle,"ogg_sync_pageout");
-    *(void **)(&ogg_sync_pagein)=dlsym(ogg_ogg_handle,"ogg_sync_pagein");
-    *(void **)(&ogg_sync_wrote)=dlsym(ogg_ogg_handle,"ogg_sync_wrote");
-    *(void **)(&ogg_stream_init)=dlsym(ogg_ogg_handle,"ogg_stream_init");
-    *(void **)(&ogg_stream_pagein)=dlsym(ogg_ogg_handle,"ogg_stream_pagein");
+  if((ogg_ogg_handle=lt_dlopen("libogg.so.0"))!=NULL) {
+    *(void **)(&ogg_sync_init)=lt_dlsym(ogg_ogg_handle,"ogg_sync_init");
+    *(void **)(&ogg_sync_clear)=lt_dlsym(ogg_ogg_handle,"ogg_sync_clear");
+    *(void **)(&ogg_sync_reset)=lt_dlsym(ogg_ogg_handle,"ogg_sync_reset");
+    *(void **)(&ogg_sync_buffer)=lt_dlsym(ogg_ogg_handle,"ogg_sync_buffer");
+    *(void **)(&ogg_sync_pageout)=lt_dlsym(ogg_ogg_handle,"ogg_sync_pageout");
+    *(void **)(&ogg_sync_pagein)=lt_dlsym(ogg_ogg_handle,"ogg_sync_pagein");
+    *(void **)(&ogg_sync_wrote)=lt_dlsym(ogg_ogg_handle,"ogg_sync_wrote");
+    *(void **)(&ogg_stream_init)=lt_dlsym(ogg_ogg_handle,"ogg_stream_init");
+    *(void **)(&ogg_stream_pagein)=lt_dlsym(ogg_ogg_handle,"ogg_stream_pagein");
     *(void **)(&ogg_stream_packetout)=
-      dlsym(ogg_ogg_handle,"ogg_stream_packetout");
-    *(void **)(&ogg_page_serialno)=dlsym(ogg_ogg_handle,"ogg_page_serialno");
+      lt_dlsym(ogg_ogg_handle,"ogg_stream_packetout");
+    *(void **)(&ogg_page_serialno)=lt_dlsym(ogg_ogg_handle,"ogg_page_serialno");
 
   //
   // Initialize Libvorbis
   //
-    if((ogg_vorbis_handle=dlopen("libvorbis.so.0",RTLD_NOW))!=NULL) {
+    if((ogg_vorbis_handle=lt_dlopen("libvorbis.so.0"))!=NULL) {
       *(void **)(&vorbis_info_init)=
-	dlsym(ogg_vorbis_handle,"vorbis_info_init");
+	lt_dlsym(ogg_vorbis_handle,"vorbis_info_init");
       *(void **)(&vorbis_info_clear)=
-	dlsym(ogg_vorbis_handle,"vorbis_info_clear");
+	lt_dlsym(ogg_vorbis_handle,"vorbis_info_clear");
       *(void **)(&vorbis_comment_init)=
-	dlsym(ogg_vorbis_handle,"vorbis_comment_init");
+	lt_dlsym(ogg_vorbis_handle,"vorbis_comment_init");
       *(void **)(&vorbis_comment_clear)=
-	dlsym(ogg_vorbis_handle,"vorbis_comment_clear");
+	lt_dlsym(ogg_vorbis_handle,"vorbis_comment_clear");
       *(void **)(&vorbis_block_init)=
-	dlsym(ogg_vorbis_handle,"vorbis_block_init");
-      *(void **)(&vorbis_synthesis)=dlsym(ogg_vorbis_handle,"vorbis_synthesis");
+	lt_dlsym(ogg_vorbis_handle,"vorbis_block_init");
+      *(void **)(&vorbis_synthesis)=
+	lt_dlsym(ogg_vorbis_handle,"vorbis_synthesis");
       *(void **)(&vorbis_synthesis_headerin)=
-	dlsym(ogg_vorbis_handle,"vorbis_synthesis_headerin");
+	lt_dlsym(ogg_vorbis_handle,"vorbis_synthesis_headerin");
       *(void **)(&vorbis_synthesis_init)=
-	dlsym(ogg_vorbis_handle,"vorbis_synthesis_init");
+	lt_dlsym(ogg_vorbis_handle,"vorbis_synthesis_init");
       *(void **)(&vorbis_synthesis_blockin)=
-	dlsym(ogg_vorbis_handle,"vorbis_synthesis_blockin");
+	lt_dlsym(ogg_vorbis_handle,"vorbis_synthesis_blockin");
       *(void **)(&vorbis_synthesis_pcmout)=
-	dlsym(ogg_vorbis_handle,"vorbis_synthesis_pcmout");
+	lt_dlsym(ogg_vorbis_handle,"vorbis_synthesis_pcmout");
       *(void **)(&vorbis_synthesis_read)=
-	dlsym(ogg_vorbis_handle,"vorbis_synthesis_read");
+	lt_dlsym(ogg_vorbis_handle,"vorbis_synthesis_read");
 
-      if((ogg_opus_handle=dlopen("libopus.so.0",RTLD_NOW))!=NULL) {
+      if((ogg_opus_handle=lt_dlopen("libopus.so.0"))!=NULL) {
 	*(void **)(&opus_decoder_create)=
-	  dlsym(ogg_opus_handle,"opus_decoder_create");
+	  lt_dlsym(ogg_opus_handle,"opus_decoder_create");
 	*(void **)(&opus_decode_float)=
-	  dlsym(ogg_opus_handle,"opus_decode_float");
+	  lt_dlsym(ogg_opus_handle,"opus_decode_float");
 
 	ogg_codec_type=CodecOgg::Unknown;
 	ogg_istate=0;
