@@ -316,3 +316,6 @@
 	possible.
 2016-12-07 Fred Gleason <fredg@paravelsystems.com>
 	* Modified build system to work under MinGW32.
+2016-12-07 Fred Gleason <fredg@paravelsystems.com>
+	* Added basic PortAudio support in 'src/glassplayer/dev_portaudio.cpp'
+	and 'src/glassplayer/dev_portaudio.h'.

@@ -112,6 +112,10 @@ QString AudioDevice::typeText(AudioDevice::Type type)
     ret=tr("JACK Audio Connection Kit");
     break;
 
+  case AudioDevice::PortAudio:
+    ret=tr("PortAudio");
+    break;
+
   case AudioDevice::LastType:
     break;
   }
@@ -143,6 +147,10 @@ QString AudioDevice::optionKeyword(AudioDevice::Type type)
 
   case AudioDevice::Jack:
     ret="jack";
+    break;
+
+  case AudioDevice::PortAudio:
+    ret="portaudio";
     break;
 
   case AudioDevice::LastType:

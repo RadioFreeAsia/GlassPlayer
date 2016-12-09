@@ -60,9 +60,9 @@ AC_ARG_ENABLE(file,[  --disable-file          disable FILE sound support],
 		      [SNDFILE_DISABLED=yes],[])
 AC_ARG_ENABLE(jack,[  --disable-jack          disable JACK sound support],
 		      [JACK_DISABLED=yes],[])
+AC_ARG_ENABLE(portaudio,[  --disable-portaudio     disable PortAudio sound support],
+		      [PORTAUDIO_DISABLED=yes],[])
 AC_ARG_ENABLE(docbook,[  --disable-docbook       disable building of DocBook documentation],[DOCBOOK_DISABLED=yes],[])
-#AC_ARG_ENABLE(opus,[  --disable-opus          disable Opus support],
-#	      [OPUS_DISABLED=yes],[]) 
 
 #
 # Check for Qt (Mandatory)
@@ -121,6 +121,17 @@ if test $JACK_FOUND ; then
   if test -z $JACK_DISABLED ; then
     AC_DEFINE(JACK,yes)
     USING_JACK=yes
+  fi
+fi
+
+#
+# Check for PortAudio
+#
+PKG_CHECK_MODULES(PORTAUDIO,portaudio-2.0,[PORTAUDIO_FOUND=y],[PORTAUDIO_NOT_FOUND=y])
+if test $PORTAUDIO_FOUND ; then
+  if test -z $PORTAUDIO_DISABLED ; then
+    AC_DEFINE(PORTAUDIO,yes)
+    USING_PORTAUDIO=yes
   fi
 fi
 
@@ -332,6 +343,11 @@ if test -z $USING_JACK ; then
 AC_MSG_NOTICE("|          Jack Audio Connection Kit (JACK) ... No    |")
 else
 AC_MSG_NOTICE("|          Jack Audio Connection Kit (JACK) ... Yes   |")
+fi
+if test -z $USING_PORTAUDIO ; then
+AC_MSG_NOTICE("|                     PortAudio (PORTAUDIO) ... No    |")
+else
+AC_MSG_NOTICE("|                     PortAudio (PORTAUDIO) ... Yes   |")
 fi
 AC_MSG_NOTICE("|                  Standard Output (STDOUT) ... Yes   |")
 AC_MSG_NOTICE("|                                                     |")
