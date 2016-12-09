@@ -22,6 +22,7 @@
 
 #include "dev_portaudio.h"
 
+#ifdef PORTAUDIO
 int __PortAudioCallback(const void *input,void *output,unsigned long frames,
 			const PaStreamCallbackTimeInfo *ti,
 			PaStreamCallbackFlags flags,void *priv)
@@ -32,6 +33,7 @@ int __PortAudioCallback(const void *input,void *output,unsigned long frames,
 
   return paContinue;
 }
+#endif  // PORTAUDIO
 
 
 DevPortAudio::DevPortAudio(Codec *codec,QObject *parent)
@@ -53,7 +55,9 @@ DevPortAudio::DevPortAudio(Codec *codec,QObject *parent)
 
 DevPortAudio::~DevPortAudio()
 {
+#ifdef PORTAUDIO
   Pa_Terminate();
+#endif  // PORTAUDIO
 }
 
 
@@ -70,6 +74,7 @@ bool DevPortAudio::isAvailable() const
 bool DevPortAudio::processOptions(QString *err,const QStringList &keys,
 				  const QStringList &values)
 {
+#ifdef PORTAUDIO
   bool ok=false;
 
   for(int i=0;i<keys.size();i++) {
@@ -89,6 +94,9 @@ bool DevPortAudio::processOptions(QString *err,const QStringList &keys,
   }
 
   return true;
+#else
+  return false;
+#endif  // PORTAUDIO
 }
 
 
@@ -129,10 +137,12 @@ bool DevPortAudio::start(QString *err)
 
 void DevPortAudio::stop()
 {
+#ifdef PORTAUDIO
   if(portaudio_stream!=NULL) {
     Pa_StopStream(portaudio_stream);
     Pa_CloseStream(portaudio_stream);
   }
+#endif  // PORTAUDIO
 }
 
 

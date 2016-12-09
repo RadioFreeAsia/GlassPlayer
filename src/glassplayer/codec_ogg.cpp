@@ -251,7 +251,11 @@ bool CodecOgg::LoadOgg()
   //
   // Initialize Libogg
   //
+#ifdef WIN32
+  if((ogg_ogg_handle=lt_dlopen("libogg-0.dll"))!=NULL) {
+#else
   if((ogg_ogg_handle=lt_dlopen("libogg.so.0"))!=NULL) {
+#endif  // WIN32
     *(void **)(&ogg_sync_init)=lt_dlsym(ogg_ogg_handle,"ogg_sync_init");
     *(void **)(&ogg_sync_clear)=lt_dlsym(ogg_ogg_handle,"ogg_sync_clear");
     *(void **)(&ogg_sync_reset)=lt_dlsym(ogg_ogg_handle,"ogg_sync_reset");
@@ -268,7 +272,11 @@ bool CodecOgg::LoadOgg()
   //
   // Initialize Libvorbis
   //
+#ifdef WIN32
+    if((ogg_vorbis_handle=lt_dlopen("libvorbis-0.dll"))!=NULL) {
+#else
     if((ogg_vorbis_handle=lt_dlopen("libvorbis.so.0"))!=NULL) {
+#endif  // WIN32
       *(void **)(&vorbis_info_init)=
 	lt_dlsym(ogg_vorbis_handle,"vorbis_info_init");
       *(void **)(&vorbis_info_clear)=
@@ -292,7 +300,11 @@ bool CodecOgg::LoadOgg()
       *(void **)(&vorbis_synthesis_read)=
 	lt_dlsym(ogg_vorbis_handle,"vorbis_synthesis_read");
 
+#ifdef WIN32
+      if((ogg_opus_handle=lt_dlopen("libopus-0.dll"))!=NULL) {
+#else
       if((ogg_opus_handle=lt_dlopen("libopus.so.0"))!=NULL) {
+#endif  // WIN32
 	*(void **)(&opus_decoder_create)=
 	  lt_dlsym(ogg_opus_handle,"opus_decoder_create");
 	*(void **)(&opus_decode_float)=

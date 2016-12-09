@@ -45,8 +45,16 @@ install-win32:
 	cp $(MINGW32_SYS_ROOT)/bin/libsamplerate-0.dll .
 	cp $(MINGW32_SYS_ROOT)/bin/libsndfile-1.dll .
 	cp $(MINGW32_SYS_ROOT)/bin/libstdc++-6.dll .
+	cp $(MINGW32_SYS_ROOT)/bin/libltdl-7.dll .
 	cp $(MINGW32_SYS_ROOT)/bin/libwinpthread-1.dll .
 	cp $(MINGW32_SYS_ROOT)/bin/zlib1.dll .
+
+install-win32-ogg:	
+		cp $(MINGW32_SYS_ROOT)/bin/libvorbis-0.dll .
+		cp $(MINGW32_SYS_ROOT)/bin/libvorbisenc-2.dll .
+		cp $(MINGW32_SYS_ROOT)/bin/libvorbisfile-3.dll .
+		cp $(MINGW32_SYS_ROOT)/bin/libogg-0.dll .
+		cp $(MINGW32_SYS_ROOT)/bin/libopus-0.dll .
 
 EXTRA_DIST = glassplayer.spec.in\
              autogen.sh\

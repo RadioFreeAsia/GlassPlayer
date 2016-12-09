@@ -321,3 +321,9 @@
 	and 'src/glassplayer/dev_portaudio.h'.
 2016-12-09 Fred Gleason <fredg@paravelsystems.com>
 	* Converted the codecs to use Libtool libltdl for dynamic loading.
+2016-12-09 Fred Gleason <fredg@paravelsystems.com>
+	* Fixed bugs in 'src/glassplayer/dev_portaudio.cpp' that broke the
+	build when PortAudio was not enabled.
+	* Added Ogg codec load paths for Windows in
+	'src/glassplayer/codec_ogg.cpp'.
+	* Added a 'make win32-install-ogg' target in 'Makefile.am'.
