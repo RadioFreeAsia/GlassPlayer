@@ -62,7 +62,7 @@
       <listitem>
 	<para>
 	  The type of audio device to use.  The default value is
-	  <userinput>ALSA</userinput>. See the
+	  <userinput>@DEFAULT_AUDIO_DEVICE_NAME@</userinput>. See the
 	  <emphasis remap='B'>DEVICE OPTIONS</emphasis> section (below) for
 	  the options appropriate for each audio device type.  Valid values
 	  are:

@@ -24,7 +24,7 @@ EXTRA_DIST = audiodevice.cpp audiodevice.h\
              cmdswitch.cpp cmdswitch.h\
              codec.cpp codec.h\
              connector.cpp connector.h\
-             glasslimits.h\
+             glasslimits.h.in\
              logging.cpp logging.h\
              metaevent.cpp metaevent.h\
              ringbuffer.cpp ringbuffer.h
@@ -36,6 +36,8 @@ CLEANFILES = *~\
              *.pdb\
              *.qm\
              moc_*
+
+DISTCLEANFILES = glasslimits.h
 
 MAINTAINERCLEANFILES = *~\
                        *.tar.gz\

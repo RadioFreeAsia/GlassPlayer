@@ -196,8 +196,12 @@ if test $ar_gcc_arch = i686 ; then
   USING_WIN32=yes
   AC_DEFINE(WIN32)
   AC_SUBST(PLATFORM_LIBS,"")
+  AC_SUBST(DEFAULT_AUDIO_DEVICE,AudioDevice::Mme)
+  AC_SUBST(DEFAULT_AUDIO_DEVICE_NAME,MME)
 else
   AC_SUBST(PLATFORM_LIBS,"-ldl -lpthread")
+  AC_SUBST(DEFAULT_AUDIO_DEVICE,AudioDevice::Alsa)
+  AC_SUBST(DEFAULT_AUDIO_DEVICE_NAME,ALSA)
 fi
 
 #
@@ -224,8 +228,10 @@ else
 fi 
 
 AC_CONFIG_FILES([ \
+    docs/glassplayer.xml \
     docs/Makefile \
     src/Makefile \
+    src/common/glasslimits.h \
     src/common/Makefile \
     src/glassplayer/Makefile \
     src/glassplayergui/Makefile \

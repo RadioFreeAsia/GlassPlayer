@@ -58,7 +58,7 @@ MainObject::MainObject(QObject *parent)
   sir_first_stats=true;
   disable_stream_metadata=false;
 
-  audio_device_type=AudioDevice::Alsa;
+  audio_device_type=DEFAULT_AUDIO_DEVICE;
   dump_bitstream=false;
   list_codecs=false;
   list_devices=false;

@@ -33,12 +33,13 @@ man_MANS = glassplayer.1\
            glassplayergui.1
 
 EXTRA_DIST = glassplayer.1\
-             glassplayer.xml\
+             glassplayer.xml.in\
              glassplayergui.1\
              glassplayergui.xml
 
 CLEANFILES = *~
-DISTCLEANFILES = moc_*
+DISTCLEANFILES = glassplayer.xml\
+                 moc_*
 MAINTAINERCLEANFILES = *~\
                        *.1\
                        *.fo\
