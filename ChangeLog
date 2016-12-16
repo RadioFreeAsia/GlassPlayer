@@ -338,3 +338,6 @@
 2016-12-16 Fred Gleason <fredg@paravelsystems.com>
 	* Modified glassplayer(1) to use 'MME' as the default audio device
 	under Windows.
+2016-12-16 Fred Gleason <fredg@paravelsystems.com>
+	* Added a '--mme-device-id=' switch for glassplayer(1).
+	* Implemented the Stats interface for the MME driver.

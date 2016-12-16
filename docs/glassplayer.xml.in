@@ -743,18 +743,18 @@
 
   <varlistentry>
     <term>
-      <emphasis remap='B'>PortAudio</emphasis>
-      (<option>--audio-device=</option><userinput>PORTAUDIO</userinput>)
+      <emphasis remap='B'>Windows Multimedia Extensions</emphasis>
+      (<option>--audio-device=</option><userinput>MME</userinput>)
     </term>
     <listitem>
       <variablelist>
 	<varlistentry>
 	  <term>
-	    <option>--portaudio-index=</option><replaceable>index</replaceable>
+	    <option>--mme-device-id=</option><replaceable>device-id</replaceable>
 	  </term>
 	  <listitem>
 	    <para>
-	      The index number of the sound device to use.
+	      The device ID of the sound device to use.
 	    </para>
 	  </listitem>
 	</varlistentry>

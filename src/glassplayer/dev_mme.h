@@ -55,14 +55,15 @@ class DevMme : public AudioDevice
  private:
 #ifdef MME
   QString MmeError(MMRESULT err) const;
+  QStringList mme_device_names;
+  unsigned mme_device_id;
   HWAVEOUT mme_handle;
   WAVEHDR mme_headers[MME_PERIOD_QUAN];
   unsigned mme_current_header;
   QTimer *mme_audio_timer;
-  friend void CALLBACK __DevMmeCallback(HWAVEOUT hwo,UINT uMsg,
-					DWORD_PTR dwInstance,  
-					DWORD_PTR dwParam1,DWORD_PTR dwParam2);
-
+  uint64_t mme_frames_played;
+  float *mme_pcm_in;
+  float *mme_pcm_out;
 #endif  // MME
 };
 

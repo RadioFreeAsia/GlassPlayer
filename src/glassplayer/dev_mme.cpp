@@ -36,8 +36,10 @@ void CALLBACK __DevMmeCallback(HWAVEOUT hwo,UINT umsg,DWORD_PTR instance,
 {
   WAVEHDR *hdr=(WAVEHDR *)param1;
 
-  if(umsg==WOM_DONE) {
+  switch(umsg) {
+  case WOM_DONE:
     hdr->dwUser=false;
+    break;
   }
 }
 #endif  // MME
@@ -47,20 +49,37 @@ DevMme::DevMme(Codec *codec,QObject *parent)
   : AudioDevice(codec,parent)
 {
 #ifdef MME
+  mme_device_id=0;
   mme_current_header=0;
+  mme_frames_played=0;
 
   for(int i=0;i<MME_PERIOD_QUAN;i++) {
     memset(&(mme_headers[i]),0,sizeof(mme_headers[i]));
   }
+  mme_pcm_in=new float[MME_BUFFER_SIZE*MAX_AUDIO_CHANNELS*2];
+  mme_pcm_out=new float[MME_BUFFER_SIZE*MAX_AUDIO_CHANNELS*2];
 
   mme_audio_timer=new QTimer(this);
   connect(mme_audio_timer,SIGNAL(timeout()),this,SLOT(audioData()));
+
+  for(unsigned i=0;i<waveOutGetNumDevs();i++) {
+    WAVEOUTCAPS caps;
+    waveOutGetDevCaps(i,&caps,sizeof(caps));
+    mme_device_names.push_back(caps.szPname);
+  }
 #endif  // MME
 }
 
 
 DevMme::~DevMme()
 {
+  delete mme_pcm_out;
+  delete mme_pcm_in;
+  for(int i=0;i<MME_PERIOD_QUAN;i++) {
+    if(mme_headers[i].lpData!=NULL) {
+      delete mme_headers[i].lpData;
+    }
+  }
 }
 
 
@@ -77,7 +96,33 @@ bool DevMme::isAvailable() const
 bool DevMme::processOptions(QString *err,const QStringList &keys,
 				    const QStringList &values)
 {
+#ifdef MME
+  for(int i=0;i<keys.size();i++) {
+    bool processed=false;
+    bool ok=false;
+    if(keys[i]=="--mme-device-id") {
+      mme_device_id=values[i].toUInt(&ok);
+      if(ok) {
+	if(mme_device_id>=(unsigned)mme_device_names.size()) {
+	  *err=tr("no such MME device");
+	  return false;
+	}
+	processed=true;
+      }
+      else {
+	*err=tr("invalid --mme-device value");
+	return false;
+      }
+    }
+    if(!processed) {
+      *err=tr("unrecognized option")+" "+keys[i]+"\"";
+      return false;
+    }
+  }
   return true;
+#else
+  return false;
+#endif  // MME
 }
 
 
@@ -85,7 +130,6 @@ bool DevMme::start(QString *err)
 {
 #ifdef MME
   MMRESULT merr;
-  UINT device=0;
   WAVEFORMATEX wfx;
 
   //
@@ -99,7 +143,8 @@ bool DevMme::start(QString *err)
   wfx.nAvgBytesPerSec=codec()->samplerate()*codec()->channels()*sizeof(int16_t);
   wfx.wBitsPerSample=sizeof(int16_t)*8;
 
-  if((merr=waveOutOpen(&mme_handle,device,&wfx,(DWORD_PTR)__DevMmeCallback,
+  if((merr=waveOutOpen(&mme_handle,mme_device_id,&wfx,
+		       (DWORD_PTR)__DevMmeCallback,
 		       (DWORD_PTR)this,CALLBACK_FUNCTION))!=0) {
     *err=MmeError(merr);
     return false;
@@ -139,12 +184,38 @@ bool DevMme::start(QString *err)
 
 void DevMme::stop()
 {
+  waveOutClose(mme_handle);
 }
 
 
 void DevMme::loadStats(QStringList *hdrs,QStringList *values,
 			       bool is_first)
 {
+#ifdef MME
+  if(is_first) {
+    hdrs->push_back("Device|Type");
+    values->push_back("MME");
+
+    hdrs->push_back("Device|Name");
+    values->push_back(mme_device_names.at(mme_device_id));
+
+    hdrs->push_back("Device|Samplerate");
+    values->push_back(QString().sprintf("%u",codec()->samplerate()));
+
+    hdrs->push_back("Device|Buffer Size");
+    values->push_back(QString().sprintf("%u",MME_BUFFER_SIZE));
+  }
+  /*
+  hdrs->push_back("Device|Frames Played");
+  values->push_back(QString().sprintf("%lu",jack_play_position));
+
+  hdrs->push_back("Device|PLL Offset");
+  values->push_back(QString().sprintf("%8.6lf",jack_pll_offset));
+
+  hdrs->push_back("Device|PLL Setpoint Frames");
+  values->push_back(QString().sprintf("%u",jack_pll_setpoint_frames));
+  */
+#endif  // MME
 }
 
 
@@ -152,13 +223,13 @@ void DevMme::audioData()
 {
 #ifdef MME
   MMRESULT merr;
-  float pcm[MME_BUFFER_SIZE*codec()->channels()];
+  unsigned hdrptr;
   Ringbuffer *rb=codec()->ring();
 
-  unsigned hdrptr=mme_current_header%MME_PERIOD_QUAN;
+  hdrptr=mme_current_header%MME_PERIOD_QUAN;
   while((!mme_headers[hdrptr].dwUser)&&(rb->readSpace()>=MME_BUFFER_SIZE)) {
-    rb->read(pcm,MME_BUFFER_SIZE);
-    src_float_to_short_array(pcm,(short *)mme_headers[hdrptr].lpData,
+    rb->read(mme_pcm_in,MME_BUFFER_SIZE);
+    src_float_to_short_array(mme_pcm_in,(short *)mme_headers[hdrptr].lpData,
 			     MME_BUFFER_SIZE*codec()->channels());
     mme_headers[hdrptr].dwUser=true;
     if((merr=waveOutWrite(mme_handle,&(mme_headers[hdrptr]),
@@ -166,8 +237,9 @@ void DevMme::audioData()
       Log(LOG_WARNING,MmeError(merr));
     }
     hdrptr=++mme_current_header%MME_PERIOD_QUAN;
+    mme_frames_played+=MME_BUFFER_SIZE;
+    updatePlayPosition(mme_frames_played);
   }
-
 #endif // MME
 }
 
