@@ -60,6 +60,8 @@ AC_ARG_ENABLE(file,[  --disable-file          disable FILE sound support],
 		      [SNDFILE_DISABLED=yes],[])
 AC_ARG_ENABLE(jack,[  --disable-jack          disable JACK sound support],
 		      [JACK_DISABLED=yes],[])
+AC_ARG_ENABLE(mme,[  --disable-mme           disable MME sound support],
+		      [MME_DISABLED=yes],[])
 AC_ARG_ENABLE(portaudio,[  --disable-portaudio     disable PortAudio sound support],
 		      [PORTAUDIO_DISABLED=yes],[])
 AC_ARG_ENABLE(docbook,[  --disable-docbook       disable building of DocBook documentation],[DOCBOOK_DISABLED=yes],[])
@@ -127,6 +129,22 @@ if test $JACK_FOUND ; then
     AC_DEFINE(JACK,yes)
     USING_JACK=yes
   fi
+fi
+
+#
+# Check for Windows MME
+#
+AC_CHECK_HEADER(windows.h,[MME_FOUND=yes],[])
+if test $MME_FOUND ; then
+  if test -z $MME_DISABLED ; then
+    AC_DEFINE(MME)
+    AC_SUBST(MME_LIBS,-lwinmm)
+    USING_MME=yes
+  else
+    AC_SUBST(MME_LIBS,"")
+  fi
+else
+  AC_SUBST(MME_LIBS,"")
 fi
 
 #
@@ -353,6 +371,11 @@ if test -z $USING_PORTAUDIO ; then
 AC_MSG_NOTICE("|                     PortAudio (PORTAUDIO) ... No    |")
 else
 AC_MSG_NOTICE("|                     PortAudio (PORTAUDIO) ... Yes   |")
+fi
+if test -z $USING_MME ; then
+AC_MSG_NOTICE("|       Windows Multimedia Extensions (MME) ... No    |")
+else
+AC_MSG_NOTICE("|       Windows Multimedia Extensions (MME) ... Yes   |")
 fi
 AC_MSG_NOTICE("|                  Standard Output (STDOUT) ... Yes   |")
 AC_MSG_NOTICE("|                                                     |")

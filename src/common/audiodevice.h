@@ -42,7 +42,8 @@ class AudioDevice : public QObject
 {
   Q_OBJECT;
  public:
-  enum Type {Stdout=0,Alsa=1,AsiHpi=2,File=3,Jack=4,PortAudio=5,LastType=6};
+  enum Type {Stdout=0,Alsa=1,AsiHpi=2,File=3,Jack=4,PortAudio=5,Mme=6,
+	     LastType=7};
   enum Format {FLOAT=0,S16_LE=1,S32_LE=2,LastFormat=3};
   AudioDevice(Codec *codec,QObject *parent=0);
   ~AudioDevice();

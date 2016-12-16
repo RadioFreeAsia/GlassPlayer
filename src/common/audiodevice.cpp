@@ -112,6 +112,10 @@ QString AudioDevice::typeText(AudioDevice::Type type)
     ret=tr("JACK Audio Connection Kit");
     break;
 
+  case AudioDevice::Mme:
+    ret=tr("Windows MME");
+    break;
+
   case AudioDevice::PortAudio:
     ret=tr("PortAudio");
     break;
@@ -147,6 +151,10 @@ QString AudioDevice::optionKeyword(AudioDevice::Type type)
 
   case AudioDevice::Jack:
     ret="jack";
+    break;
+
+  case AudioDevice::Mme:
+    ret="mme";
     break;
 
   case AudioDevice::PortAudio:

@@ -21,8 +21,10 @@
 #include "dev_alsa.h"
 #include "dev_file.h"
 #include "dev_jack.h"
+#include "dev_mme.h"
 #include "dev_portaudio.h"
 #include "dev_stdout.h"
+
 #include "audiodevicefactory.h"
 
 AudioDevice *AudioDeviceFactory(AudioDevice::Type type,Codec *codec,QObject *parent)
@@ -51,6 +53,12 @@ AudioDevice *AudioDeviceFactory(AudioDevice::Type type,Codec *codec,QObject *par
 #ifdef JACK
     audiodevice=new DevJack(codec,parent);
 #endif  // JACK
+    break;
+
+  case AudioDevice::Mme:
+#ifdef MME
+    audiodevice=new DevMme(codec,parent);
+#endif  // MME
     break;
 
   case AudioDevice::PortAudio:

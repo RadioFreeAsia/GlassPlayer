@@ -131,6 +131,21 @@
 	  <variablelist remap='TP'>
 	    <varlistentry>
 	      <term>
+		<userinput>MME</userinput>
+	      </term>
+	      <listitem>
+		<para>
+		  Windows Multimedia Extensions
+		</para>
+	      </listitem>
+	    </varlistentry>
+	  </variablelist>
+	</blockquote>
+
+	<blockquote remap='RS'>
+	  <variablelist remap='TP'>
+	    <varlistentry>
+	      <term>
 		<userinput>PORTAUDIO</userinput>
 	      </term>
 	      <listitem>
