@@ -20,7 +20,7 @@
 ##
 ## Use automake to process this into a Makefile.in
 
-AM_CPPFLAGS = -Wall -DPREFIX=\"$(prefix)\" -Wno-strict-aliasing @QT4CLI_CFLAGS@ @SNDFILE_CFLAGS@ @SAMPLERATE_CFLAGS@ @ALSA_CFLAGS@ @JACK_CFLAGS@ @OGG_CFLAGS@ @PORTAUDIO_CFLAGS@
+AM_CPPFLAGS = -Wall -DPREFIX=\"$(prefix)\" -Wno-strict-aliasing @QT4CLI_CFLAGS@ @SNDFILE_CFLAGS@ @SAMPLERATE_CFLAGS@ @ALSA_CFLAGS@ @JACK_CFLAGS@ @OGG_CFLAGS@
 MOC = @QT4_MOC@
 
 # The dependency for qt's Meta Object Compiler (moc)
@@ -45,7 +45,6 @@ dist_glassplayer_SOURCES = audiodevicefactory.cpp audiodevicefactory.h\
                            dev_file.cpp dev_file.h\
                            dev_jack.cpp dev_jack.h\
                            dev_mme.cpp dev_mme.h\
-                           dev_portaudio.cpp dev_portaudio.h\
                            dev_stdout.cpp dev_stdout.h\
                            glassplayer.cpp glassplayer.h\
                            m3uplaylist.cpp m3uplaylist.h\
@@ -74,13 +73,12 @@ nodist_glassplayer_SOURCES = audiodevice.cpp audiodevice.h\
                              moc_dev_file.cpp\
                              moc_dev_jack.cpp\
                              moc_dev_mme.cpp\
-                             moc_dev_portaudio.cpp\
                              moc_dev_stdout.cpp\
                              moc_glassplayer.cpp\
                              moc_serverid.cpp\
                              ringbuffer.cpp ringbuffer.h
 
-glassplayer_LDADD = @QT4CLI_LIBS@ @SNDFILE_LIBS@ @SAMPLERATE_LIBS@ @ALSA_LIBS@ @JACK_LIBS@ @ASIHPI_LIBS@ @PLATFORM_LIBS@ @PORTAUDIO_LIBS@ @MME_LIBS@ -lltdl
+glassplayer_LDADD = @QT4CLI_LIBS@ @SNDFILE_LIBS@ @SAMPLERATE_LIBS@ @ALSA_LIBS@ @JACK_LIBS@ @ASIHPI_LIBS@ @PLATFORM_LIBS@ @MME_LIBS@ -lltdl
 
 
 CLEANFILES = *~\

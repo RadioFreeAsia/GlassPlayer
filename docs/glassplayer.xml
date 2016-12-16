@@ -146,21 +146,6 @@
 	  <variablelist remap='TP'>
 	    <varlistentry>
 	      <term>
-		<userinput>PORTAUDIO</userinput>
-	      </term>
-	      <listitem>
-		<para>
-		  PortAudio cross-platform audio framework.
-		</para>
-	      </listitem>
-	    </varlistentry>
-	  </variablelist>
-	</blockquote>
-
-	<blockquote remap='RS'>
-	  <variablelist remap='TP'>
-	    <varlistentry>
-	      <term>
 		<userinput>STDOUT</userinput>
 	      </term>
 	      <listitem>

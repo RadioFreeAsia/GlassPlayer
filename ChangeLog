@@ -330,3 +330,5 @@
 2016-12-16 Fred Gleason <fredg@paravelsystems.com>
 	* Implemented a Windows Multimedia audio device in
 	'src/glassplayer/dst_mme.cpp' and 'src/glassplayer/dst_mme.h'.
+2016-12-16 Fred Gleason <fredg@paravelsystems.com>
+	* Removed PortAudio support.

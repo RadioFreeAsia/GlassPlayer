@@ -116,10 +116,6 @@ QString AudioDevice::typeText(AudioDevice::Type type)
     ret=tr("Windows MME");
     break;
 
-  case AudioDevice::PortAudio:
-    ret=tr("PortAudio");
-    break;
-
   case AudioDevice::LastType:
     break;
   }
@@ -155,10 +151,6 @@ QString AudioDevice::optionKeyword(AudioDevice::Type type)
 
   case AudioDevice::Mme:
     ret="mme";
-    break;
-
-  case AudioDevice::PortAudio:
-    ret="portaudio";
     break;
 
   case AudioDevice::LastType:
