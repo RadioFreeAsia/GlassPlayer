@@ -332,3 +332,6 @@
 	'src/glassplayer/dst_mme.cpp' and 'src/glassplayer/dst_mme.h'.
 2016-12-16 Fred Gleason <fredg@paravelsystems.com>
 	* Removed PortAudio support.
+2016-12-16 Fred Gleason <fredg@paravelsystems.com>
+	* Fixed bugs in 'src/glassplayer/dev_mme.cpp' that broke the build
+	under Linux.

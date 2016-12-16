@@ -23,11 +23,14 @@
 
 #include <samplerate.h>
 
+#ifdef MME
 #include <mmdeviceapi.h>
+#endif  // MME
 
 #include "dev_mme.h"
 #include "logging.h"
 
+#ifdef MME
 void CALLBACK __DevMmeCallback(HWAVEOUT hwo,UINT umsg,DWORD_PTR instance,  
 			       DWORD_PTR param1,DWORD_PTR param2)
 {
@@ -37,11 +40,13 @@ void CALLBACK __DevMmeCallback(HWAVEOUT hwo,UINT umsg,DWORD_PTR instance,
     hdr->dwUser=false;
   }
 }
+#endif  // MME
 
 
 DevMme::DevMme(Codec *codec,QObject *parent)
   : AudioDevice(codec,parent)
 {
+#ifdef MME
   mme_current_header=0;
 
   for(int i=0;i<MME_PERIOD_QUAN;i++) {
@@ -50,16 +55,7 @@ DevMme::DevMme(Codec *codec,QObject *parent)
 
   mme_audio_timer=new QTimer(this);
   connect(mme_audio_timer,SIGNAL(timeout()),this,SLOT(audioData()));
-  /*
-  WAVEOUTCAPS caps;
-
-  printf("DEVS: %u\n",waveOutGetNumDevs());
-  for(unsigned i=0;i<waveOutGetNumDevs();i++) {
-    waveOutGetDevCaps(i,&caps,sizeof(caps));
-    printf("DEV[%u]: %s\n",i,caps.szPname);
-    
-  }
-  */
+#endif  // MME
 }
 
 
@@ -176,7 +172,7 @@ void DevMme::audioData()
 }
 
 
-
+#ifdef MME
 QString DevMme::MmeError(MMRESULT err) const
 {
   char err_msg[200];
@@ -186,4 +182,5 @@ QString DevMme::MmeError(MMRESULT err) const
   }
   return tr("Unknown MME error")+QString().sprintf(" [%d]",err);
 }
+#endif  // MME
 
