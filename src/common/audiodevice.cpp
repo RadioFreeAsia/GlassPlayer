@@ -243,7 +243,7 @@ void AudioDevice::updateMeterLevels(int *lvls)
 }
 
 
-void AudioDevice::updatePlayPosition(uint64_t frames)
+void AudioDevice::updatePlayPosition(long unsigned frames)
 {
   audio_play_position=frames;
   audio_play_position_changed=true;

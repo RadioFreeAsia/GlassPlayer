@@ -70,7 +70,7 @@ class AudioDevice : public QObject
   void setMeterLevels(float *lvls);
   void setMeterLevels(int *lvls);
   void updateMeterLevels(int *lvls);
-  void updatePlayPosition(uint64_t frames);
+  void updatePlayPosition(long unsigned frames);
   Codec *codec();
   void remixChannels(float *pcm_out,unsigned chans_out,
 		     float *pcm_in,unsigned chans_in,unsigned nframes); 
@@ -85,7 +85,7 @@ class AudioDevice : public QObject
  private:
   Codec *audio_codec;
   int audio_meter_levels[MAX_AUDIO_CHANNELS];
-  uint64_t audio_play_position;
+  long unsigned audio_play_position;
   bool audio_play_position_changed;
   unsigned audio_ring_read_space_prev;
   std::queue<uint64_t> audio_metadata_frames;

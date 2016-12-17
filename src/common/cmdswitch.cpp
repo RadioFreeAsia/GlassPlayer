@@ -31,7 +31,6 @@ CmdSwitch::CmdSwitch(int argc,char *argv[],const char *modname,
 {
   unsigned l=0;
   bool handled=false;
-  bool debug=false;
 
   for(int i=1;i<argc;i++) {
 #ifndef WIN32
@@ -43,9 +42,6 @@ CmdSwitch::CmdSwitch(int argc,char *argv[],const char *modname,
     if(!strcmp(argv[i],"--help")) {
       printf("\n%s %s\n",modname,usage);
       exit(0);
-    }
-    if(!strcmp(argv[i],"-d")) {
-      debug=true;
     }
     l=strlen(argv[i]);
     handled=false;

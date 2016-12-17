@@ -341,3 +341,6 @@
 2016-12-16 Fred Gleason <fredg@paravelsystems.com>
 	* Added a '--mme-device-id=' switch for glassplayer(1).
 	* Implemented the Stats interface for the MME driver.
+2016-12-16 Fred Gleason <fredg@paravelsystems.com>
+	* Cleaned up warnings in 'src/common/audiodevice.cpp'.
+	* Cleaned up warnings in 'src/common/cmdswitch.cpp'.

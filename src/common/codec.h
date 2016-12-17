@@ -91,7 +91,7 @@ class Codec : public QObject
   virtual void loadStats(QStringList *hdrs,QStringList *values,bool is_first)=0;
 
  private:
-  uint64_t codec_bytes_processed;
+  long unsigned codec_bytes_processed;
   bool codec_bytes_processed_changed;
   uint64_t codec_frames_generated;
   std::queue<uint64_t> codec_metadata_bytes;
