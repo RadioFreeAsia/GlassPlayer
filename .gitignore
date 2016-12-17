@@ -16,6 +16,8 @@ Makefile
 Makefile.in
 missing
 moc_*
+docs/glassplayer.xml
+src/common/glasslimits.h
 src/glassplayer/audiodevice.cpp
 src/glassplayer/audiodevice.h
 src/glassplayer/cmdswitch.cpp
