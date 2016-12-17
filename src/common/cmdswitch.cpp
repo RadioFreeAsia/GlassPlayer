@@ -60,18 +60,6 @@ CmdSwitch::CmdSwitch(int argc,char *argv[],const char *modname,
       switch_processed.push_back(false);
     }
   }
-
-  //
-  // Initialize Logging
-  //
-#ifndef WIN32
-  if(debug) {
-    openlog(modname,LOG_PERROR,LOG_USER);
-  }
-  else {
-    openlog(modname,0,LOG_USER);
-  }
-#endif  // WIN32
 }
 
 

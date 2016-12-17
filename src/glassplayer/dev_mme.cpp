@@ -73,6 +73,7 @@ DevMme::DevMme(Codec *codec,QObject *parent)
 
 DevMme::~DevMme()
 {
+#ifdef MME
   delete mme_pcm_out;
   delete mme_pcm_in;
   for(int i=0;i<MME_PERIOD_QUAN;i++) {
@@ -80,6 +81,7 @@ DevMme::~DevMme()
       delete mme_headers[i].lpData;
     }
   }
+#endif  // MME
 }
 
 
@@ -184,7 +186,9 @@ bool DevMme::start(QString *err)
 
 void DevMme::stop()
 {
+#ifdef MME
   waveOutClose(mme_handle);
+#endif  // MME
 }
 
 

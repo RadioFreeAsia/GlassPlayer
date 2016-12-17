@@ -344,3 +344,6 @@
 2016-12-16 Fred Gleason <fredg@paravelsystems.com>
 	* Cleaned up warnings in 'src/common/audiodevice.cpp'.
 	* Cleaned up warnings in 'src/common/cmdswitch.cpp'.
+2016-12-16 Fred Gleason <fredg@paravelsystems.com>
+	* Fixed bugs in 'src/common/cmdswitch.cpp' and
+	'src/glassplayer/dev_mme.cpp' that broke the build under Linux.
