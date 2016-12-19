@@ -33,6 +33,7 @@ ServerId::ServerId(QObject *parent)
 {
   id_socket=CreateSocket();
   id_restarting=false;
+  id_tempfile=NULL;
 
   id_restart_timer=new QTimer(this);
   id_restart_timer->setSingleShot(true);
@@ -46,6 +47,9 @@ ServerId::ServerId(QObject *parent)
 
 ServerId::~ServerId()
 {
+  if(id_tempfile!=NULL) {
+    delete id_tempfile;
+  }
   if(id_socket!=NULL) {
     delete id_socket;
   }
@@ -206,17 +210,17 @@ void ServerId::errorData(QAbstractSocket::SocketError err)
       //
       // Static File
       //
-      int fd=-1;
-      char tempfile[]={"/tmp/glassplayerXXXXXX"};
-      if((fd=mkstemp(tempfile))<0) {
+      id_tempfile=new QTemporaryFile(this);
+      id_tempfile->setAutoRemove(false);
+      if(!id_tempfile->open()) {
 	Log(LOG_ERR,tr("unable to create temporary file")+
 	    " ["+strerror(errno)+"]");
 	exit(GLASS_EXIT_FILEOPEN_ERROR);
       }
-      write(fd,id_body.constData(),id_body.size());
-      close(fd);
+      id_tempfile->write(id_body);
+      id_tempfile->close();
       emit typeFound(Connector::FileServer,id_content_type,
-		     QUrl(QString("file://")+tempfile));
+		     QUrl(QString("file://")+id_tempfile->fileName()));
       id_kill_timer->start(0);
     }
     break;

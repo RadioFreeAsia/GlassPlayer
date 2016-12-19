@@ -347,3 +347,6 @@
 2016-12-16 Fred Gleason <fredg@paravelsystems.com>
 	* Fixed bugs in 'src/common/cmdswitch.cpp' and
 	'src/glassplayer/dev_mme.cpp' that broke the build under Linux.
+2016-12-16 Fred Gleason <fredg@paravelsystems.com>
+	* Refactored temporary file creation code in
+	'src/glassplayer/serverid.cpp' to work correctly under Windows.

@@ -23,6 +23,7 @@
 
 #include <QString>
 #include <QTcpSocket>
+#include <QTemporaryFile>
 #include <QTimer>
 #include <QUrl>
 
@@ -70,6 +71,7 @@ class ServerId : public QObject
   QTimer *id_restart_timer;
   bool id_restarting;
   bool id_icy;
+  QTemporaryFile *id_tempfile;
 };
 
 
