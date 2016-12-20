@@ -20,6 +20,7 @@
 
 #include <stdint.h>
 #include <stdio.h>
+#include <unistd.h>
 
 #include <samplerate.h>
 
@@ -31,6 +32,34 @@
 #include "logging.h"
 
 #ifdef MME
+
+void *__DevMmeWaveCallback(void *ptr)
+{
+#ifdef MME
+  DevMme *dev=(DevMme *)ptr;
+  static unsigned hdrptr;
+  static Ringbuffer *rb=dev->codec()->ring();
+
+  while(1==1) {
+    hdrptr=dev->mme_current_header%MME_PERIOD_QUAN;
+    while((!dev->mme_headers[hdrptr].dwUser)&&(rb->readSpace()>=MME_BUFFER_SIZE)) {
+      rb->read(dev->mme_pcm_in,MME_BUFFER_SIZE);
+      src_float_to_short_array(dev->mme_pcm_in,(short *)dev->mme_headers[hdrptr].lpData,
+			       MME_BUFFER_SIZE*dev->codec()->channels());
+      dev->mme_headers[hdrptr].dwUser=true;
+      waveOutWrite(dev->mme_handle,&(dev->mme_headers[hdrptr]),
+		   sizeof(dev->mme_headers[hdrptr]));
+      hdrptr=++dev->mme_current_header%MME_PERIOD_QUAN;
+      dev->mme_frames_played+=MME_BUFFER_SIZE;
+    }
+    usleep(40000);
+  }
+#endif // MME
+
+  return NULL;
+}
+
+
 void CALLBACK __DevMmeCallback(HWAVEOUT hwo,UINT umsg,DWORD_PTR instance,  
 			       DWORD_PTR param1,DWORD_PTR param2)
 {
@@ -133,6 +162,7 @@ bool DevMme::start(QString *err)
 #ifdef MME
   MMRESULT merr;
   WAVEFORMATEX wfx;
+  pthread_attr_t pthread_attr;
 
   //
   // Open the output device
@@ -174,6 +204,14 @@ bool DevMme::start(QString *err)
     mme_headers[i].dwUser=true;
     waveOutWrite(mme_handle,&(mme_headers[i]),sizeof(mme_headers[i]));
   }
+
+
+  //
+  // Start the Callback
+  //
+  pthread_attr_init(&pthread_attr);
+  pthread_attr_setschedpolicy(&pthread_attr,SCHED_FIFO);
+  pthread_create(&mme_pthread,&pthread_attr,__DevMmeWaveCallback,this);
 
   mme_audio_timer->start(1000*MME_BUFFER_SIZE/codec()->samplerate());
 
@@ -226,6 +264,7 @@ void DevMme::loadStats(QStringList *hdrs,QStringList *values,
 void DevMme::audioData()
 {
 #ifdef MME
+  /*
   MMRESULT merr;
   unsigned hdrptr;
   Ringbuffer *rb=codec()->ring();
@@ -244,6 +283,8 @@ void DevMme::audioData()
     mme_frames_played+=MME_BUFFER_SIZE;
     updatePlayPosition(mme_frames_played);
   }
+  */
+  updatePlayPosition(mme_frames_played);
 #endif // MME
 }
 

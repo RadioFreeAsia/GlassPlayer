@@ -26,6 +26,7 @@
 #include <mmsystem.h>
 #endif  // MME
 
+#include <pthread.h>
 #include <samplerate.h>
 
 #include <QTimer>
@@ -64,6 +65,8 @@ class DevMme : public AudioDevice
   uint64_t mme_frames_played;
   float *mme_pcm_in;
   float *mme_pcm_out;
+  pthread_t mme_pthread;
+  friend void *__DevMmeWaveCallback(void *ptr);
 #endif  // MME
 };
 

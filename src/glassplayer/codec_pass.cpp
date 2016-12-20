@@ -18,6 +18,9 @@
 //   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 //
 
+#include <stdio.h>
+#include <unistd.h>
+
 #include "codec_pass.h"
 
 CodecPassthrough::CodecPassthrough(unsigned bitrate,QObject *parent)
@@ -47,7 +50,7 @@ void CodecPassthrough::process(const QByteArray &data,bool is_last)
 {
   if(!isFramed()) {
     setFramed(channels(),samplerate(),
-	      channels()*samplerate()*sizeof(float)/1000);
+    	      channels()*samplerate()*sizeof(float)/1000);
   }
   writePcm((float *)data.constData(),data.length()/(channels()*sizeof(float)),
 	   is_last);
