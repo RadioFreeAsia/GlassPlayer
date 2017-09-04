@@ -29,7 +29,7 @@ class DevFile : public AudioDevice
 {
   Q_OBJECT;
  public:
-  DevFile(Codec *codec,QObject *parent=0);
+  DevFile(unsigned pregap,Codec *codec,QObject *parent=0);
   ~DevFile();
   bool processOptions(QString *err,const QStringList &keys,
 		      const QStringList &values);

@@ -39,7 +39,7 @@ class DevAlsa : public AudioDevice
 {
   Q_OBJECT;
  public:
-  DevAlsa(Codec *codec,QObject *parent=0);
+  DevAlsa(unsigned pregap,Codec *codec,QObject *parent=0);
   ~DevAlsa();
   bool processOptions(QString *err,const QStringList &keys,
 		      const QStringList &values);

@@ -44,7 +44,7 @@ class AudioDevice : public QObject
  public:
   enum Type {Stdout=0,Alsa=1,AsiHpi=2,File=3,Jack=4,Mme=5,LastType=6};
   enum Format {FLOAT=0,S16_LE=1,S32_LE=2,LastFormat=3};
-  AudioDevice(Codec *codec,QObject *parent=0);
+  AudioDevice(unsigned pregap,Codec *codec,QObject *parent=0);
   ~AudioDevice();
   virtual bool isAvailable() const;
   virtual bool processOptions(QString *err,const QStringList &keys,
@@ -67,6 +67,7 @@ class AudioDevice : public QObject
   void metadataReceived(MetaEvent *e);
 
  protected:
+  unsigned pregap() const;
   void setMeterLevels(float *lvls);
   void setMeterLevels(int *lvls);
   void updateMeterLevels(int *lvls);
@@ -83,6 +84,7 @@ class AudioDevice : public QObject
   virtual void loadStats(QStringList *hdrs,QStringList *values,bool is_first)=0;
 
  private:
+  unsigned audio_pregap;
   Codec *audio_codec;
   int audio_meter_levels[MAX_AUDIO_CHANNELS];
   long unsigned audio_play_position;

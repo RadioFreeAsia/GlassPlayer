@@ -23,8 +23,8 @@
 
 #include "dev_stdout.h"
 
-DevStdout::DevStdout(Codec *codec,QObject *parent)
-  : AudioDevice(codec,parent)
+DevStdout::DevStdout(unsigned pregap,Codec *codec,QObject *parent)
+  : AudioDevice(pregap,codec,parent)
 {
   stdout_format=AudioDevice::S16_LE;
 }

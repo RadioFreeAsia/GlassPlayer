@@ -41,7 +41,7 @@ class DevMme : public AudioDevice
 {
   Q_OBJECT;
  public:
-  DevMme(Codec *codec,QObject *parent=0);
+  DevMme(unsigned pregap,Codec *codec,QObject *parent=0);
   ~DevMme();
   bool isAvailable() const;
   bool processOptions(QString *err,const QStringList &keys,

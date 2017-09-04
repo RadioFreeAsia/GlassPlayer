@@ -26,18 +26,19 @@
 
 #include "audiodevicefactory.h"
 
-AudioDevice *AudioDeviceFactory(AudioDevice::Type type,Codec *codec,QObject *parent)
+AudioDevice *AudioDeviceFactory(AudioDevice::Type type,unsigned pregap,
+				Codec *codec,QObject *parent)
 {
   AudioDevice *audiodevice=NULL;
 
   switch(type) {
   case AudioDevice::Stdout:
-    audiodevice=new DevStdout(codec,parent);
+    audiodevice=new DevStdout(pregap,codec,parent);
     break;
 
   case AudioDevice::Alsa:
 #ifdef ALSA
-    audiodevice=new DevAlsa(codec,parent);
+    audiodevice=new DevAlsa(pregap,codec,parent);
 #endif  // ALSA
     break;
  
@@ -45,18 +46,18 @@ AudioDevice *AudioDeviceFactory(AudioDevice::Type type,Codec *codec,QObject *par
     break;
 
   case AudioDevice::File:
-    audiodevice=new DevFile(codec,parent);
+    audiodevice=new DevFile(pregap,codec,parent);
     break;
 
   case AudioDevice::Jack:
 #ifdef JACK
-    audiodevice=new DevJack(codec,parent);
+    audiodevice=new DevJack(pregap,codec,parent);
 #endif  // JACK
     break;
 
   case AudioDevice::Mme:
 #ifdef MME
-    audiodevice=new DevMme(codec,parent);
+    audiodevice=new DevMme(pregap,codec,parent);
 #endif  // MME
     break;
 

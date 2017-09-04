@@ -57,11 +57,13 @@ MainObject::MainObject(QObject *parent)
   sir_server_id=NULL;
   sir_first_stats=true;
   disable_stream_metadata=false;
+  bool ok=false;
 
   audio_device_type=DEFAULT_AUDIO_DEVICE;
   dump_bitstream=false;
   list_codecs=false;
   list_devices=false;
+  pregap=0;
   sir_stats_out=false;
   server_type=Connector::XCastServer;
 
@@ -107,6 +109,14 @@ MainObject::MainObject(QObject *parent)
     }
     if(cmd->key(i)=="--post-data") {
       post_data=cmd->value(i);
+      cmd->setProcessed(i,true);
+    }
+    if(cmd->key(i)=="--pregap") {
+      pregap=cmd->value(i).toUInt(&ok);
+      if(!ok) {
+	fprintf(stderr,"glassplayer: unvalid argument to --pregap\n");
+	exit(GLASS_EXIT_ARGUMENT_ERROR);
+      }
       cmd->setProcessed(i,true);
     }
     if(cmd->key(i)=="--server-script-down") {
@@ -305,7 +315,7 @@ void MainObject::codecFramedData(unsigned chans,unsigned samprate,
     }
   }
   if((sir_audio_device=
-      AudioDeviceFactory(audio_device_type,sir_codec,this))==NULL) {
+      AudioDeviceFactory(audio_device_type,pregap,sir_codec,this))==NULL) {
     Log(LOG_ERR,"unsupported audio device");
     exit(GLASS_EXIT_UNSUPPORTED_DEVICE_ERROR);
   }
@@ -468,7 +478,7 @@ void MainObject::ListCodecs()
 void MainObject::ListDevices()
 {
   for(int i=0;i<AudioDevice::LastType;i++) {
-    if(AudioDeviceFactory((AudioDevice::Type)i,NULL,this)!=NULL) {
+    if(AudioDeviceFactory((AudioDevice::Type)i,0,NULL,this)!=NULL) {
       printf("%s\n",(const char *)AudioDevice::optionKeyword((AudioDevice::Type)i).toUtf8());
     }
   }

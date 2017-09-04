@@ -38,7 +38,7 @@ class DevJack : public AudioDevice
 {
   Q_OBJECT;
  public:
-  DevJack(Codec *codec,QObject *parent=0);
+  DevJack(unsigned pregap,Codec *codec,QObject *parent=0);
   ~DevJack();
   bool isAvailable() const;
   bool processOptions(QString *err,const QStringList &keys,

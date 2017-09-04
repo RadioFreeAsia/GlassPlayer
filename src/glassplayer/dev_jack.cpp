@@ -159,8 +159,8 @@ int JackProcess(jack_nframes_t nframes, void *arg)
 #endif  // JACK
 
 
-DevJack::DevJack(Codec *codec,QObject *parent)
-  : AudioDevice(codec,parent)
+DevJack::DevJack(unsigned pregap,Codec *codec,QObject *parent)
+  : AudioDevice(pregap,codec,parent)
 {
 #ifdef JACK
   jack_jack_client=NULL;

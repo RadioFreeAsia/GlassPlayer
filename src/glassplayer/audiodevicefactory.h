@@ -24,8 +24,8 @@
 #include "audiodevice.h"
 #include "codec.h"
 
-AudioDevice *AudioDeviceFactory(AudioDevice::Type type,Codec *codec,
-				QObject *parent=0);
+AudioDevice *AudioDeviceFactory(AudioDevice::Type type,unsigned pregap,
+				Codec *codec,QObject *parent=0);
 
 
 #endif  // AUDIODEVICEFACTORY_H

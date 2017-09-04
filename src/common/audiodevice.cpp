@@ -30,9 +30,10 @@
 #include "glasslimits.h"
 #include "logging.h"
 
-AudioDevice::AudioDevice(Codec *codec,QObject *parent)
+AudioDevice::AudioDevice(unsigned pregap,Codec *codec,QObject *parent)
   : QObject(parent)
 {
+  audio_pregap=pregap;
   audio_codec=codec;
   audio_play_position_changed=true;
   audio_ring_read_space_prev=0;
@@ -222,6 +223,12 @@ void AudioDevice::setMeterLevels(float *lvls)
       audio_meter_levels[i]=(int)(-2000.0*log10f(lvls[i]));
     }
   }
+}
+
+
+unsigned AudioDevice::pregap() const
+{
+  return audio_pregap;
 }
 
 

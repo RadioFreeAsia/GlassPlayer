@@ -23,8 +23,8 @@
 
 #include "dev_file.h"
 
-DevFile::DevFile(Codec *codec,QObject *parent)
-  : AudioDevice(codec,parent)
+DevFile::DevFile(unsigned pregap,Codec *codec,QObject *parent)
+  : AudioDevice(pregap,codec,parent)
 {
   file_format=AudioDevice::S16_LE;
   file_file_name="";

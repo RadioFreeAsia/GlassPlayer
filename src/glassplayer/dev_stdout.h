@@ -27,7 +27,7 @@ class DevStdout : public AudioDevice
 {
   Q_OBJECT;
  public:
-  DevStdout(Codec *codec,QObject *parent=0);
+  DevStdout(unsigned pregap,Codec *codec,QObject *parent=0);
   ~DevStdout();
   bool processOptions(QString *err,const QStringList &keys,
 		      const QStringList &values);

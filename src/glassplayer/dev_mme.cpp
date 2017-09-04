@@ -74,8 +74,8 @@ void CALLBACK __DevMmeCallback(HWAVEOUT hwo,UINT umsg,DWORD_PTR instance,
 #endif  // MME
 
 
-DevMme::DevMme(Codec *codec,QObject *parent)
-  : AudioDevice(codec,parent)
+DevMme::DevMme(unsigned pregap,Codec *codec,QObject *parent)
+  : AudioDevice(pregap,codec,parent)
 {
 #ifdef MME
   mme_device_id=0;

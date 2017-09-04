@@ -87,6 +87,9 @@ void *AlsaCallback(void *ptr)
     usleep(36);
   }
 
+  //
+  // All the ringbuffer to stabilize
+  //
   while(count<PLL_SETTLE_INTERVAL) {  // Allow ringbuffer to stabilize
     if((ring_frames=dev->codec()->ring()->readSpace())>dev->alsa_pll_setpoint_frames) {
       dev->alsa_pll_setpoint_frames=ring_frames;
@@ -94,6 +97,34 @@ void *AlsaCallback(void *ptr)
     dev->alsa_pll_setpoint_frames=ring_frames;
     count++;
   }
+
+  //
+  // Apply the pregap
+  //
+  unsigned pregap=dev->pregap();
+  switch(dev->alsa_format) {
+  case AudioDevice::S16_LE:
+    memset(pcm16,0,ALSA_MAX_CARD_BUFFER);
+    for(i=0;i<pregap;i++) {
+      snd_pcm_writei(dev->alsa_pcm,pcm16,dev->alsa_samplerate/1000);
+    }
+    break;
+
+  case AudioDevice::S32_LE:
+    memset(pcm32,0,ALSA_MAX_CARD_BUFFER);
+    for(i=0;i<pregap;i++) {
+      snd_pcm_writei(dev->alsa_pcm,pcm32,dev->alsa_samplerate/1000);
+    }
+    break;
+
+  case AudioDevice::FLOAT:
+    break;
+
+  case AudioDevice::LastFormat:
+    break;
+  }
+
+
   while((!dev->alsa_stopping)&&(dev->codec()->ring()->readSpace()>0)) {
     ring_frames=dev->codec()->ring()->readSpace();
     if(ring_frames>dev->alsa_pll_setpoint_frames) {
@@ -198,8 +229,8 @@ void *AlsaCallback(void *ptr)
 }
 
 
-DevAlsa::DevAlsa(Codec *codec,QObject *parent)
-  : AudioDevice(codec,parent)
+DevAlsa::DevAlsa(unsigned pregap,Codec *codec,QObject *parent)
+  : AudioDevice(pregap,codec,parent)
 {
 #ifdef ALSA
   alsa_device=ALSA_DEFAULT_DEVICE;

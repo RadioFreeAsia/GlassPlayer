@@ -358,3 +358,5 @@
 	at startup for File Server sources shorter than 2*samplerate frames.
 	* Added a workaround for a bug in ALSA that causes garbage to be
 	appended to the final PCM block written.
+2017-09-04 Fred Gleason <fredg@paravelsystems.com>
+	* Added a '--pregap=' option to glassplayer(1).
