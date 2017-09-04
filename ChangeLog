@@ -353,3 +353,8 @@
 2016-12-20 Fred Gleason <fredg@paravelsystems.com>
 	* Refactored the Windows MME driver so as not to deadlock when
 	playing File Server sources.
+2017-09-04 Fred Gleason <fredg@paravelsystems.com>
+	* Fixed a bug in 'src/glassplayer/dev_alsa.cpp' that caused a hang
+	at startup for File Server sources shorter than 2*samplerate frames.
+	* Added a workaround for a bug in ALSA that causes garbage to be
+	appended to the final PCM block written.

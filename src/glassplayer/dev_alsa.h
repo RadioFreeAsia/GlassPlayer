@@ -31,6 +31,7 @@
 #include "audiodevice.h"
 #include "meteraverage.h"
 
+#define ALSA_MAX_CARD_BUFFER 131072
 #define ALSA_DEFAULT_DEVICE "hw:0"
 #define ALSA_PERIOD_QUANTITY 4
 

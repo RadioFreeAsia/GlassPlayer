@@ -27,11 +27,11 @@ void *AlsaCallback(void *ptr)
 {
 #ifdef ALSA
   static DevAlsa *dev=NULL;
-  static float pcm_s1[32768];
+  static float pcm_s1[ALSA_MAX_CARD_BUFFER];
   static float *pcm_s2;
   static float *pcm_s3;
-  static int16_t pcm16[32768];
-  static int32_t pcm32[32768];
+  static int16_t pcm16[ALSA_MAX_CARD_BUFFER];
+  static int32_t pcm32[ALSA_MAX_CARD_BUFFER];
   static int n;
   static SRC_STATE *src=NULL;
   static SRC_DATA data;
@@ -82,7 +82,7 @@ void *AlsaCallback(void *ptr)
   //
   // Wait for PCM buffer to fill
   //
-  while((!dev->alsa_stopping)&&
+  while((!dev->alsa_stopping)&&(!dev->codec()->ring()->isFinished())&&
 	(dev->codec()->ring()->readSpace()<2*dev->codec()->samplerate())) {
     usleep(36);
   }
@@ -94,7 +94,7 @@ void *AlsaCallback(void *ptr)
     dev->alsa_pll_setpoint_frames=ring_frames;
     count++;
   }
-  while(!dev->alsa_stopping) {
+  while((!dev->alsa_stopping)&&(dev->codec()->ring()->readSpace()>0)) {
     ring_frames=dev->codec()->ring()->readSpace();
     if(ring_frames>dev->alsa_pll_setpoint_frames) {
       if(dev->alsa_pll_offset>(-PLL_CORRECTION_LIMIT)) {
@@ -136,12 +136,32 @@ void *AlsaCallback(void *ptr)
       }
       switch(dev->alsa_format) {
       case AudioDevice::S16_LE:
+	memset(pcm16,0,ALSA_MAX_CARD_BUFFER*sizeof(int16_t));
 	dev->convertFromFloat(pcm16,pcm_s3,n,dev->alsa_channels);
+
+	//
+	// Work around an ALSA bug that appends garbage to the end of
+	// the final PCM block
+	//
+	if(dev->codec()->ring()->readSpace()==0) {
+	  n=dev->alsa_buffer_size;
+	}
+
 	snd_pcm_writei(dev->alsa_pcm,pcm16,n);
 	break;
 
       case AudioDevice::S32_LE:
+	memset(pcm32,0,ALSA_MAX_CARD_BUFFER*sizeof(int32_t));
 	dev->convertFromFloat(pcm32,pcm_s3,n,dev->alsa_channels);
+
+	//
+	// Work around an ALSA bug that appends garbage to the end of
+	// the final PCM block
+	//
+	if(dev->codec()->ring()->readSpace()==0) {
+	  n=dev->alsa_buffer_size;
+	}
+
 	snd_pcm_writei(dev->alsa_pcm,pcm32,n);
 	break;
 
@@ -327,6 +347,9 @@ bool DevAlsa::start(QString *err)
     }
   }
   alsa_buffer_size=alsa_samplerate/2;
+  if(alsa_buffer_size>ALSA_MAX_CARD_BUFFER) {
+    alsa_buffer_size=ALSA_MAX_CARD_BUFFER;
+  }
   snd_pcm_hw_params_set_buffer_size_near(alsa_pcm,hwparams,&alsa_buffer_size);
   if(alsa_buffer_size!=(alsa_samplerate/2)) {
     if(global_log_verbose) {

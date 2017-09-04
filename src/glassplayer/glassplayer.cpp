@@ -330,7 +330,7 @@ void MainObject::codecFramedData(unsigned chans,unsigned samprate,
   if(sir_meter_data) {
     sir_meter_timer->start(AUDIO_METER_INTERVAL);
   }
-  sir_starvation_timer->start(1000);
+  sir_starvation_timer->start(2000);
 }
 
 
