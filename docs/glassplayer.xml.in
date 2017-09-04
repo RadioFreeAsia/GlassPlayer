@@ -299,6 +299,21 @@
 
     <varlistentry>
       <term>
+	<option>--pregap=</option><replaceable>msec</replaceable>
+      </term>
+      <listitem>
+	<para>
+	  Insert silence of duration <replaceable>msec</replaceable>
+	  milliseconds before outputing the decoded PCM data. Useful for
+	  dealing with certain types of audio hardware (such as HDMI) that
+	  may require a &quot;wakeup&quot; period before actually passing
+	  audio.
+	</para>
+      </listitem>
+    </varlistentry>
+
+    <varlistentry>
+      <term>
 	<option>--server-script-down=</option><replaceable>cmd</replaceable>
       </term>
       <listitem>
@@ -324,7 +339,7 @@
 
     <varlistentry>
       <term>
-	<option>--stats-data</option>
+	<option>--stats-out</option>
       </term>
       <listitem>
 	<para>
