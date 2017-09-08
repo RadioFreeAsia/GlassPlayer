@@ -95,7 +95,7 @@ void SigGen::connectToHostConnector()
   QStringList f0=serverUrl().path().split("/",QString::KeepEmptyParts);
   if(f0.size()>1) {
     siggen_level=f0.at(1);
-    siggen_ratio=exp10(siggen_level.toDouble(&ok)/20.0);
+    siggen_ratio=exp(2.303*siggen_level.toDouble(&ok)/(20.0));
     if(!ok) {
       fprintf(stderr,"glassplayer: invalid url\n");
       exit(GLASS_EXIT_ARGUMENT_ERROR);

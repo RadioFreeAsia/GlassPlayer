@@ -368,3 +368,6 @@
 	* Added an internal tone generator.
 2017-09-08 Fred Gleason <fredg@paravelsystems.com>
 	* Incremented the package version to 0.7.0.
+2017-09-08 Fred Gleason <fredg@paravelsystems.com>
+	* Modified 'src/glassplayer/conn_siggen.cpp' to avoid use of the
+	'exp10()' function.
