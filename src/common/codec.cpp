@@ -195,7 +195,8 @@ bool Codec::acceptsContentType(Type type,const QString &mimetype)
     ret=(mime=="audio/x-wav")||(mime=="audio/wav")||(mime=="audio/wave")||
       (mime=="audio/vnd.wave")||(mime=="audio/aiff")||(mime=="audio/x-aiff")||
       (mime=="audio/basic")||(mime=="audio/x-au")||(mime=="audio/voc")||
-      (mime=="audio/x-voc")||(mime=="audio/x-adpcm")||(mime=="audio/x-flac");
+      (mime=="audio/x-voc")||(mime=="audio/x-adpcm")||(mime=="audio/x-flac")||
+      (mime=="audio/tone");
     break;
 
   case Codec::TypeLast:

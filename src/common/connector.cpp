@@ -313,6 +313,10 @@ QString Connector::serverTypeText(Connector::ServerType type)
     ret=tr("File");
     break;
 
+  case Connector::SignalGenerator:
+    ret=tr("Signal Generator");
+    break;
+
   case Connector::LastServer:
     break;
   }
@@ -336,6 +340,10 @@ QString Connector::optionKeyword(Connector::ServerType type)
 
   case Connector::FileServer:
     ret="file";
+    break;
+
+  case Connector::SignalGenerator:
+    ret="tone";
     break;
 
   case Connector::LastServer:
@@ -373,6 +381,10 @@ bool Connector:: acceptsContentType(Connector::ServerType type,
 
   case Connector::HlsServer:    // We don't list any mimetypes here because
   case Connector::FileServer:   // ServerId handles it.
+    break;
+
+  case Connector::SignalGenerator:  // Doesn't use the mimetype at all
+    ret=true;
     break;
 
   case Connector::LastServer:

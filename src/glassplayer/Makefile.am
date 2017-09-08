@@ -39,6 +39,7 @@ dist_glassplayer_SOURCES = audiodevicefactory.cpp audiodevicefactory.h\
                            codecfactory.cpp codecfactory.h\
                            conn_file.cpp conn_file.h\
                            conn_hls.cpp conn_hls.h\
+                           conn_siggen.cpp conn_siggen.h\
                            conn_xcast.cpp conn_xcast.h\
                            connectorfactory.cpp connectorfactory.h\
                            dev_alsa.cpp dev_alsa.h\
@@ -67,6 +68,7 @@ nodist_glassplayer_SOURCES = audiodevice.cpp audiodevice.h\
                              moc_codec_pass.cpp\
                              moc_conn_file.cpp\
                              moc_conn_hls.cpp\
+                             moc_conn_siggen.cpp\
                              moc_conn_xcast.cpp\
                              moc_connector.cpp\
                              moc_dev_alsa.cpp\

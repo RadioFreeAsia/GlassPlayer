@@ -20,6 +20,7 @@
 
 #include "conn_file.h"
 #include "conn_hls.h"
+#include "conn_siggen.h"
 #include "conn_xcast.h"
 #include "connectorfactory.h"
 
@@ -39,6 +40,10 @@ Connector *ConnectorFactory(Connector::ServerType type,const QString &mimetype,
 
   case Connector::FileServer:
     conn=new File(mimetype,parent);
+    break;
+
+  case Connector::SignalGenerator:
+    conn=new SigGen(mimetype,parent);
     break;
 
   case Connector::LastServer:

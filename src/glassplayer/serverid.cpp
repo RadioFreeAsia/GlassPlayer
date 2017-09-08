@@ -94,7 +94,12 @@ void ServerId::connectToServer(const QUrl &url,const QString &post_data,
     }
   }
   else {
-    id_socket->connectToHost(url.host(),url.port(80));
+    if(id_url.scheme()=="tone") {
+      emit typeFound(Connector::SignalGenerator,"audio/tone",id_url);
+    }
+    else {
+      id_socket->connectToHost(url.host(),url.port(80));
+    }
   }
 }
 

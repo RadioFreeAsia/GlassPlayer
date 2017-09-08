@@ -40,7 +40,8 @@ class Connector : public QObject
 {
   Q_OBJECT;
  public:
-  enum ServerType {XCastServer=1,HlsServer=2,FileServer=3,LastServer=5};
+  enum ServerType {XCastServer=1,HlsServer=2,FileServer=3,SignalGenerator=4,
+		   LastServer=5};
   Connector(const QString &mimetype,QObject *parent=0);
   ~Connector();
   virtual Connector::ServerType serverType() const=0;

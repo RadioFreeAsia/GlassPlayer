@@ -364,3 +364,5 @@
 	* Documented the '--pregap=' option in the glasscoder(1) man page.
 	* Fixed a typo in the entry for the --stats-out' option in the
 	glasscoder(1) man page.
+2017-09-08 Fred Gleason <fredg@paravelsystems.com>
+	* Added an internal tone generator.
