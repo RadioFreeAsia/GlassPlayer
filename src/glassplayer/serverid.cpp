@@ -2,7 +2,7 @@
 //
 // Identify remote server
 //
-//   (C) Copyright 2016 Fred Gleason <fredg@paravelsystems.com>
+//   (C) Copyright 2016-2019 Fred Gleason <fredg@paravelsystems.com>
 //
 //   This program is free software; you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License version 2 as
@@ -98,7 +98,13 @@ void ServerId::connectToServer(const QUrl &url,const QString &post_data,
       emit typeFound(Connector::SignalGenerator,"audio/tone",id_url);
     }
     else {
-      id_socket->connectToHost(url.host(),url.port(80));
+      if(id_url.scheme()=="https") {
+	emit typeFound(Connector::HlsServer,"",id_url);
+	return;
+      }
+      else {
+	id_socket->connectToHost(url.host(),url.port(80));
+      }
     }
   }
 }

@@ -371,3 +371,8 @@
 2017-09-08 Fred Gleason <fredg@paravelsystems.com>
 	* Modified 'src/glassplayer/conn_siggen.cpp' to avoid use of the
 	'exp10()' function.
+2019-03-22 Fred Gleason <fredg@paravelsystems.com>
+	* Fixed a bug in glassplayer(1) that caused an incorrect default
+	port to be used when accessing HTTPS resources.
+	* Fixed a bug in glassplayer(1) that caused HLS playout to fail
+	when using HTTPS.

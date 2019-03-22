@@ -2,7 +2,7 @@
 //
 // glassplayer(1) Audio Encoder
 //
-//   (C) Copyright 2014-2016 Fred Gleason <fredg@paravelsystems.com>
+//   (C) Copyright 2014-2019 Fred Gleason <fredg@paravelsystems.com>
 //
 //   This program is free software; you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License version 2 as
@@ -228,6 +228,8 @@ MainObject::MainObject(QObject *parent)
 void MainObject::serverTypeFoundData(Connector::ServerType type,
 				     const QString &mimetype,const QUrl &url)
 {
+  //  printf("serverTypeFound(%d,%s,%s)\n",type,
+  //	 (const char *)mimetype.toUtf8(),(const char *)url.toString().toUtf8());
   sir_connector=ConnectorFactory(type,mimetype,this);
   sir_connector->setStreamMetadataEnabled(!disable_stream_metadata);
   connect(sir_connector,SIGNAL(connected(bool)),

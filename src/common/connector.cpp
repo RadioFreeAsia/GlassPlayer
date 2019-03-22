@@ -2,7 +2,7 @@
 //
 // Abstract base class for streaming server connections.
 //
-//   (C) Copyright 2014-2015 Fred Gleason <fredg@paravelsystems.com>
+//   (C) Copyright 2014-2019 Fred Gleason <fredg@paravelsystems.com>
 //
 //   This program is free software; you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License version 2 as
@@ -114,7 +114,12 @@ void Connector::setServerUrl(const QUrl &url)
   conn_server_url=url;
   uint16_t port=conn_server_url.port();
   if(port==65535) {
-    conn_server_url.setPort(DEFAULT_SERVER_PORT);
+    if(conn_server_url.scheme().toLower()=="https") {
+      conn_server_url.setPort(443);
+    }
+    else {
+      conn_server_url.setPort(DEFAULT_SERVER_PORT);
+    }
   }
   if(conn_server_url.path().isEmpty()) {
     conn_server_url.setPath("/");
