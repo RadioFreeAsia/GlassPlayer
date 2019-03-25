@@ -46,5 +46,11 @@
 #define GLASS_EXIT_INVALID_PLAYLIST_ERROR 12  // invalid playlist format
 #define GLASS_EXIT_NETWORK_ERROR 13           // general network error
 
+//
+// User Agent Strings
+//
+#define GLASSPLAYER_USER_AGENT "GlassPlayer/@VERSION@"
+#define GLASSPLAYERGUI_USER_AGENT "GlassPlayerGui/@VERSION@"
+
 
 #endif  // GLASSLIMITS_H

@@ -443,6 +443,8 @@ void MainWidget::GetLogo(const QString &url)
   if(url.isEmpty()) {
     return;
   }
+  args.push_back("--user-agent");
+  args.push_back(GLASSPLAYERGUI_USER_AGENT);
   args.push_back(url);
 
   if(gui_logo_process!=NULL) {

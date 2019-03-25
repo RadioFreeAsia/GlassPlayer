@@ -376,3 +376,8 @@
 	port to be used when accessing HTTPS resources.
 	* Fixed a bug in glassplayer(1) that caused HLS playout to fail
 	when using HTTPS.
+2019-03-25 Fred Gleason <fredg@paravelsystems.com>
+	* Changed the User Agent string of glassplayer(1) to
+	'GlassPlayer/<version>'.
+	* Changed the User Agent string of glassplayergui(1) to
+	'GlassPlayerGui/<version>'.

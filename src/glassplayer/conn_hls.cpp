@@ -134,6 +134,8 @@ void Hls::indexProcessStartData()
 {
   QStringList args;
 
+  args.push_back("--user-agent");
+  args.push_back(GLASSPLAYER_USER_AGENT);
   args.push_back("-D");
   args.push_back("-");
   if((!serverUsername().isEmpty())||(!serverPassword().isEmpty())) {
@@ -214,6 +216,8 @@ void Hls::mediaProcessStartData()
   if(segno<hls_index_playlist->segmentQuantity()) {
     hls_current_media_segment=hls_index_playlist->segmentUrl(segno);
     QStringList args;
+    args.push_back("--user-agent");
+    args.push_back(GLASSPLAYER_USER_AGENT);
     if((!serverUsername().isEmpty())||(!serverPassword().isEmpty())) {
       args.push_back("--user");
       args.push_back(serverUsername()+":"+serverPassword());
