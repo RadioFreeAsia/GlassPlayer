@@ -58,6 +58,7 @@ class Hls : public Connector
   M3uPlaylist *hls_index_playlist;
   QTimer *hls_index_timer;
   QProcess *hls_media_process;
+  QUrl hls_index_url;
   QUrl hls_current_media_segment;
   QUrl hls_last_media_segment;
   QTimer *hls_media_timer;

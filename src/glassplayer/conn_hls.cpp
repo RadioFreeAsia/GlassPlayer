@@ -72,6 +72,7 @@ void Hls::reset()
 
 void Hls::connectToHostConnector()
 {
+  hls_index_url=serverUrl();
   hls_index_timer->start(0);
 }
 
@@ -142,7 +143,7 @@ void Hls::indexProcessStartData()
     args.push_back("--user");
     args.push_back(serverUsername()+":"+serverPassword());
   }
-  args.push_back(serverUrl().toString());
+  args.push_back(hls_index_url.toString());
   if(hls_index_process!=NULL) {
     delete hls_index_process;
   }
@@ -167,29 +168,37 @@ void Hls::indexProcessFinishedData(int exit_code,QProcess::ExitStatus status)
     }
     else {
       QByteArray data=hls_index_process->readAllStandardOutput();
+      // printf("INDEX: %s\n",(const char *)data);
       data=ReadHeaders(data);
       M3uPlaylist *playlist=new M3uPlaylist();
-      if(playlist->parse(data,serverUrl())) {
-	if(*playlist!=*hls_index_playlist) {
-	  *hls_index_playlist=*playlist;
-	  if(isConnected()||hls_index_playlist->segmentQuantity()>=3) {
-	    hls_media_timer->start(0);
-	  }
-	  else {
-	    if(global_log_verbose) {
-	      Log(LOG_INFO,"waiting from stream to fill");
-	    }
-	  }
-	  hls_index_timer->start(1000*hls_index_playlist->targetDuration());
+      if(playlist->parse(data,hls_index_url)) {
+	if(playlist->isMaster()) {  // Recurse to target playlist
+	  // printf("TARGET: %s\n",(const char *)playlist->target().toString().toUtf8());
+	  hls_index_url=playlist->target();
+	  hls_index_timer->start(0);
 	}
 	else {
-	  hls_index_timer->start(1000);
+	  if(*playlist!=*hls_index_playlist) {
+	    *hls_index_playlist=*playlist;
+	    if(isConnected()||hls_index_playlist->segmentQuantity()>=3) {
+	      hls_media_timer->start(0);
+	    }
+	    else {
+	      if(global_log_verbose) {
+		Log(LOG_INFO,"waiting from stream to fill");
+	      }
+	    }
+	    hls_index_timer->start(1000*hls_index_playlist->targetDuration());
+	  }
+	  else {
+	    hls_index_timer->start(1000);
+	  }
 	}
-	delete playlist;
       }
       else {
 	Log(LOG_WARNING,"error parsing playlist");
       }
+      delete playlist;
     }
   }
 }

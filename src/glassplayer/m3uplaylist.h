@@ -2,7 +2,7 @@
 //
 // Abstract an M3U playlist
 //
-//   (C) Copyright 2016 Fred Gleason <fredg@paravelsystems.com>
+//   (C) Copyright 2016-2019 Fred Gleason <fredg@paravelsystems.com>
 //
 //   This program is free software; you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License version 2 as
@@ -34,7 +34,9 @@ class M3uPlaylist
   M3uPlaylist();
   QUrl source();
   QUrl root();
+  QUrl target();
   bool isExtended() const;
+  bool isMaster() const;
   int version() const;
   int targetDuration() const;
   bool isEnded() const;
@@ -55,6 +57,7 @@ class M3uPlaylist
   bool m3u_extended;
   int m3u_version;
   int m3u_target_duration;
+  bool m3u_master;
   bool m3u_ended;
   bool m3u_independent;
   int m3u_media_sequence;
@@ -67,6 +70,7 @@ class M3uPlaylist
   std::vector<QUrl> m3u_segment_urls;
   QUrl m3u_source;
   QUrl m3u_root;
+  QUrl m3u_target;
 };
 
 

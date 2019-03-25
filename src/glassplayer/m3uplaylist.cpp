@@ -45,9 +45,21 @@ QUrl M3uPlaylist::root()
 }
 
 
+QUrl M3uPlaylist::target()
+{
+  return m3u_target;
+}
+
+
 bool M3uPlaylist::isExtended() const
 {
   return m3u_extended;
+}
+
+
+bool M3uPlaylist::isMaster() const
+{
+  return m3u_master;
 }
 
 
@@ -179,6 +191,10 @@ bool M3uPlaylist::parse(const QByteArray &data,const QUrl &src)
 	    m3u_independent=true;
 	  }
 
+	  if((f1[0]=="#EXT-X-STREAM-INF")&&(f1.size()==2)) {
+	    m3u_master=true;
+	  }
+
 	  if((f1[0]=="#EXTINF")&&(f1.size()==2)) {
 	    QStringList f2=f1[1].split(",");
 	    m3u_current_segment_duration=f2[0].toDouble(&ok);
@@ -199,17 +215,22 @@ bool M3uPlaylist::parse(const QByteArray &data,const QUrl &src)
 	}
       }
       else {
-	m3u_segment_urls.push_back(QUrl(f0[i]));
-	if(!m3u_segment_urls.back().isValid()) {
-	  Log(LOG_WARNING,"M3uPlaylist: invalid URL");
-	  return false;
+	if(m3u_master) {
+	  m3u_target=QUrl(m3u_root.toString()+"/"+f0[i]);
 	}
-	m3u_segment_durations.push_back(m3u_current_segment_duration);
-	m3u_current_segment_duration=0.0;
-	m3u_segment_titles.push_back(m3u_current_segment_title);
-	m3u_current_segment_title="";
-	m3u_segment_datetimes.push_back(m3u_current_segment_datetime);
-	m3u_current_segment_datetime=QDateTime();
+	else {
+	  m3u_segment_urls.push_back(QUrl(f0[i]));
+	  if(!m3u_segment_urls.back().isValid()) {
+	    Log(LOG_WARNING,"M3uPlaylist: invalid URL");
+	    return false;
+	  }
+	  m3u_segment_durations.push_back(m3u_current_segment_duration);
+	  m3u_current_segment_duration=0.0;
+	  m3u_segment_titles.push_back(m3u_current_segment_title);
+	  m3u_current_segment_title="";
+	  m3u_segment_datetimes.push_back(m3u_current_segment_datetime);
+	  m3u_current_segment_datetime=QDateTime();
+	}
       }
     }
   }
@@ -271,6 +292,8 @@ void M3uPlaylist::clear()
 {
   m3u_source=QUrl();
   m3u_root=QUrl();
+  m3u_target=QUrl();
+  m3u_master=false;
   m3u_extended=false;
   m3u_version=-1;
   m3u_target_duration=10;
