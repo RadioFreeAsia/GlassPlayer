@@ -2,7 +2,7 @@
 //
 // Server connector for HTTP live streams (HLS).
 //
-//   (C) Copyright 2014-2016 Fred Gleason <fredg@paravelsystems.com>
+//   (C) Copyright 2014-2019 Fred Gleason <fredg@paravelsystems.com>
 //
 //   This program is free software; you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License version 2 as
@@ -25,9 +25,20 @@
 #include "conn_hls.h"
 #include "logging.h"
 
+#ifdef CONN_HLS_DUMP_SEGMENTS
+#include <errno.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#endif  // CONN_HLS_DUMP_SEGMENTS
+
 Hls::Hls(const QString &mimetype,QObject *parent)
   : Connector(mimetype,parent)
 {
+#ifdef CONN_HLS_DUMP_SEGMENTS
+  hls_segment_fd=-1;
+#endif  // CONN_HLS_DUMP_SEGMENTS
   hls_index_process=NULL;
   hls_media_process=NULL;
 
@@ -35,6 +46,7 @@ Hls::Hls(const QString &mimetype,QObject *parent)
   // Index Processor
   //
   hls_index_playlist=new M3uPlaylist();
+  hls_id3_parser=new Id3Parser();
   hls_index_timer=new QTimer(this);
   hls_index_timer->setSingleShot(true);
   connect(hls_index_timer,SIGNAL(timeout()),this,SLOT(indexProcessStartData()));
@@ -224,6 +236,23 @@ void Hls::mediaProcessStartData()
   }
   if(segno<hls_index_playlist->segmentQuantity()) {
     hls_current_media_segment=hls_index_playlist->segmentUrl(segno);
+
+#ifdef CONN_HLS_DUMP_SEGMENTS
+    QString filename=
+      CONN_HLS_DUMP_SEGMENTS+"/"+
+      hls_current_media_segment.toString().split("/",QString::SkipEmptyParts).back();
+    hls_segment_fd=open(filename.toUtf8(),O_CREAT|O_TRUNC|O_WRONLY,S_IRUSR|S_IWUSR);
+    if(hls_segment_fd>=0) {
+      fprintf(stderr,
+	      "creating media segment: %s\n",(const char *)filename.toUtf8()); 
+    }
+    else {
+      fprintf(stderr,
+        "unable to open media segment: %s [%s]\n",
+        (const char *)filename.toUtf8(),strerror(errno)); 
+    }
+ #endif  // CONN_HLS_DUMP_SEGMENTS
+
     QStringList args;
     args.push_back("--user-agent");
     args.push_back(GLASSPLAYER_USER_AGENT);
@@ -255,6 +284,15 @@ void Hls::mediaReadyReadData()
 
   while(hls_media_process->bytesAvailable()>0) {
     data=hls_media_process->read(1024);
+#ifdef CONN_HLS_DUMP_SEGMENTS
+    if(hls_segment_fd>=0) {
+      if(write(hls_segment_fd,data.data(),data.size())<0) {
+	fprintf(stderr,"  ERROR writing media segment data: %s\n",strerror(errno));
+      }
+    }
+#endif  // CONN_HLS_DUMP_SEGMENTS
+    /*
+    hls_id3_parser->parse(data);
     if(hls_new_segment) {
       if((data.constData()[0]=='I')&&
 	 (data.constData()[1]=='D')&&
@@ -266,13 +304,50 @@ void Hls::mediaReadyReadData()
       }
       hls_new_segment=false;
     }
-    emit dataReceived(data,false);
+    */
+    //    emit dataReceived(data,false);
+    hls_media_segment_data+=data;
   }
 }
 
 
 void Hls::mediaProcessFinishedData(int exit_code,QProcess::ExitStatus status)
 {
+#ifdef CONN_HLS_DUMP_SEGMENTS
+  if(hls_segment_fd>=0) {
+    close(hls_segment_fd);
+    hls_segment_fd=-1;
+  }
+#endif  // CONN_HLS_DUMP_SEGMENTS
+
+  //
+  // Extract Timed Metadata
+  //
+  hls_id3_parser->parse(hls_media_segment_data);
+  if(hls_new_segment) {
+    /*
+    if((data.constData()[0]=='I')&&
+       (data.constData()[1]=='D')&&
+       (data.constData()[2]=='3')) {
+      //
+      // FIXME: Extract ID3 timestamp info here
+      //
+      data=data.right(data.length()-(10+data.constData()[9]));
+    }
+    */
+    hls_new_segment=false;
+  }
+
+  for(int i=0;i<hls_media_segment_data.size();i+=1024) {
+    int n=hls_media_segment_data.size()-i;
+    if(n>1024) {
+      n=1024;
+    }
+    emit dataReceived(hls_media_segment_data.mid(i,n),false);
+  }
+  hls_media_segment_data.clear();
+
+  hls_id3_parser->reset();
   if(status!=QProcess::NormalExit) {
     Log(LOG_WARNING,tr("media process crashed"));
   }

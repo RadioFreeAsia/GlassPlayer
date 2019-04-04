@@ -2,7 +2,7 @@
 //
 // Server connector for HTTP live streams (HLS).
 //
-//   (C) Copyright 2014-2016 Fred Gleason <fredg@paravelsystems.com>
+//   (C) Copyright 2014-2019 Fred Gleason <fredg@paravelsystems.com>
 //
 //   This program is free software; you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License version 2 as
@@ -26,7 +26,10 @@
 #include <QTimer>
 
 #include "connector.h"
+#include "id3parser.h"
 #include "m3uplaylist.h"
+
+// #define CONN_HLS_DUMP_SEGMENTS QString("/home/fredg/hls_segments")
 
 class Hls : public Connector
 {
@@ -56,6 +59,8 @@ class Hls : public Connector
   void ProcessHeader(const QString &str);
   QProcess *hls_index_process;
   M3uPlaylist *hls_index_playlist;
+  Id3Parser *hls_id3_parser;
+  QByteArray hls_media_segment_data;
   QTimer *hls_index_timer;
   QProcess *hls_media_process;
   QUrl hls_index_url;
@@ -65,6 +70,9 @@ class Hls : public Connector
   bool hls_new_segment;
   QString hls_server;
   QString hls_content_type;
+#ifdef CONN_HLS_DUMP_SEGMENTS
+  int hls_segment_fd;
+#endif  // CONN_HLS_DUMP_SEGMENTS
 };
 
 

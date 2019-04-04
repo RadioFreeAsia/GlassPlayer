@@ -2,7 +2,7 @@
 ##
 ## Makefile for the glassplayer(1) Audio Encoder.
 ##
-## (C) Copyright 2014-2015 Fred Gleason <fredg@paravelsystems.com>
+## (C) Copyright 2014-2019 Fred Gleason <fredg@paravelsystems.com>
 ##
 ##   This program is free software; you can redistribute it and/or modify
 ##   it under the terms of the GNU General Public License version 2 as
@@ -48,6 +48,7 @@ dist_glassplayer_SOURCES = audiodevicefactory.cpp audiodevicefactory.h\
                            dev_mme.cpp dev_mme.h\
                            dev_stdout.cpp dev_stdout.h\
                            glassplayer.cpp glassplayer.h\
+                           id3parser.cpp id3parser.h\
                            m3uplaylist.cpp m3uplaylist.h\
                            meteraverage.cpp meteraverage.h\
                            serverid.cpp serverid.h
