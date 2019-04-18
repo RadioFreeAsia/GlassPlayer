@@ -387,3 +387,5 @@
 2019-04-18 Fred Gleason <fredg@paravelsystems.com>
 	* Documented the integrated signal generator in the glassplayer(1)
 	man page.
+2019-04-18 Fred Gleason <fredg@paravelsystems.com>
+	* Incremented the package version to 0.7.1.
