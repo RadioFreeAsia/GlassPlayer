@@ -880,6 +880,50 @@
   </variablelist>
 </refsect1>
 
+<refsect1 id='signal_generator'><title>Signal Generator</title>
+<para>
+  <command>glassplayer</command>
+  <manvolnum>1</manvolnum> includes an integrated signal generator that
+  can produce sinusoidal tones on the specified audio output. It works
+  by passing a <replaceable>stream-url</replaceable> of the form:
+</para>
+<para>
+  <userinput>tone://<replaceable>freq</replaceable>/<replaceable>level</replaceable></userinput>
+</para>
+<para>
+  Where:
+</para>
+<variablelist>
+  <varlistentry>
+    <term><replaceable>freq</replaceable> Signal frequency in Hz (must be an even multiple of 125)</term>
+  </varlistentry>
+  <varlistentry>
+    <term><replaceable>level</replaceable> Peak signal level in dBFS</term>
+  </varlistentry>
+</variablelist>
+
+<refsect2 id='signal_generator.examples'><title>Examples</title>
+<variablelist>
+  <varlistentry>
+    <term><userinput>tone://1000/0</userinput></term>
+    <listitem>
+      <para>
+	Output 1000 Hz at 0 dBFS
+      </para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term><userinput>tone://250/-12</userinput></term>
+    <listitem>
+      <para>
+	Output 250 Hz at -12 dBFS
+      </para>
+    </listitem>
+  </varlistentry>
+</variablelist>
+</refsect2>
+</refsect1>
+
 <refsect1 id='exit_values'><title>Exit Values</title>
 <variablelist>
   <varlistentry>

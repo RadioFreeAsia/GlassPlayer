@@ -384,3 +384,6 @@
 2019-03-25 Fred Gleason <fredg@paravelsystems.com>
 	* Added support for processing '#EXT-X-STREAM-INF' headers in
 	master HLS playlists.
+2019-04-18 Fred Gleason <fredg@paravelsystems.com>
+	* Documented the integrated signal generator in the glassplayer(1)
+	man page.
