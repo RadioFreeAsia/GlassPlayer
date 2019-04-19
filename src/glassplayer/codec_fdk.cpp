@@ -128,6 +128,7 @@ void CodecFdk::process(const QByteArray &data,bool is_last)
   if(is_last) {
     ring()->setFinished();
   }
+  delete bitstream[0];
 #endif  // HAVE_FDKAAC
 }
 
