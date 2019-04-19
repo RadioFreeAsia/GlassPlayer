@@ -2,7 +2,7 @@
 //
 // Abstract an M3U playlist
 //
-//   (C) Copyright 2016 Fred Gleason <fredg@paravelsystems.com>
+//   (C) Copyright 2016-2019 Fred Gleason <fredg@paravelsystems.com>
 //
 //   This program is free software; you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License version 2 as
@@ -240,12 +240,13 @@ bool M3uPlaylist::parse(const QByteArray &data,const QUrl &src)
 
 bool M3uPlaylist::parseFile(const QUrl &url)
 {
-  QFile *file=new QFile(url.path());
-  if(!file->open(QIODevice::ReadOnly)) {
+  QFile file(url.path());
+  if(!file.open(QIODevice::ReadOnly)) {
     return false;
   }
-  QByteArray data=file->readAll();
-  file->close();
+  QByteArray data=file.readAll();
+  file.close();
+
   return parse(data,url);
 }
 
