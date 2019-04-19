@@ -393,3 +393,5 @@
 	* Fixed a memory leak in glassplayer(1).
 2019-04-19 Fred Gleason <fredg@paravelsystems.com>
 	* Fixed a memory leak in the HeAAC decoder in glassplayer(1).
+2019-04-19 Fred Gleason <fredg@paravelsystems.com>
+	* Incremented the package version to 0.7.2.
