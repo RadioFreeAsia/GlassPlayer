@@ -1,6 +1,6 @@
-// id3parser.h
+// id3tag.cpp
 //
-// Extract ID3 tags from an MPEG/AAC Bitstream
+// ID3 tag container class.
 //
 //   (C) Copyright 2019 Fred Gleason <fredg@paravelsystems.com>
 //
@@ -18,30 +18,14 @@
 //   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 //
 
-#ifndef ID3PARSER_H
-#define ID3PARSER_H
-
-#include <stdint.h>
-
-#include <QByteArray>
-#include <QObject>
+#include <tbytevector.h>
 
 #include "id3tag.h"
 
-class Id3Parser : public QObject
+Id3Tag::Id3Tag(const QByteArray &data)
+  : TagLib::ID3v2::Tag()
 {
-  Q_OBJECT;
- public:
-  Id3Parser(QObject *parent=0);
-  void parse(QByteArray &data);
-  void reset();
-
- signals:
-  void tagReceived(uint64_t offset,Id3Tag *tag);
-
- private:
-  int parser_bytes_processed;
-};
-
-
-#endif  // ID3PARSER_H
+  TagLib::ByteVector bytes(data.constData(),data.size());
+  header()->setData(bytes.mid(0,10));
+  parse(bytes.mid(10));
+}

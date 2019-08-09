@@ -89,6 +89,11 @@ fi
 PKG_CHECK_MODULES(SAMPLERATE,samplerate,[SAMPLERATE_FOUND=y],[])
 
 #
+# Check for TagLib (Mandatory)
+#
+PKG_CHECK_MODULES(TAGLIB,taglib,[TAGLIB_FOUND=y],[])
+
+#
 # Check for LibTool libltdl
 #
 AC_CHECK_HEADER(ltdl.h,[],[AC_MSG_ERROR([*** Libtool ltdl not found ***])])

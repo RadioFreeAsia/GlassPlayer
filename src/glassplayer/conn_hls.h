@@ -46,6 +46,7 @@ class Hls : public Connector
   void loadStats(QStringList *hdrs,QStringList *values,bool is_first);
 
  private slots:
+  void tagReceivedData(uint64_t bytes,Id3Tag *tag);
   void indexProcessStartData();
   void indexProcessFinishedData(int exit_code,QProcess::ExitStatus status);
   void indexProcessErrorData(QProcess::ProcessError err);
@@ -67,9 +68,9 @@ class Hls : public Connector
   QUrl hls_current_media_segment;
   QUrl hls_last_media_segment;
   QTimer *hls_media_timer;
-  bool hls_new_segment;
   QString hls_server;
   QString hls_content_type;
+  MetaEvent hls_meta_event;
 #ifdef CONN_HLS_DUMP_SEGMENTS
   int hls_segment_fd;
 #endif  // CONN_HLS_DUMP_SEGMENTS

@@ -21,6 +21,8 @@
 #include <QByteArray>
 #include <QStringList>
 
+#include <tbytevector.h>
+
 #include "codec.h"
 #include "conn_hls.h"
 #include "logging.h"
@@ -47,6 +49,8 @@ Hls::Hls(const QString &mimetype,QObject *parent)
   //
   hls_index_playlist=new M3uPlaylist();
   hls_id3_parser=new Id3Parser();
+  connect(hls_id3_parser,SIGNAL(tagReceived(uint64_t,Id3Tag *)),
+	  this,SLOT(tagReceivedData(uint64_t,Id3Tag *)));
   hls_index_timer=new QTimer(this);
   hls_index_timer->setSingleShot(true);
   connect(hls_index_timer,SIGNAL(timeout()),this,SLOT(indexProcessStartData()));
@@ -139,6 +143,46 @@ void Hls::loadStats(QStringList *hdrs,QStringList *values,bool is_first)
       values->push_back(hls_index_playlist->segmentDateTime(i).
 			toString("yyyy-mm-dd hh::mm:ss"));
     }
+  }
+}
+
+
+void Hls::tagReceivedData(uint64_t bytes,Id3Tag *tag)
+{
+  bool changed=false;
+  TagLib::ID3v2::FrameList frames=tag->frameList();
+
+  for(unsigned i=0;i<frames.size();i++) {
+    TagLib::ByteVector raw_bytes=frames[i]->frameID();
+    QString id(QByteArray(raw_bytes.data(),raw_bytes.size()).constData());
+    if(id=="TIT2") {
+      QString str=QString::fromUtf8(frames[i]->toString().toCString(true));
+      if(hls_meta_event.field(MetaEvent::Name).toString()!=str) {
+	hls_meta_event.setField(MetaEvent::Name,str);
+	changed=true;
+      }
+    }
+    if(id=="TRSO") {
+      QString str=QString::fromUtf8(frames[i]->toString().toCString(true));
+      if(hls_meta_event.field(MetaEvent::Description)!=str) {
+	hls_meta_event.setField(MetaEvent::Description,str);
+	changed=true;
+      }
+    }
+    if(id=="TRSN") {
+      QString str=QString::fromUtf8(frames[i]->toString().toCString(true));
+      if(hls_meta_event.field(MetaEvent::StreamTitle)!=str) {
+	hls_meta_event.setField(MetaEvent::StreamTitle,str);
+	changed=true;
+      }
+    }
+    printf("frame[%u]: %s|%s\n",i,
+	   (const char *)id.toUtf8(),
+	   frames[i]->toString().toCString(true));
+  }
+  if(changed) {
+    //    printf("TITLE: %s\n",(const char *)hls_meta_event.field(MetaEvent::Name).toString().toUtf8());
+    emit metadataReceived(bytes,&hls_meta_event);
   }
 }
 
@@ -264,7 +308,6 @@ void Hls::mediaProcessStartData()
     if(hls_media_process!=NULL) {
       delete hls_media_process;
     }
-    hls_new_segment=true;
     hls_media_process=new QProcess(this);
     hls_media_process->setReadChannel(QProcess::StandardOutput);
     connect(hls_media_process,SIGNAL(readyReadStandardOutput()),
@@ -291,21 +334,6 @@ void Hls::mediaReadyReadData()
       }
     }
 #endif  // CONN_HLS_DUMP_SEGMENTS
-    /*
-    hls_id3_parser->parse(data);
-    if(hls_new_segment) {
-      if((data.constData()[0]=='I')&&
-	 (data.constData()[1]=='D')&&
-	 (data.constData()[2]=='3')) {
-	//
-	// FIXME: Extract ID3 timestamp info here
-	//
-	data=data.right(data.length()-(10+data.constData()[9]));
-      }
-      hls_new_segment=false;
-    }
-    */
-    //    emit dataReceived(data,false);
     hls_media_segment_data+=data;
   }
 }
@@ -324,30 +352,16 @@ void Hls::mediaProcessFinishedData(int exit_code,QProcess::ExitStatus status)
   // Extract Timed Metadata
   //
   hls_id3_parser->parse(hls_media_segment_data);
-  if(hls_new_segment) {
-    /*
-    if((data.constData()[0]=='I')&&
-       (data.constData()[1]=='D')&&
-       (data.constData()[2]=='3')) {
-      //
-      // FIXME: Extract ID3 timestamp info here
-      //
-      data=data.right(data.length()-(10+data.constData()[9]));
-    }
-    */
-    hls_new_segment=false;
+
+  //
+  // Forward Data
+  //
+  while(hls_media_segment_data.size()>=1024) {
+    emit dataReceived(hls_media_segment_data.left(1024),false);
+    hls_media_segment_data.remove(0,1024);
   }
 
-  for(int i=0;i<hls_media_segment_data.size();i+=1024) {
-    int n=hls_media_segment_data.size()-i;
-    if(n>1024) {
-      n=1024;
-    }
-    emit dataReceived(hls_media_segment_data.mid(i,n),false);
-  }
-  hls_media_segment_data.clear();
-
-  hls_id3_parser->reset();
+  //  hls_id3_parser->reset();
   if(status!=QProcess::NormalExit) {
     Log(LOG_WARNING,tr("media process crashed"));
   }

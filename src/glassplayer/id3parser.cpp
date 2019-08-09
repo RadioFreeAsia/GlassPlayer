@@ -18,11 +18,18 @@
 //   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 //
 
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <errno.h>
+#include <unistd.h>
+
 #include <stdio.h>
 
 #include "id3parser.h"
 
-Id3Parser::Id3Parser()
+Id3Parser::Id3Parser(QObject *parent)
+  : QObject(parent)
 {
   reset();
 }
@@ -30,24 +37,7 @@ Id3Parser::Id3Parser()
 
 void Id3Parser::parse(QByteArray &data)
 {
-  /*
-  int offset=-3;
-
-  while((offset=data.indexOf("ID3",offset+3))>=0) {
-    if(data.size()>offset+10) {
-      if((0xFF&data[offset+3])==0x04) {  // ID3v2.4
-	printf("ID3 at %d, size: %d\n",parser_bytes_processed+offset,
-	       ((0xFF&data[offset+6])*2048383)+
-	       ((0xFF&data[offset+7])*16129)+
-	       ((0xFF&data[offset+8])*127)+
-	       (0xFF&data[offset+9])+
-	       10);
-      }
-    }
-  }
-  */
   int offset=0;
-  int bytes_removed=0;
 
   //
   // Find ID3 Tags
@@ -68,10 +58,10 @@ void Id3Parser::parse(QByteArray &data)
       if((0x08&data[offset+5])!=0) {  // Check for Footer
 	tag_size+=10;
       }
-      printf("ID3 at: %d:%d\n",offset,tag_size);
-      //      data.remove(offset,tag_size);
-      //bytes_removed+=tag_size;
-      offset+=tag_size;
+      Id3Tag *tag=new Id3Tag(data.mid(offset,tag_size));
+      emit tagReceived(parser_bytes_processed+offset,tag);
+      delete tag;
+      data.remove(offset,tag_size);
     }
     else {
       offset+=3;
