@@ -107,8 +107,7 @@ class Connector : public QObject
   void setAudioSamplerate(unsigned samprate);
   void setCodecType(Codec::Type type);
   void setConnected(bool state);
-  void setMetadataField(uint64_t bytes,MetaEvent::Field field,
-			const QVariant &value);
+  void setMetadataField(uint64_t bytes,const QString &key,const QString &str);
   virtual void connectToHostConnector()=0;
   virtual void disconnectFromHostConnector()=0;
   virtual void loadStats(QStringList *hdrs,QStringList *values,bool is_first)=0;

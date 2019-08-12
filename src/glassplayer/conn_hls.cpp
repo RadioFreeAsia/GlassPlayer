@@ -149,39 +149,20 @@ void Hls::loadStats(QStringList *hdrs,QStringList *values,bool is_first)
 
 void Hls::tagReceivedData(uint64_t bytes,Id3Tag *tag)
 {
-  bool changed=false;
   TagLib::ID3v2::FrameList frames=tag->frameList();
 
   for(unsigned i=0;i<frames.size();i++) {
     TagLib::ByteVector raw_bytes=frames[i]->frameID();
     QString id(QByteArray(raw_bytes.data(),raw_bytes.size()).constData());
-    if(id=="TIT2") {
-      QString str=QString::fromUtf8(frames[i]->toString().toCString(true));
-      if(hls_meta_event.field(MetaEvent::Name).toString()!=str) {
-	hls_meta_event.setField(MetaEvent::Name,str);
-	changed=true;
-      }
-    }
-    if(id=="TRSO") {
-      QString str=QString::fromUtf8(frames[i]->toString().toCString(true));
-      if(hls_meta_event.field(MetaEvent::Description)!=str) {
-	hls_meta_event.setField(MetaEvent::Description,str);
-	changed=true;
-      }
-    }
-    if(id=="TRSN") {
-      QString str=QString::fromUtf8(frames[i]->toString().toCString(true));
-      if(hls_meta_event.field(MetaEvent::StreamTitle)!=str) {
-	hls_meta_event.setField(MetaEvent::StreamTitle,str);
-	changed=true;
-      }
-    }
+    QString str=QString::fromUtf8(frames[i]->toString().toCString(true));
+    hls_meta_event.setField(id,str);
+    /*
     printf("frame[%u]: %s|%s\n",i,
 	   (const char *)id.toUtf8(),
 	   frames[i]->toString().toCString(true));
+    */
   }
-  if(changed) {
-    //    printf("TITLE: %s\n",(const char *)hls_meta_event.field(MetaEvent::Name).toString().toUtf8());
+  if(hls_meta_event.isChanged()) {
     emit metadataReceived(bytes,&hls_meta_event);
   }
 }

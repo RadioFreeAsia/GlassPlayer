@@ -2,7 +2,7 @@
 //
 // Container class for metadata updates.
 //
-//   (C) Copyright 2016 Fred Gleason <fredg@paravelsystems.com>
+//   (C) Copyright 2016-2019 Fred Gleason <fredg@paravelsystems.com>
 //
 //   This program is free software; you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License version 2 as
@@ -24,25 +24,25 @@
 #include <stdint.h>
 
 #include <QString>
-#include <QVariant>
+#include <QStringList>
+#include <QMap>
 
 class MetaEvent
 {
  public:
-  enum Field {Name=0,Description=1,Genre=2,Url=3,Irc=4,Aim=5,Icq=6,
-	      Public=7,StreamTitle=8,StreamUrl=9,LastField=10};
   MetaEvent();
   MetaEvent(const MetaEvent &e);
-  QVariant field(Field f) const;
-  void setField(Field f,const QVariant v);
-  bool isChanged(Field f) const;
+  QStringList fieldKeys(bool changed_only=true) const;
+  QString field(const QString &key,bool *ok=NULL) const;
+  void setField(const QString &key,const QString &v);
+  bool isChanged(const QString &key) const;
   bool isChanged() const;
   void processed();
-  static QString fieldText(Field f);
+  QString exportFields(bool changed_only=true) const;
 
  private:
-  QVariant meta_fields[MetaEvent::LastField];
-  bool meta_changed[MetaEvent::LastField];
+  QMap<QString,QString> meta_fields;
+  QMap<QString,bool> meta_changeds;
 };
 
 

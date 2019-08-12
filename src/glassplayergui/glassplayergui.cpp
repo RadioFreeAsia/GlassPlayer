@@ -366,14 +366,14 @@ void MainWidget::ProcessStats(const QStringList &stats)
 
   for(int i=0;i<stats.size();i++) {
     if(!stats[i].isEmpty()) {
-      QStringList f0=stats[i].split(": ");
+      QStringList f0=stats[i].split(":");
       QStringList f1=f0[0].split("|",QString::KeepEmptyParts);
       category=f1[0];
       if(f1.size()==2) {
 	param=f1[1];
       }
       f0.erase(f0.begin());
-      value=f0.join(": ");
+      value=f0.join(":");
 
       UpdateStat(category,param,value);
     }
@@ -405,7 +405,8 @@ void MainWidget::UpdateStat(const QString &category,const QString &param,
   gui_stats_dialog->update(category,param,value);
 
   if(category=="Metadata") {
-    if(param=="StreamTitle") {
+    if((param=="StreamTitle")||
+       (param=="TIT2")){
       if(value.isEmpty()) {
 	gui_title_text->setText(tr("The GlassPlayer"));
       }
@@ -413,7 +414,8 @@ void MainWidget::UpdateStat(const QString &category,const QString &param,
 	gui_title_text->setText(value);
       }
     }
-    if(param=="Name") {
+    if((param=="Name")||
+       (param=="TRSN")){
       gui_name_text->setText(value);
       resizeEvent(NULL);
     }

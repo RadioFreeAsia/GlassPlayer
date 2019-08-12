@@ -566,10 +566,10 @@ void Connector::setConnected(bool state)
 }
 
 
-void Connector::setMetadataField(uint64_t bytes,MetaEvent::Field field,
-				 const QVariant &value)
+void Connector::setMetadataField(uint64_t bytes,const QString &key,
+				 const QString &str)
 {
-  conn_metadata.setField(field,value);
+  conn_metadata.setField(key,str);
 
   if(conn_start_metadata) {
     emit metadataReceived(bytes,&conn_metadata);

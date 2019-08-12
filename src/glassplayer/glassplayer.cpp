@@ -352,6 +352,17 @@ void MainObject::metadataReceivedData(MetaEvent *e)
   QStringList values;
 
   sir_meta_event=*e;
+
+  if(global_log_verbose) {
+    QStringList keys=e->fieldKeys();
+    for(int i=0;i<keys.size();i++) {
+      Log(LOG_INFO,keys.at(i)+": "+e->field(keys.at(i)));
+    }
+  }
+  printf("%s\n",(const char *)e->exportFields().toUtf8());
+  fflush(stdout);
+
+  /*
   for(unsigned i=0;i<MetaEvent::LastField;i++) {
     MetaEvent::Field f=(MetaEvent::Field)i;
     if(e->isChanged(f)) {
@@ -372,6 +383,7 @@ void MainObject::metadataReceivedData(MetaEvent *e)
     printf("\n");
     fflush(stdout);
   }
+  */
 }
 
 

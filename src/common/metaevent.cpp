@@ -2,7 +2,7 @@
 //
 // Container class for metadata updates.
 //
-//   (C) Copyright 2016 Fred Gleason <fredg@paravelsystems.com>
+//   (C) Copyright 2016-2019 Fred Gleason <fredg@paravelsystems.com>
 //
 //   This program is free software; you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License version 2 as
@@ -24,106 +24,102 @@
 
 MetaEvent::MetaEvent()
 {
-  for(unsigned i=0;i<MetaEvent::LastField;i++) {
-    meta_changed[i]=false;
-  }
 }
 
 
 MetaEvent::MetaEvent(const MetaEvent &e)
 {
-  for(unsigned i=0;i<MetaEvent::LastField;i++) {
-    meta_fields[i]=e.meta_fields[i];
-    meta_changed[i]=e.meta_changed[i];
+  meta_fields=e.meta_fields;
+  meta_changeds=e.meta_changeds;
+}
+
+
+QStringList MetaEvent::fieldKeys(bool changed_only) const
+{
+  QStringList keys;
+
+  for(QMap<QString,QString>::const_iterator it=meta_fields.begin();
+      it!=meta_fields.end();it++) {
+    if((!changed_only)||meta_changeds.value(it.key())) {
+      keys.push_back(it.key());
+    }
+  }
+
+  return keys;
+}
+
+
+QString MetaEvent::field(const QString &key,bool *ok) const
+{
+  if(ok!=NULL) {
+    *ok=meta_fields.find(key)!=meta_fields.end();
+  }
+
+  return meta_fields.value(key,QString());
+}
+
+
+void MetaEvent::setField(const QString &key,const QString &v)
+{
+  QString mkey=key;
+  QString mv=v;
+  if(key=="TXXX") {
+    int index=v.indexOf("]");
+    if(index>=2) {
+      QString subkey=v.mid(1,v.indexOf("]")-1);
+      mkey=key+subkey;
+      mv=v.right(v.length()-index-2);
+    }
+  }
+
+  meta_changeds[mkey]=(meta_fields.find(mkey)==meta_fields.end())||
+    (meta_fields.value(mkey)!=mv);
+  if(meta_changeds.value(mkey)) {
+    meta_fields[mkey]=mv;
   }
 }
 
 
-QVariant MetaEvent::field(MetaEvent::Field f) const
+bool MetaEvent::isChanged(const QString &key) const
 {
-  return meta_fields[f];
-}
-
-
-void MetaEvent::setField(MetaEvent::Field f,const QVariant v)
-{
-  meta_fields[f]=v;
-  meta_changed[f]=true;
-}
-
-
-bool MetaEvent::isChanged(MetaEvent::Field f) const
-{
-  return meta_changed[f];
+  return meta_changeds.value(key,false);
 }
 
 
 bool MetaEvent::isChanged() const
 {
-  for(unsigned i=0;i<MetaEvent::LastField;i++) {
-    if(meta_changed[i]) {
+  for(QMap<QString,bool>::const_iterator it=meta_changeds.begin();
+      it!=meta_changeds.end();it++) {
+    if(it.value()) {
       return true;
     }
   }
+
   return false;
 }
 
 
 void MetaEvent::processed()
 {
-  for(unsigned i=0;i<MetaEvent::LastField;i++) {
-    meta_changed[i]=false;
+  for(QMap<QString,bool>::iterator it=meta_changeds.begin();
+      it!=meta_changeds.end();it++) {
+    it.value()=false;
   }
 }
 
 
-QString MetaEvent::fieldText(Field f)
+QString MetaEvent::exportFields(bool changed_only) const
 {
-  QString ret=QObject::tr("Unknown");
+  QString ret="";
 
-  switch(f) {
-  case MetaEvent::Name:
-    ret=QObject::tr("Name");
-    break;
-
-  case MetaEvent::Description:
-    ret=QObject::tr("Description");
-    break;
-
-  case MetaEvent::Genre:
-    ret=QObject::tr("Genre");
-    break;
-
-  case MetaEvent::Url:
-    ret=QObject::tr("ChannelUrl");
-    break;
-
-  case MetaEvent::Irc:
-    ret=QObject::tr("Irc");
-    break;
-
-  case MetaEvent::Aim:
-    ret=QObject::tr("Aim");
-    break;
-
-  case MetaEvent::Icq:
-    ret=QObject::tr("Icq");
-    break;
-
-  case MetaEvent::Public:
-    ret=QObject::tr("Public");
-    break;
-
-  case MetaEvent::StreamTitle:
-    ret=QObject::tr("StreamTitle");
-    break;
-
-  case MetaEvent::StreamUrl:
-    ret=QObject::tr("StreamUrl");
-    break;
-
-  case MetaEvent::LastField:
-    break;
+  for(QMap<QString,QString>::const_iterator it=meta_fields.begin();
+      it!=meta_fields.end();it++) {
+    if((!changed_only)||meta_changeds.value(it.key())) {
+      QString value=it.value();
+      value.replace("\r","\\r");
+      value.replace("\n","\\n");
+      ret+="Metadata|"+it.key()+":"+value+"\n";
+    }
   }
 
   return ret;

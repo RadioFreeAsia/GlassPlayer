@@ -390,3 +390,6 @@
 	* Added a TagLib dependency.
 2019-08-12 Fred Gleason <fredg@paravelsystems.com>
 	* Added MIME type 'audio/aac' as accepted by the FDK-AAC codec.
+2019-08-12 Fred Gleason <fredg@paravelsystems.com>
+	* Refactored the 'MetaEvent' class to allow arbitrary field key
+	values.
