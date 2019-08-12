@@ -188,7 +188,7 @@ bool Codec::acceptsContentType(Type type,const QString &mimetype)
     break;
 
   case Codec::TypeAac:
-    ret=mime=="audio/aacp";
+    ret=(mime=="audio/aacp")||(mime=="audio/aac");
     break;
 
   case Codec::TypePassthrough:

@@ -388,3 +388,5 @@
 	* Stubbed out support for HLS timed metadata.
 2019-08-09 Fred Gleason <fredg@paravelsystems.com>
 	* Added a TagLib dependency.
+2019-08-12 Fred Gleason <fredg@paravelsystems.com>
+	* Added MIME type 'audio/aac' as accepted by the FDK-AAC codec.
