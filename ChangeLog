@@ -396,3 +396,5 @@
 2019-08-13 Fred Gleason <fredg@paravelsystems.com>
 	* Added a 'Download Speed' Connection attribute to the HLS
 	connector.
+2019-08-13 Fred Gleason <fredg@paravelsystems.com>
+	* Cleaned up warnings in glassplayer(1) when exiting.

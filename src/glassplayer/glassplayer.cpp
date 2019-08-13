@@ -455,15 +455,16 @@ void MainObject::exitData()
 	RunScript(sir_server_script_down);
       }
     }
-    if(sir_audio_device!=NULL) {
-      sir_audio_device->stop();
-      delete sir_audio_device;
+    if(sir_connector!=NULL) {
+      sir_connector->stop();
+      delete sir_connector;
     }
     if(sir_codec!=NULL) {
       delete sir_codec;
     }
-    if(sir_connector!=NULL) {
-      delete sir_connector;
+    if(sir_audio_device!=NULL) {
+      sir_audio_device->stop();
+      delete sir_audio_device;
     }
     exit(0);
   }

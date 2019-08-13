@@ -50,15 +50,14 @@ class Hls : public Connector
   void tagReceivedData(uint64_t bytes,Id3Tag *tag);
   void indexProcessStartData();
   void indexProcessFinishedData(int exit_code,QProcess::ExitStatus status);
-  void indexProcessErrorData(QProcess::ProcessError err);
   void mediaProcessStartData();
   void mediaReadyReadData();
   void mediaProcessFinishedData(int exit_code,QProcess::ExitStatus status);
-  void mediaProcessErrorData(QProcess::ProcessError err);
 
  private:
   QByteArray ReadHeaders(QByteArray &data);
   void ProcessHeader(const QString &str);
+  void StopProcess(QProcess *proc);
   QProcess *hls_index_process;
   M3uPlaylist *hls_index_playlist;
   Id3Parser *hls_id3_parser;

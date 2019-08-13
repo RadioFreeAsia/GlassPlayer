@@ -240,6 +240,7 @@ void Connector::connectToServer()
 
 void Connector::stop()
 {
+  disconnectFromHostConnector();
   setConnected(false);
 }
 

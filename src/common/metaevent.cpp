@@ -72,8 +72,7 @@ void MetaEvent::setField(const QString &key,const QString &v)
     }
   }
 
-  meta_changeds[mkey]=(meta_fields.find(mkey)==meta_fields.end())||
-    (meta_fields.value(mkey)!=mv);
+  meta_changeds[mkey]=(meta_fields.value(mkey)!=mv);
   if(meta_changeds.value(mkey)) {
     meta_fields[mkey]=mv;
   }
