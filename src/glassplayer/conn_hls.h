@@ -28,6 +28,7 @@
 #include "connector.h"
 #include "id3parser.h"
 #include "m3uplaylist.h"
+#include "meteraverage.h"
 
 // #define CONN_HLS_DUMP_SEGMENTS QString("/home/fredg/hls_segments")
 
@@ -64,6 +65,8 @@ class Hls : public Connector
   QByteArray hls_media_segment_data;
   QTimer *hls_index_timer;
   QProcess *hls_media_process;
+  QDateTime hls_download_start_datetime;
+  MeterAverage *hls_download_average;
   QUrl hls_index_url;
   QUrl hls_current_media_segment;
   QUrl hls_last_media_segment;

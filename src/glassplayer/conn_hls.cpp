@@ -58,6 +58,8 @@ Hls::Hls(const QString &mimetype,QObject *parent)
   //
   // Media Processor
   //
+  hls_download_average=new MeterAverage(3);
+
   hls_media_timer=new QTimer(this);
   hls_media_timer->setSingleShot(true);
   connect(hls_media_timer,SIGNAL(timeout()),this,SLOT(mediaProcessStartData()));
@@ -110,6 +112,10 @@ void Hls::loadStats(QStringList *hdrs,QStringList *values,bool is_first)
     hdrs->push_back("Connector|ContentType");
     values->push_back(hls_content_type);
   }
+
+  hdrs->push_back("Connector|Download Speed");
+  values->push_back(QString().sprintf("%7.0f kbit/sec",
+			 hls_download_average->average()/1000.0).trimmed());
 
   hdrs->push_back("Connector|HLS Version");
   values->push_back(QString().sprintf("%d",hls_index_playlist->version()));
@@ -250,6 +256,13 @@ void Hls::indexProcessErrorData(QProcess::ProcessError err)
 
 void Hls::mediaProcessStartData()
 {
+  if(hls_media_process!=NULL) {
+    if(hls_media_process->state()!=QProcess::NotRunning) {
+      hls_media_timer->start(500);
+      return;
+    }
+  }
+
   //
   // Find next media segment
   //
@@ -298,6 +311,7 @@ void Hls::mediaProcessStartData()
     connect(hls_media_process,SIGNAL(finished(int,QProcess::ExitStatus)),
 	    this,SLOT(mediaProcessFinishedData(int,QProcess::ExitStatus)));
     hls_media_process->start("curl",args);
+    hls_download_start_datetime=QDateTime::currentDateTime();
   }
 }
 
@@ -328,6 +342,14 @@ void Hls::mediaProcessFinishedData(int exit_code,QProcess::ExitStatus status)
     hls_segment_fd=-1;
   }
 #endif  // CONN_HLS_DUMP_SEGMENTS
+
+  //
+  // Calculate Download Speed
+  //
+  float msecs=hls_download_start_datetime.msecsTo(QDateTime::currentDateTime());
+  float bytes_per_sec=
+    (float)hls_media_segment_data.size()/(msecs/1000.0);
+  hls_download_average->addValue(bytes_per_sec);
 
   //
   // Extract Timed Metadata

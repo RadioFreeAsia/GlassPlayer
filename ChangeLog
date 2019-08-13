@@ -393,3 +393,6 @@
 2019-08-12 Fred Gleason <fredg@paravelsystems.com>
 	* Refactored the 'MetaEvent' class to allow arbitrary field key
 	values.
+2019-08-13 Fred Gleason <fredg@paravelsystems.com>
+	* Added a 'Download Speed' Connection attribute to the HLS
+	connector.
