@@ -293,7 +293,6 @@ bool DevJack::start(QString *err)
       *err=tr("JACK general failure");
     }
     *err=tr("no connection to JACK server");
-  printf("~DevJack::start() Ends FALSE 1\n");
     return false;
   }
   jack_set_buffer_size_callback(jack_jack_client,JackBufferSizeChanged,this);
@@ -304,7 +303,6 @@ bool DevJack::start(QString *err)
   //
   if(jack_activate(jack_jack_client)) {
     *err=tr("unable to join JACK graph");
-  printf("~DevJack::start() Ends FALSE 2\n");
     return false;
   }
   jack_jack_sample_rate=jack_get_sample_rate(jack_jack_client);

@@ -56,7 +56,6 @@ MainObject::MainObject(QObject *parent)
   sir_meter_data=false;
   sir_server_id=NULL;
   sir_first_stats=true;
-  disable_stream_metadata=false;
   bool ok=false;
 
   audio_device_type=DEFAULT_AUDIO_DEVICE;
@@ -65,6 +64,7 @@ MainObject::MainObject(QObject *parent)
   list_devices=false;
   pregap=0;
   sir_stats_out=false;
+  sir_metadata_out=false;
   server_type=Connector::XCastServer;
 
   CmdSwitch *cmd=
@@ -87,10 +87,6 @@ MainObject::MainObject(QObject *parent)
 	}
       }
     }
-    if(cmd->key(i)=="--disable-stream-metadata") {
-      disable_stream_metadata=true;
-      cmd->setProcessed(i,true);
-    }
     if(cmd->key(i)=="--dump-bitstream") {
       dump_bitstream=true;
       cmd->setProcessed(i,true);
@@ -101,6 +97,10 @@ MainObject::MainObject(QObject *parent)
     }
     if(cmd->key(i)=="--list-devices") {
       list_devices=true;
+      cmd->setProcessed(i,true);
+    }
+    if(cmd->key(i)=="--metadata-out") {
+      sir_metadata_out=true;
       cmd->setProcessed(i,true);
     }
     if(cmd->key(i)=="--meter-data") {
@@ -231,7 +231,7 @@ void MainObject::serverTypeFoundData(Connector::ServerType type,
   //  printf("serverTypeFound(%d,%s,%s)\n",type,
   //	 (const char *)mimetype.toUtf8(),(const char *)url.toString().toUtf8());
   sir_connector=ConnectorFactory(type,mimetype,this);
-  sir_connector->setStreamMetadataEnabled(!disable_stream_metadata);
+  sir_connector->setStreamMetadataEnabled(sir_metadata_out);
   connect(sir_connector,SIGNAL(connected(bool)),
 	  this,SLOT(serverConnectedData(bool)));
   sir_connector->setServerUrl(url);
@@ -359,31 +359,10 @@ void MainObject::metadataReceivedData(MetaEvent *e)
       Log(LOG_INFO,keys.at(i)+": "+e->field(keys.at(i)));
     }
   }
-  printf("%s\n",(const char *)e->exportFields().toUtf8());
-  fflush(stdout);
-
-  /*
-  for(unsigned i=0;i<MetaEvent::LastField;i++) {
-    MetaEvent::Field f=(MetaEvent::Field)i;
-    if(e->isChanged(f)) {
-      if(global_log_verbose) {
-	Log(LOG_INFO,e->fieldText(f)+": "+e->field(f).toString());
-      }
-      if(sir_stats_out) {
-	hdrs.push_back("Metadata|"+e->fieldText(f));
-	values.push_back(e->field(f).toString());
-      }
-    }
-  }
-  if(hdrs.size()>0) {
-    for(int i=0;i<hdrs.size();i++) {
-      printf("%s: %s\n",(const char *)hdrs[i].toUtf8(),
-	     (const char *)values[i].toUtf8());
-    }
-    printf("\n");
+  if(sir_metadata_out) {
+    printf("%s\n",(const char *)e->exportFields().toUtf8());
     fflush(stdout);
   }
-  */
 }
 
 

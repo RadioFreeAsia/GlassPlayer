@@ -60,11 +60,11 @@ class MainObject : public QObject
   Connector::ServerType server_type;
   AudioDevice::Type audio_device_type;
   QUrl server_url;
-  bool disable_stream_metadata;
   bool dump_bitstream;
   unsigned pregap;
   QString post_data;
   bool sir_stats_out;
+  bool sir_metadata_out;
   QString sir_server_script_up;
   QString sir_server_script_down;
   QString sir_user;

@@ -238,8 +238,6 @@ void XCast::ProcessHeader(const QString &str)
 {
   QStringList f0;
 
-  fprintf(stderr,"%s\n",(const char *)str.toUtf8());
-
   if(xcast_result_code==0) {
     f0=str.split(" ",QString::SkipEmptyParts);
     if(f0.size()<3) {

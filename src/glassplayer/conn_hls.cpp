@@ -208,7 +208,6 @@ void Hls::indexProcessFinishedData(int exit_code,QProcess::ExitStatus status)
     }
     else {
       QByteArray data=hls_index_process->readAllStandardOutput();
-      // printf("INDEX: %s\n",(const char *)data);
       data=ReadHeaders(data);
       M3uPlaylist *playlist=new M3uPlaylist();
       if(playlist->parse(data,hls_index_url)) {

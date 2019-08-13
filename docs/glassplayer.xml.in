@@ -161,18 +161,6 @@
 
     <varlistentry>
       <term>
-	<option>--disable-stream-metadata</option>
-      </term>
-      <listitem>
-	<para>
-	  Disable realtime stream metadata updates.  Useless except for
-	  debugging.
-	</para>
-      </listitem>
-    </varlistentry>
-
-    <varlistentry>
-      <term>
 	<option>--dump-bitstream</option>
       </term>
       <listitem>
@@ -275,6 +263,18 @@
 
     <varlistentry>
       <term>
+	<option>--metadata-out</option>
+      </term>
+      <listitem>
+	<para>
+	  Output realtime stream metadata on standard output. Useful for 
+	  updating an external control system.
+	</para>
+      </listitem>
+    </varlistentry>
+
+    <varlistentry>
+      <term>
 	<option>--meter-data</option>
       </term>
       <listitem>
@@ -343,7 +343,7 @@
       </term>
       <listitem>
 	<para>
-	  Output realtime operating statistics on STDOUT. Useful for 
+	  Output realtime operating statistics on standard output. Useful for 
 	  updating an external control system.
 	</para>
       </listitem>
@@ -780,7 +780,7 @@
   <varlistentry>
     <term>
       <emphasis remap='B'>Standard Output</emphasis>
-      (<option>--audio-device=</option><userinput>STDOUT</userinput>)
+      (<option>--audio-device=</option><userinput>standard output</userinput>)
     </term>
     <listitem>
       <variablelist>
