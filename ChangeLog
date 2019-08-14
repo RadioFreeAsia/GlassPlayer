@@ -401,3 +401,5 @@
 2019-08-13 Fred Gleason <fredg@paravelsystems.com>
 	* Replaced the '--disable-stream-metadata' switch with
 	'--metadata-out' in glassplayer(1).
+2019-08-13 Fred Gleason <fredg@paravelsystems.com>
+	* Refactored metadata processing to be strictly synchronous.

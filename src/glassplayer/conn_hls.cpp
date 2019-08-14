@@ -158,21 +158,27 @@ void Hls::loadStats(QStringList *hdrs,QStringList *values,bool is_first)
 void Hls::tagReceivedData(uint64_t bytes,Id3Tag *tag)
 {
   TagLib::ID3v2::FrameList frames=tag->frameList();
+  bool initialize=false;
 
+  if(hls_meta_event.isEmpty()) {
+    initialize=true;
+  }
+  hls_meta_event.clear();
   for(unsigned i=0;i<frames.size();i++) {
     TagLib::ByteVector raw_bytes=frames[i]->frameID();
     QString id(QByteArray(raw_bytes.data(),raw_bytes.size()).constData());
     QString str=QString::fromUtf8(frames[i]->toString().toCString(true));
     hls_meta_event.setField(id,str);
+    if(initialize) {
+      setMetadataField(0,id,str);
+    }
     /*
     printf("frame[%u]: %s|%s\n",i,
 	   (const char *)id.toUtf8(),
 	   frames[i]->toString().toCString(true));
     */
   }
-  if(hls_meta_event.isChanged()) {
-    emit metadataReceived(bytes,&hls_meta_event);
-  }
+  emit metadataReceived(bytes,&hls_meta_event);
 }
 
 

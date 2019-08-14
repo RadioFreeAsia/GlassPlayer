@@ -30,19 +30,16 @@ MetaEvent::MetaEvent()
 MetaEvent::MetaEvent(const MetaEvent &e)
 {
   meta_fields=e.meta_fields;
-  meta_changeds=e.meta_changeds;
 }
 
 
-QStringList MetaEvent::fieldKeys(bool changed_only) const
+QStringList MetaEvent::fieldKeys() const
 {
   QStringList keys;
 
   for(QMap<QString,QString>::const_iterator it=meta_fields.begin();
       it!=meta_fields.end();it++) {
-    if((!changed_only)||meta_changeds.value(it.key())) {
-      keys.push_back(it.key());
-    }
+    keys.push_back(it.key());
   }
 
   return keys;
@@ -71,55 +68,34 @@ void MetaEvent::setField(const QString &key,const QString &v)
       mv=v.right(v.length()-index-2);
     }
   }
-
-  meta_changeds[mkey]=(meta_fields.value(mkey)!=mv);
-  if(meta_changeds.value(mkey)) {
-    meta_fields[mkey]=mv;
-  }
+  meta_fields[mkey]=mv;
 }
 
 
-bool MetaEvent::isChanged(const QString &key) const
-{
-  return meta_changeds.value(key,false);
-}
-
-
-bool MetaEvent::isChanged() const
-{
-  for(QMap<QString,bool>::const_iterator it=meta_changeds.begin();
-      it!=meta_changeds.end();it++) {
-    if(it.value()) {
-      return true;
-    }
-  }
-
-  return false;
-}
-
-
-void MetaEvent::processed()
-{
-  for(QMap<QString,bool>::iterator it=meta_changeds.begin();
-      it!=meta_changeds.end();it++) {
-    it.value()=false;
-  }
-}
-
-
-QString MetaEvent::exportFields(bool changed_only) const
+QString MetaEvent::exportFields() const
 {
   QString ret="";
 
   for(QMap<QString,QString>::const_iterator it=meta_fields.begin();
       it!=meta_fields.end();it++) {
-    if((!changed_only)||meta_changeds.value(it.key())) {
-      QString value=it.value();
-      value.replace("\r","\\r");
-      value.replace("\n","\\n");
-      ret+="Metadata|"+it.key()+":"+value+"\n";
-    }
+    QString value=it.value();
+    value.replace("\r","\\r");
+    value.replace("\n","\\n");
+    ret+="Metadata|"+it.key()+":"+value+"\n";
   }
 
   return ret;
 }
+
+
+bool MetaEvent::isEmpty() const
+{
+  return meta_fields.size()==0;
+}
+
+
+void MetaEvent::clear()
+{
+  meta_fields.clear();
+}
+

@@ -32,17 +32,15 @@ class MetaEvent
  public:
   MetaEvent();
   MetaEvent(const MetaEvent &e);
-  QStringList fieldKeys(bool changed_only=true) const;
+  QStringList fieldKeys() const;
   QString field(const QString &key,bool *ok=NULL) const;
   void setField(const QString &key,const QString &v);
-  bool isChanged(const QString &key) const;
-  bool isChanged() const;
-  void processed();
-  QString exportFields(bool changed_only=true) const;
+  QString exportFields() const;
+  bool isEmpty() const;
+  void clear();
 
  private:
   QMap<QString,QString> meta_fields;
-  QMap<QString,bool> meta_changeds;
 };
 
 

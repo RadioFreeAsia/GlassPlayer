@@ -25,6 +25,7 @@
 #include <QTimer>
 
 #include "connector.h"
+#include "metaevent.h"
 
 #define XCAST_WATCHDOG_RETRY_INTERVAL 5000
 

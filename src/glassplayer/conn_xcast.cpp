@@ -270,23 +270,12 @@ void XCast::ProcessHeader(const QString &str)
       if(hdr=="icy-br") {
 	setAudioBitrate(value.toInt());
       }
-      if(hdr=="icy-description") {
-	setMetadataField(xcast_byte_counter,"icy-description",value);
-      }
-      if(hdr=="icy-genre") {
-	setMetadataField(xcast_byte_counter,"icy-genre",value);
-      }
       if(hdr=="icy-metaint") {
 	xcast_metadata_interval=value.toInt();
       }
-      if(hdr=="icy-name") {
-	setMetadataField(xcast_byte_counter,"icy-name",value);
-      }
-      if(hdr=="icy-public") {
-	setMetadataField(xcast_byte_counter,"icy-public",value);
-      }
-      if(hdr=="icy-url") {
-	setMetadataField(xcast_byte_counter,"icy_url",value);
+      if((hdr=="icy-description")||(hdr=="icy-genre")||(hdr=="icy-name")||
+	 (hdr=="icy-public")||(hdr=="icy-url")) {
+	setMetadataField(0,hdr,value);
       }
     }
   }
@@ -297,6 +286,7 @@ void XCast::ProcessMetadata(const QByteArray &mdata)
 {
   if(mdata.length()>0) {
     QStringList f0=QString(mdata).split(";",QString::SkipEmptyParts);
+    MetaEvent *meta=new MetaEvent();
     for(int i=0;i<f0.size();i++) {
       QStringList f1=f0[i].split("=");
       if(f1.size()>1) {
@@ -304,21 +294,11 @@ void XCast::ProcessMetadata(const QByteArray &mdata)
 	f1.removeFirst();
 	QString value=f1.join("=").trimmed();
 	value=value.mid(1,value.length()-2);
-	setMetadataField(xcast_byte_counter,key,value);
+	meta->setField(key,value);
       }
-      /*
-      if(f1[0]=="StreamTitle") {
-	QString title=f1.join("=");
-	setMetadataField(xcast_byte_counter,"StreamTitle",
-			 title.mid(13,title.length()-14));
-      }
-      if(f1[0]=="StreamUrl") {
-	QString url=f1.join("=");
-	setMetadataField(xcast_byte_counter,"StreamUrl",
-			 url.mid(11,url.length()-12));
-      }
-      */
     }
+    emit metadataReceived(xcast_byte_counter,meta);
+    delete meta;
   }
 }
 

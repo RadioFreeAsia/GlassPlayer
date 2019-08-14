@@ -203,7 +203,6 @@ void Connector::setStreamMetadataEnabled(bool state)
 void Connector::startMetadata()
 {
   emit metadataReceived(0,&conn_metadata);
-  conn_metadata.processed();
   conn_start_metadata=true;
 }
 
@@ -574,7 +573,6 @@ void Connector::setMetadataField(uint64_t bytes,const QString &key,
 
   if(conn_start_metadata) {
     emit metadataReceived(bytes,&conn_metadata);
-    conn_metadata.processed();
   }
 }
 
