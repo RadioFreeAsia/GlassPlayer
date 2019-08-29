@@ -2,7 +2,7 @@
 //
 // Server connector for Icecast/Shoutcast streams.
 //
-//   (C) Copyright 2014-2016 Fred Gleason <fredg@paravelsystems.com>
+//   (C) Copyright 2014-2019 Fred Gleason <fredg@paravelsystems.com>
 //
 //   This program is free software; you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License version 2 as
@@ -238,8 +238,6 @@ void XCast::ProcessHeader(const QString &str)
 {
   QStringList f0;
 
-  //  fprintf(stderr,"%s\n",(const char *)str.toUtf8());
-
   if(xcast_result_code==0) {
     f0=str.split(" ",QString::SkipEmptyParts);
     if(f0.size()<3) {
@@ -272,23 +270,12 @@ void XCast::ProcessHeader(const QString &str)
       if(hdr=="icy-br") {
 	setAudioBitrate(value.toInt());
       }
-      if(hdr=="icy-description") {
-	setMetadataField(xcast_byte_counter,MetaEvent::Description,value);
-      }
-      if(hdr=="icy-genre") {
-	setMetadataField(xcast_byte_counter,MetaEvent::Genre,value);
-      }
       if(hdr=="icy-metaint") {
 	xcast_metadata_interval=value.toInt();
       }
-      if(hdr=="icy-name") {
-	setMetadataField(xcast_byte_counter,MetaEvent::Name,value);
-      }
-      if(hdr=="icy-public") {
-	setMetadataField(xcast_byte_counter,MetaEvent::Public,value.toInt()!=0);
-      }
-      if(hdr=="icy-url") {
-	setMetadataField(xcast_byte_counter,MetaEvent::Url,value);
+      if((hdr=="icy-description")||(hdr=="icy-genre")||(hdr=="icy-name")||
+	 (hdr=="icy-public")||(hdr=="icy-url")) {
+	setMetadataField(0,hdr,value);
       }
     }
   }
@@ -299,19 +286,19 @@ void XCast::ProcessMetadata(const QByteArray &mdata)
 {
   if(mdata.length()>0) {
     QStringList f0=QString(mdata).split(";",QString::SkipEmptyParts);
+    MetaEvent *meta=new MetaEvent();
     for(int i=0;i<f0.size();i++) {
       QStringList f1=f0[i].split("=");
-      if(f1[0]=="StreamTitle") {
-	QString title=f1.join("=");
-	setMetadataField(xcast_byte_counter,MetaEvent::StreamTitle,
-			 title.mid(13,title.length()-14));
-      }
-      if(f1[0]=="StreamUrl") {
-	QString url=f1.join("=");
-	setMetadataField(xcast_byte_counter,MetaEvent::StreamUrl,
-			 url.mid(11,url.length()-12));
+      if(f1.size()>1) {
+	QString key=f1.at(0).trimmed();
+	f1.removeFirst();
+	QString value=f1.join("=").trimmed();
+	value=value.mid(1,value.length()-2);
+	meta->setField(key,value);
       }
     }
+    emit metadataReceived(xcast_byte_counter,meta);
+    delete meta;
   }
 }
 

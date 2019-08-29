@@ -384,6 +384,8 @@
 2019-03-25 Fred Gleason <fredg@paravelsystems.com>
 	* Added support for processing '#EXT-X-STREAM-INF' headers in
 	master HLS playlists.
+2019-04-04 Fred Gleason <fredg@paravelsystems.com>
+	* Stubbed out support for HLS timed metadata.
 2019-04-18 Fred Gleason <fredg@paravelsystems.com>
 	* Documented the integrated signal generator in the glassplayer(1)
 	man page.
@@ -395,3 +397,22 @@
 	* Fixed a memory leak in the HeAAC decoder in glassplayer(1).
 2019-04-19 Fred Gleason <fredg@paravelsystems.com>
 	* Incremented the package version to 0.7.2.
+2019-08-09 Fred Gleason <fredg@paravelsystems.com>
+	* Added a TagLib dependency.
+2019-08-12 Fred Gleason <fredg@paravelsystems.com>
+	* Added MIME type 'audio/aac' as accepted by the FDK-AAC codec.
+2019-08-12 Fred Gleason <fredg@paravelsystems.com>
+	* Refactored the 'MetaEvent' class to allow arbitrary field key
+	values.
+2019-08-13 Fred Gleason <fredg@paravelsystems.com>
+	* Added a 'Download Speed' Connection attribute to the HLS
+	connector.
+2019-08-13 Fred Gleason <fredg@paravelsystems.com>
+	* Cleaned up warnings in glassplayer(1) when exiting.
+2019-08-13 Fred Gleason <fredg@paravelsystems.com>
+	* Replaced the '--disable-stream-metadata' switch with
+	'--metadata-out' in glassplayer(1).
+2019-08-13 Fred Gleason <fredg@paravelsystems.com>
+	* Refactored metadata processing to be strictly synchronous.
+2019-08-29 Fred Gleason <fredg@paravelsystems.com>
+	* Updated Qt4 to Qt5.

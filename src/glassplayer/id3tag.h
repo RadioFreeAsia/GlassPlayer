@@ -1,8 +1,8 @@
-// metaevent.h
+// id3tag.h
 //
-// Container class for metadata updates.
+// ID3 tag container class.
 //
-//   (C) Copyright 2016-2019 Fred Gleason <fredg@paravelsystems.com>
+//   (C) Copyright 2019 Fred Gleason <fredg@paravelsystems.com>
 //
 //   This program is free software; you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License version 2 as
@@ -18,30 +18,18 @@
 //   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 //
 
-#ifndef METAEVENT_H
-#define METAEVENT_H
+#ifndef ID3TAG_H
+#define ID3TAG_H
 
-#include <stdint.h>
+#include <QByteArray>
 
-#include <QString>
-#include <QStringList>
-#include <QMap>
+#include <id3v2tag.h>
 
-class MetaEvent
+class Id3Tag : public TagLib::ID3v2::Tag
 {
  public:
-  MetaEvent();
-  MetaEvent(const MetaEvent &e);
-  QStringList fieldKeys() const;
-  QString field(const QString &key,bool *ok=NULL) const;
-  void setField(const QString &key,const QString &v);
-  QString exportFields() const;
-  bool isEmpty() const;
-  void clear();
-
- private:
-  QMap<QString,QString> meta_fields;
+  Id3Tag(const QByteArray &data);
 };
 
 
-#endif  // METAEVENT_H
+#endif  // ID3TAG_H

@@ -108,7 +108,9 @@ void CodecMpeg1::process(const QByteArray &data,bool is_last)
   }
   if(is_last) {
     frame_offset=0;
-    mpeg1_mpeg.append(0,MAD_BUFFER_GUARD);
+    for(int i=0;i<MAD_BUFFER_GUARD;i++) {
+      mpeg1_mpeg.append((char)0);
+    }
     mad_stream_buffer(&mpeg1_mad_stream,(const unsigned char *)mpeg1_mpeg.data(),
 		      mpeg1_mpeg.length());
     do {

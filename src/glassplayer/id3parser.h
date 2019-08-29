@@ -1,8 +1,8 @@
-// metaevent.h
+// id3parser.h
 //
-// Container class for metadata updates.
+// Extract ID3 tags from an MPEG/AAC Bitstream
 //
-//   (C) Copyright 2016-2019 Fred Gleason <fredg@paravelsystems.com>
+//   (C) Copyright 2019 Fred Gleason <fredg@paravelsystems.com>
 //
 //   This program is free software; you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License version 2 as
@@ -18,30 +18,30 @@
 //   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 //
 
-#ifndef METAEVENT_H
-#define METAEVENT_H
+#ifndef ID3PARSER_H
+#define ID3PARSER_H
 
 #include <stdint.h>
 
-#include <QString>
-#include <QStringList>
-#include <QMap>
+#include <QByteArray>
+#include <QObject>
 
-class MetaEvent
+#include "id3tag.h"
+
+class Id3Parser : public QObject
 {
+  Q_OBJECT;
  public:
-  MetaEvent();
-  MetaEvent(const MetaEvent &e);
-  QStringList fieldKeys() const;
-  QString field(const QString &key,bool *ok=NULL) const;
-  void setField(const QString &key,const QString &v);
-  QString exportFields() const;
-  bool isEmpty() const;
-  void clear();
+  Id3Parser(QObject *parent=0);
+  void parse(QByteArray &data);
+  void reset();
+
+ signals:
+  void tagReceived(uint64_t offset,Id3Tag *tag);
 
  private:
-  QMap<QString,QString> meta_fields;
+  int parser_bytes_processed;
 };
 
 
-#endif  // METAEVENT_H
+#endif  // ID3PARSER_H

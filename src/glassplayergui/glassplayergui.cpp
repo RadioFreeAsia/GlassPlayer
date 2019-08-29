@@ -18,7 +18,7 @@
 //   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 //
 
-#include <QApplication>
+#include <QGuiApplication>
 #include <QCloseEvent>
 #include <QMessageBox>
 #include <QPixmap>
@@ -35,8 +35,7 @@ MainWidget::MainWidget(QWidget *parent)
   gui_player_process=NULL;
   gui_logo_process=NULL;
 
-  CmdSwitch *cmd=new CmdSwitch(qApp->argc(),qApp->argv(),"glassplayergui",
-			       GLASSPLAYERGUI_USAGE);
+  CmdSwitch *cmd=new CmdSwitch("glassplayergui",GLASSPLAYERGUI_USAGE);
   if(cmd->keys()>0) {
     for(unsigned i=0;i<(cmd->keys()-1);i++) {
       if(!cmd->processed(i)) {
@@ -366,14 +365,14 @@ void MainWidget::ProcessStats(const QStringList &stats)
 
   for(int i=0;i<stats.size();i++) {
     if(!stats[i].isEmpty()) {
-      QStringList f0=stats[i].split(": ");
+      QStringList f0=stats[i].split(":");
       QStringList f1=f0[0].split("|",QString::KeepEmptyParts);
       category=f1[0];
       if(f1.size()==2) {
 	param=f1[1];
       }
       f0.erase(f0.begin());
-      value=f0.join(": ");
+      value=f0.join(":");
 
       UpdateStat(category,param,value);
     }
@@ -405,7 +404,8 @@ void MainWidget::UpdateStat(const QString &category,const QString &param,
   gui_stats_dialog->update(category,param,value);
 
   if(category=="Metadata") {
-    if(param=="StreamTitle") {
+    if((param=="StreamTitle")||
+       (param=="TIT2")){
       if(value.isEmpty()) {
 	gui_title_text->setText(tr("The GlassPlayer"));
       }
@@ -413,7 +413,8 @@ void MainWidget::UpdateStat(const QString &category,const QString &param,
 	gui_title_text->setText(value);
       }
     }
-    if(param=="Name") {
+    if((param=="Name")||
+       (param=="TRSN")){
       gui_name_text->setText(value);
       resizeEvent(NULL);
     }
@@ -462,7 +463,7 @@ void MainWidget::GetLogo(const QString &url)
 
 int main(int argc,char *argv[])
 {
-  QApplication a(argc,argv);
+  QGuiApplication a(argc,argv);
   MainWidget *w=new MainWidget();
   w->show();
   return a.exec();

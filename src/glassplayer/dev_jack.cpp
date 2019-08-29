@@ -250,12 +250,12 @@ bool DevJack::start(QString *err)
   //
   if(jack_server_name.isEmpty()) {
     jack_jack_client=
-      jack_client_open(jack_client_name.toAscii(),jackopts,&jackstat);
+      jack_client_open(jack_client_name.toUtf8(),jackopts,&jackstat);
   }
   else {
     jack_jack_client=
-      jack_client_open(jack_client_name.toAscii(),jackopts,&jackstat,
-		       (const char *)jack_server_name.toAscii());
+      jack_client_open(jack_client_name.toUtf8(),jackopts,&jackstat,
+		       (const char *)jack_server_name.toUtf8());
   }
   if(jack_jack_client==NULL) {
     if((jackstat&JackInvalidOption)!=0) {
@@ -293,7 +293,6 @@ bool DevJack::start(QString *err)
       *err=tr("JACK general failure");
     }
     *err=tr("no connection to JACK server");
-  printf("~DevJack::start() Ends FALSE 1\n");
     return false;
   }
   jack_set_buffer_size_callback(jack_jack_client,JackBufferSizeChanged,this);
@@ -304,7 +303,6 @@ bool DevJack::start(QString *err)
   //
   if(jack_activate(jack_jack_client)) {
     *err=tr("unable to join JACK graph");
-  printf("~DevJack::start() Ends FALSE 2\n");
     return false;
   }
   jack_jack_sample_rate=jack_get_sample_rate(jack_jack_client);
@@ -315,7 +313,7 @@ bool DevJack::start(QString *err)
   for(unsigned i=0;i<codec()->channels();i++) {
     QString name=QString().sprintf("output_%d",i+1);
     jack_jack_ports[i]=
-      jack_port_register(jack_jack_client,name.toAscii(),JACK_DEFAULT_AUDIO_TYPE,
+      jack_port_register(jack_jack_client,name.toUtf8(),JACK_DEFAULT_AUDIO_TYPE,
 			 JackPortIsOutput|JackPortIsTerminal,0);
   }
   Log(LOG_INFO,QString().sprintf("connected to JACK graph at %u samples/sec.",

@@ -27,7 +27,7 @@
 class CmdSwitch
 {
  public:
-  CmdSwitch(int argc,char *argv[],const char *modname,const char *usage);
+  CmdSwitch(const char *modname,const char *usage);
   unsigned keys() const;
   QString key(unsigned n) const;
   QString value(unsigned n) const;

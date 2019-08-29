@@ -2,7 +2,7 @@
 ##
 ## Makefile for the glassplayer(1) Audio Encoder.
 ##
-## (C) Copyright 2014-2015 Fred Gleason <fredg@paravelsystems.com>
+## (C) Copyright 2014-2019 Fred Gleason <fredg@paravelsystems.com>
 ##
 ##   This program is free software; you can redistribute it and/or modify
 ##   it under the terms of the GNU General Public License version 2 as
@@ -20,8 +20,8 @@
 ##
 ## Use automake to process this into a Makefile.in
 
-AM_CPPFLAGS = -Wall -DPREFIX=\"$(prefix)\" -Wno-strict-aliasing @QT4CLI_CFLAGS@ @SNDFILE_CFLAGS@ @SAMPLERATE_CFLAGS@ @ALSA_CFLAGS@ @JACK_CFLAGS@ @OGG_CFLAGS@
-MOC = @QT4_MOC@
+AM_CPPFLAGS = -Wall -DPREFIX=\"$(prefix)\" -Wno-strict-aliasing @QT5CLI_CFLAGS@ @SNDFILE_CFLAGS@ @SAMPLERATE_CFLAGS@ @TAGLIB_CFLAGS@ @ALSA_CFLAGS@ @JACK_CFLAGS@ @OGG_CFLAGS@ -std=c++11 -fPIC
+MOC = @QT5_MOC@
 
 # The dependency for qt's Meta Object Compiler (moc)
 moc_%.cpp:	%.h
@@ -48,6 +48,8 @@ dist_glassplayer_SOURCES = audiodevicefactory.cpp audiodevicefactory.h\
                            dev_mme.cpp dev_mme.h\
                            dev_stdout.cpp dev_stdout.h\
                            glassplayer.cpp glassplayer.h\
+                           id3parser.cpp id3parser.h\
+                           id3tag.cpp id3tag.h\
                            m3uplaylist.cpp m3uplaylist.h\
                            meteraverage.cpp meteraverage.h\
                            serverid.cpp serverid.h
@@ -77,10 +79,11 @@ nodist_glassplayer_SOURCES = audiodevice.cpp audiodevice.h\
                              moc_dev_mme.cpp\
                              moc_dev_stdout.cpp\
                              moc_glassplayer.cpp\
+                             moc_id3parser.cpp\
                              moc_serverid.cpp\
                              ringbuffer.cpp ringbuffer.h
 
-glassplayer_LDADD = @QT4CLI_LIBS@ @SNDFILE_LIBS@ @SAMPLERATE_LIBS@ @ALSA_LIBS@ @JACK_LIBS@ @ASIHPI_LIBS@ @PLATFORM_LIBS@ @MME_LIBS@ -lltdl
+glassplayer_LDADD = @QT5CLI_LIBS@ @SNDFILE_LIBS@ @SAMPLERATE_LIBS@ @TAGLIB_LIBS@ @ALSA_LIBS@ @JACK_LIBS@ @ASIHPI_LIBS@ @PLATFORM_LIBS@ @MME_LIBS@ -lltdl
 
 
 CLEANFILES = *~\

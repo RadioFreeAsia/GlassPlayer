@@ -43,6 +43,7 @@ Codec::Codec(Codec::Type type,unsigned bitrate,QObject *parent)
   codec_pcm_out=NULL;
   codec_pcm_buffer[0]=NULL;
   codec_pcm_buffer[1]=NULL;
+  codec_frames_generated=0;
 }
 
 
@@ -188,7 +189,7 @@ bool Codec::acceptsContentType(Type type,const QString &mimetype)
     break;
 
   case Codec::TypeAac:
-    ret=mime=="audio/aacp";
+    ret=(mime=="audio/aacp")||(mime=="audio/aac");
     break;
 
   case Codec::TypePassthrough:

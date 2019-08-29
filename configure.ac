@@ -4,7 +4,7 @@ dnl Autoconf configuration
 dnl
 dnl Use autoconf to process this into a configure script
 dnl
-dnl   (C) Copyright 2014-2016 Fred Gleason <fredg@paravelsystems.com>
+dnl   (C) Copyright 2014-2019 Fred Gleason <fredg@paravelsystems.com>
 dnl
 dnl   This program is free software; you can redistribute it and/or modify
 dnl   it under the terms of the GNU General Public License version 2 as
@@ -67,9 +67,9 @@ AC_ARG_ENABLE(docbook,[  --disable-docbook       disable building of DocBook doc
 #
 # Check for Qt (Mandatory)
 #
-PKG_CHECK_MODULES(QT4CLI,QtCore QtNetwork,[],[AC_MSG_ERROR([*** Qt4 not found ***])])
-PKG_CHECK_MODULES(QT4GUI,QtGui QtCore QtNetwork,[],[AC_MSG_ERROR([*** Qt4 not found ***])])
-AC_CHECK_PROG(MOC_NAME,moc-qt4,[moc-qt4],[moc])
+PKG_CHECK_MODULES(QT5CLI,Qt5Core Qt5Network,[],[AC_MSG_ERROR([*** Qt5 not found ***])])
+PKG_CHECK_MODULES(QT5GUI,Qt5Widgets Qt5Gui Qt5Core Qt5Network,[],[AC_MSG_ERROR([*** Qt5 not found ***])])
+AC_CHECK_PROG(MOC_NAME,moc-qt5,[moc-qt5],[moc])
 AC_SUBST(MOC,$MOC_NAME)
 
 #
@@ -87,6 +87,11 @@ fi
 # Check for Secret Rabbit Code (Mandatory)
 #
 PKG_CHECK_MODULES(SAMPLERATE,samplerate,[SAMPLERATE_FOUND=y],[])
+
+#
+# Check for TagLib (Mandatory)
+#
+PKG_CHECK_MODULES(TAGLIB,taglib,[TAGLIB_FOUND=y],[])
 
 #
 # Check for LibTool libltdl

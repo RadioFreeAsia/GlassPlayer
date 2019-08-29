@@ -2,7 +2,7 @@
 //
 // Server connector for HTTP live streams (HLS).
 //
-//   (C) Copyright 2014-2016 Fred Gleason <fredg@paravelsystems.com>
+//   (C) Copyright 2014-2019 Fred Gleason <fredg@paravelsystems.com>
 //
 //   This program is free software; you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License version 2 as
@@ -21,13 +21,26 @@
 #include <QByteArray>
 #include <QStringList>
 
+#include <tbytevector.h>
+
 #include "codec.h"
 #include "conn_hls.h"
 #include "logging.h"
 
+#ifdef CONN_HLS_DUMP_SEGMENTS
+#include <errno.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#endif  // CONN_HLS_DUMP_SEGMENTS
+
 Hls::Hls(const QString &mimetype,QObject *parent)
   : Connector(mimetype,parent)
 {
+#ifdef CONN_HLS_DUMP_SEGMENTS
+  hls_segment_fd=-1;
+#endif  // CONN_HLS_DUMP_SEGMENTS
   hls_index_process=NULL;
   hls_media_process=NULL;
 
@@ -35,6 +48,9 @@ Hls::Hls(const QString &mimetype,QObject *parent)
   // Index Processor
   //
   hls_index_playlist=new M3uPlaylist();
+  hls_id3_parser=new Id3Parser();
+  connect(hls_id3_parser,SIGNAL(tagReceived(uint64_t,Id3Tag *)),
+	  this,SLOT(tagReceivedData(uint64_t,Id3Tag *)));
   hls_index_timer=new QTimer(this);
   hls_index_timer->setSingleShot(true);
   connect(hls_index_timer,SIGNAL(timeout()),this,SLOT(indexProcessStartData()));
@@ -42,6 +58,8 @@ Hls::Hls(const QString &mimetype,QObject *parent)
   //
   // Media Processor
   //
+  hls_download_average=new MeterAverage(3);
+
   hls_media_timer=new QTimer(this);
   hls_media_timer->setSingleShot(true);
   connect(hls_media_timer,SIGNAL(timeout()),this,SLOT(mediaProcessStartData()));
@@ -79,6 +97,8 @@ void Hls::connectToHostConnector()
 
 void Hls::disconnectFromHostConnector()
 {
+  StopProcess(hls_media_process);
+  StopProcess(hls_index_process);
 }
 
 
@@ -94,6 +114,10 @@ void Hls::loadStats(QStringList *hdrs,QStringList *values,bool is_first)
     hdrs->push_back("Connector|ContentType");
     values->push_back(hls_content_type);
   }
+
+  hdrs->push_back("Connector|Download Speed");
+  values->push_back(QString().sprintf("%7.0f kbit/sec",
+			 hls_download_average->average()/1000.0).trimmed());
 
   hdrs->push_back("Connector|HLS Version");
   values->push_back(QString().sprintf("%d",hls_index_playlist->version()));
@@ -131,6 +155,33 @@ void Hls::loadStats(QStringList *hdrs,QStringList *values,bool is_first)
 }
 
 
+void Hls::tagReceivedData(uint64_t bytes,Id3Tag *tag)
+{
+  TagLib::ID3v2::FrameList frames=tag->frameList();
+  bool initialize=false;
+
+  if(hls_meta_event.isEmpty()) {
+    initialize=true;
+  }
+  hls_meta_event.clear();
+  for(unsigned i=0;i<frames.size();i++) {
+    TagLib::ByteVector raw_bytes=frames[i]->frameID();
+    QString id(QByteArray(raw_bytes.data(),raw_bytes.size()).constData());
+    QString str=QString::fromUtf8(frames[i]->toString().toCString(true));
+    hls_meta_event.setField(id,str);
+    if(initialize) {
+      setMetadataField(0,id,str);
+    }
+    /*
+    printf("frame[%u]: %s|%s\n",i,
+	   (const char *)id.toUtf8(),
+	   frames[i]->toString().toCString(true));
+    */
+  }
+  emit metadataReceived(bytes,&hls_meta_event);
+}
+
+
 void Hls::indexProcessStartData()
 {
   QStringList args;
@@ -148,8 +199,6 @@ void Hls::indexProcessStartData()
     delete hls_index_process;
   }
   hls_index_process=new QProcess(this);
-  connect(hls_index_process,SIGNAL(error(QProcess::ProcessError)),
-	  this,SLOT(indexProcessErrorData(QProcess::ProcessError)));
   connect(hls_index_process,SIGNAL(finished(int,QProcess::ExitStatus)),
 	  this,SLOT(indexProcessFinishedData(int,QProcess::ExitStatus)));
   hls_index_process->start("curl",args);
@@ -158,22 +207,17 @@ void Hls::indexProcessStartData()
 
 void Hls::indexProcessFinishedData(int exit_code,QProcess::ExitStatus status)
 {
-  if(status!=QProcess::NormalExit) {
-    Log(LOG_WARNING,tr("index process crashed"));
-  }
-  else {
+  if(status==QProcess::NormalExit) {
     if(exit_code!=0) {
       Log(LOG_WARNING,tr("index process returned non-zero exit code")+
 	  QString().sprintf(" [%d]",exit_code));
     }
     else {
       QByteArray data=hls_index_process->readAllStandardOutput();
-      // printf("INDEX: %s\n",(const char *)data);
       data=ReadHeaders(data);
       M3uPlaylist *playlist=new M3uPlaylist();
       if(playlist->parse(data,hls_index_url)) {
 	if(playlist->isMaster()) {  // Recurse to target playlist
-	  // printf("TARGET: %s\n",(const char *)playlist->target().toString().toUtf8());
 	  hls_index_url=playlist->target();
 	  hls_index_timer->start(0);
 	}
@@ -204,15 +248,15 @@ void Hls::indexProcessFinishedData(int exit_code,QProcess::ExitStatus status)
 }
 
 
-void Hls::indexProcessErrorData(QProcess::ProcessError err)
-{
-  Log(LOG_WARNING,tr("index process returned error")+
-      " ["+Connector::processErrorText(err)+"]");
-}
-
-
 void Hls::mediaProcessStartData()
 {
+  if(hls_media_process!=NULL) {
+    if(hls_media_process->state()!=QProcess::NotRunning) {
+      hls_media_timer->start(500);
+      return;
+    }
+  }
+
   //
   // Find next media segment
   //
@@ -224,6 +268,23 @@ void Hls::mediaProcessStartData()
   }
   if(segno<hls_index_playlist->segmentQuantity()) {
     hls_current_media_segment=hls_index_playlist->segmentUrl(segno);
+
+#ifdef CONN_HLS_DUMP_SEGMENTS
+    QString filename=
+      CONN_HLS_DUMP_SEGMENTS+"/"+
+      hls_current_media_segment.toString().split("/",QString::SkipEmptyParts).back();
+    hls_segment_fd=open(filename.toUtf8(),O_CREAT|O_TRUNC|O_WRONLY,S_IRUSR|S_IWUSR);
+    if(hls_segment_fd>=0) {
+      fprintf(stderr,
+	      "creating media segment: %s\n",(const char *)filename.toUtf8()); 
+    }
+    else {
+      fprintf(stderr,
+        "unable to open media segment: %s [%s]\n",
+        (const char *)filename.toUtf8(),strerror(errno)); 
+    }
+ #endif  // CONN_HLS_DUMP_SEGMENTS
+
     QStringList args;
     args.push_back("--user-agent");
     args.push_back(GLASSPLAYER_USER_AGENT);
@@ -235,16 +296,14 @@ void Hls::mediaProcessStartData()
     if(hls_media_process!=NULL) {
       delete hls_media_process;
     }
-    hls_new_segment=true;
     hls_media_process=new QProcess(this);
     hls_media_process->setReadChannel(QProcess::StandardOutput);
     connect(hls_media_process,SIGNAL(readyReadStandardOutput()),
 	    this,SLOT(mediaReadyReadData()));
-    connect(hls_media_process,SIGNAL(error(QProcess::ProcessError)),
-	    this,SLOT(mediaProcessErrorData(QProcess::ProcessError)));
     connect(hls_media_process,SIGNAL(finished(int,QProcess::ExitStatus)),
 	    this,SLOT(mediaProcessFinishedData(int,QProcess::ExitStatus)));
     hls_media_process->start("curl",args);
+    hls_download_start_datetime=QDateTime::currentDateTime();
   }
 }
 
@@ -255,28 +314,50 @@ void Hls::mediaReadyReadData()
 
   while(hls_media_process->bytesAvailable()>0) {
     data=hls_media_process->read(1024);
-    if(hls_new_segment) {
-      if((data.constData()[0]=='I')&&
-	 (data.constData()[1]=='D')&&
-	 (data.constData()[2]=='3')) {
-	//
-	// FIXME: Extract ID3 timestamp info here
-	//
-	data=data.right(data.length()-(10+data.constData()[9]));
+#ifdef CONN_HLS_DUMP_SEGMENTS
+    if(hls_segment_fd>=0) {
+      if(write(hls_segment_fd,data.data(),data.size())<0) {
+	fprintf(stderr,"  ERROR writing media segment data: %s\n",strerror(errno));
       }
-      hls_new_segment=false;
     }
-    emit dataReceived(data,false);
+#endif  // CONN_HLS_DUMP_SEGMENTS
+    hls_media_segment_data+=data;
   }
 }
 
 
 void Hls::mediaProcessFinishedData(int exit_code,QProcess::ExitStatus status)
 {
-  if(status!=QProcess::NormalExit) {
-    Log(LOG_WARNING,tr("media process crashed"));
+#ifdef CONN_HLS_DUMP_SEGMENTS
+  if(hls_segment_fd>=0) {
+    close(hls_segment_fd);
+    hls_segment_fd=-1;
   }
-  else {
+#endif  // CONN_HLS_DUMP_SEGMENTS
+
+  //
+  // Calculate Download Speed
+  //
+  float msecs=hls_download_start_datetime.msecsTo(QDateTime::currentDateTime());
+  float bytes_per_sec=
+    (float)hls_media_segment_data.size()/(msecs/1000.0);
+  hls_download_average->addValue(bytes_per_sec);
+
+  //
+  // Extract Timed Metadata
+  //
+  hls_id3_parser->parse(hls_media_segment_data);
+
+  //
+  // Forward Data
+  //
+  while(hls_media_segment_data.size()>=1024) {
+    emit dataReceived(hls_media_segment_data.left(1024),false);
+    hls_media_segment_data.remove(0,1024);
+  }
+
+  //  hls_id3_parser->reset();
+  if(status==QProcess::NormalExit) {
     if(exit_code!=0) {
       Log(LOG_WARNING,tr("media process returned non-zero exit code")+
 	  QString().sprintf(" [%d]",exit_code));
@@ -300,13 +381,6 @@ void Hls::mediaProcessFinishedData(int exit_code,QProcess::ExitStatus status)
       hls_media_timer->start(0);
     }
   }
-}
-
-
-void Hls::mediaProcessErrorData(QProcess::ProcessError err)
-{
-  Log(LOG_WARNING,tr("media process returned error")+
-      " ["+Connector::processErrorText(err)+"]");
 }
 
 
@@ -340,7 +414,6 @@ QByteArray Hls::ReadHeaders(QByteArray &data)
 
 void Hls::ProcessHeader(const QString &str)
 {
-  //fprintf(stderr,"HEADER: %s\n",(const char *)str.toUtf8());
   QStringList f0=str.split(":");
 
   if(f0.size()>=2) {
@@ -354,5 +427,15 @@ void Hls::ProcessHeader(const QString &str)
     if(hdr=="content-type") {
       hls_content_type=value;
     }
+  }
+}
+
+
+void Hls::StopProcess(QProcess *proc)
+{
+  if((proc!=NULL)&&(proc->state()!=QProcess::NotRunning)) {
+    proc->disconnect();
+    proc->kill();
+    proc->waitForFinished();
   }
 }
