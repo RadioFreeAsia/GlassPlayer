@@ -416,3 +416,5 @@
 	* Refactored metadata processing to be strictly synchronous.
 2019-08-29 Fred Gleason <fredg@paravelsystems.com>
 	* Updated Qt4 to Qt5.
+2019-08-29 Fred Gleason <fredg@paravelsystems.com>
+	* Updated the prerequisites list in 'INSTALL'.

@@ -7,14 +7,16 @@ system before building GlassCoder:
 
 Qt5 Toolkit, v5.9 or better (http://www.qt.io/).
 
-Secret Rabbit Code
-A sample-rate converter library, written by Erik de Castro Lopo.  Included
-with most distros, or you can find it at http://www.mega-nerd.com/SRC/.
+Secret Rabbit Code (http://www.mega-nerd.com/SRC/)
+A sample-rate converter library, written by Erik de Castro Lopo.
 
 GNU LibTool libltdl
 A script for generic shared library support.  Information is available at
- https://www.gnu.org/software/libtool/manual/html_node/Using-libltdl.html#Using-libltdl.
+https://www.gnu.org/software/libtool/manual/html_node/Using-libltdl.html#Using-libltdl.
 
+TagLib Audio Meta-Data Library, v1.8.0 or better (https://taglib.org/)
+A library for reading and editing the meta-data of several popular audio
+formats. 
 
 OPTIONAL PREREQUISITES
 ---------------------------------------------------------------------------
