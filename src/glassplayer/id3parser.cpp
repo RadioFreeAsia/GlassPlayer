@@ -39,8 +39,6 @@ void Id3Parser::parse(QByteArray &data)
 {
   int offset=0;
   bool first_tag_processed=false;
-  int original_size=data.size();
-  int bytes_removed=0;
 
   //
   // Find ID3 Tags
@@ -71,7 +69,6 @@ void Id3Parser::parse(QByteArray &data)
       delete tag;
 
       data.remove(offset,tag_size);
-      bytes_removed+=tag_size;
     }
     else {
       offset+=3;
