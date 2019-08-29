@@ -11,7 +11,9 @@ output types:
 
   Advanced Linux Sound Architeture (ALSA)
   File Streaming (FILE)
+  JACK Audio Connection Kit (JACK)
   Standard Output (STDOUT)
+  Windows Multimedia Extensions (MME)
 
 The base GlassPlayer component utilizes no configuration files or
 GUI interface whatsoever; with the 'user interface' consisting entirely of

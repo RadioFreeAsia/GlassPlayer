@@ -5,7 +5,7 @@ MANDATORY PREREQUISITES
 You will need the following installed and configured properly on your 
 system before building GlassCoder:
 
-Qt4 Toolkit, v4.6 or better (http://www.qt.io/).
+Qt5 Toolkit, v5.9 or better (http://www.qt.io/).
 
 Secret Rabbit Code
 A sample-rate converter library, written by Erik de Castro Lopo.  Included
@@ -74,23 +74,6 @@ http://www.docbook.org/tdg5/en/html/appa.html#s.stylesheetinstall.
 
 xsltproc.  Command line XSLT processor.  Available at
 http://xmlsoft.org/XSLT/xsltproc2.html
-
-
-BUILD ENVIRONMENT
----------------------------------------------------------------------------
-Some distros may require that the CPPFLAGS and LDFLAGS
-environmental variables be set prior to running 'configure' in order for
-Qt4 to be detected properly.  Some known cases are:
-
-  CentOS/RedHat 5 (i386): export CPPFLAGS=-I/usr/lib/qt4/include
-                	  export LDFLAGS=-L/usr/lib/qt4/lib
-                	  export PATH=/usr/lib/qt4/bin:$PATH
-
-CentOS/RedHat 5 (x86_64): export CPPFLAGS=-I/usr/lib64/qt4/include
-                 	  export LDFLAGS=-L/usr/lib64/qt4/lib64
-                	  export PATH=/usr/lib64/qt4/bin:$PATH
-
-Ubuntu:                   export CPPFLAGS=-I/usr/include/qt4
 
 
 INSTALLATION

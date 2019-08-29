@@ -20,8 +20,8 @@
 ##
 ## Use automake to process this into a Makefile.in
 
-AM_CPPFLAGS = -Wall -DPREFIX=\"$(prefix)\" -Wno-strict-aliasing @QT4CLI_CFLAGS@ @SNDFILE_CFLAGS@ @SAMPLERATE_CFLAGS@ @TAGLIB_CFLAGS@ @ALSA_CFLAGS@ @JACK_CFLAGS@ @OGG_CFLAGS@
-MOC = @QT4_MOC@
+AM_CPPFLAGS = -Wall -DPREFIX=\"$(prefix)\" -Wno-strict-aliasing @QT5CLI_CFLAGS@ @SNDFILE_CFLAGS@ @SAMPLERATE_CFLAGS@ @TAGLIB_CFLAGS@ @ALSA_CFLAGS@ @JACK_CFLAGS@ @OGG_CFLAGS@ -std=c++11 -fPIC
+MOC = @QT5_MOC@
 
 # The dependency for qt's Meta Object Compiler (moc)
 moc_%.cpp:	%.h
@@ -83,7 +83,7 @@ nodist_glassplayer_SOURCES = audiodevice.cpp audiodevice.h\
                              moc_serverid.cpp\
                              ringbuffer.cpp ringbuffer.h
 
-glassplayer_LDADD = @QT4CLI_LIBS@ @SNDFILE_LIBS@ @SAMPLERATE_LIBS@ @TAGLIB_LIBS@ @ALSA_LIBS@ @JACK_LIBS@ @ASIHPI_LIBS@ @PLATFORM_LIBS@ @MME_LIBS@ -lltdl
+glassplayer_LDADD = @QT5CLI_LIBS@ @SNDFILE_LIBS@ @SAMPLERATE_LIBS@ @TAGLIB_LIBS@ @ALSA_LIBS@ @JACK_LIBS@ @ASIHPI_LIBS@ @PLATFORM_LIBS@ @MME_LIBS@ -lltdl
 
 
 CLEANFILES = *~\

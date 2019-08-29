@@ -2,7 +2,7 @@
 ##
 ## Makefile for the glassplayergui(1) Audio Player front-end.
 ##
-## (C) Copyright 2016 Fred Gleason <fredg@paravelsystems.com>
+## (C) Copyright 2016-2019 Fred Gleason <fredg@paravelsystems.com>
 ##
 ##   This program is free software; you can redistribute it and/or modify
 ##   it under the terms of the GNU General Public License version 2 as
@@ -20,8 +20,8 @@
 ##
 ## Use automake to process this into a Makefile.in
 
-AM_CPPFLAGS = -Wall -DPREFIX=\"$(prefix)\" -Wno-strict-aliasing @QT4GUI_CFLAGS@ @SAMPLERATE_CFLAGS@
-MOC = @QT4_MOC@
+AM_CPPFLAGS = -Wall -DPREFIX=\"$(prefix)\" -Wno-strict-aliasing @QT5GUI_CFLAGS@ @SAMPLERATE_CFLAGS@ -std=c++11 -fPIC
+MOC = @QT5_MOC@
 
 # The dependency for qt's Meta Object Compiler (moc)
 moc_%.cpp:	%.h
@@ -53,7 +53,7 @@ nodist_glassplayergui_SOURCES = audiodevice.cpp audiodevice.h\
                                 moc_statsdialog.cpp\
                                 moc_statspanel.cpp
 
-glassplayergui_LDADD = @QT4GUI_LIBS@ @SAMPLERATE_LIBS@
+glassplayergui_LDADD = @QT5GUI_LIBS@ @SAMPLERATE_LIBS@
 
 CLEANFILES = *~\
              moc_*\

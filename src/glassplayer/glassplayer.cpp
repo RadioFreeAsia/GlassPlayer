@@ -67,8 +67,7 @@ MainObject::MainObject(QObject *parent)
   sir_metadata_out=false;
   server_type=Connector::XCastServer;
 
-  CmdSwitch *cmd=
-    new CmdSwitch(qApp->argc(),qApp->argv(),"glassplayer",GLASSPLAYER_USAGE);
+  CmdSwitch *cmd=new CmdSwitch("glassplayer",GLASSPLAYER_USAGE);
   if(getenv("HOME")!=NULL) {
     cmd->addOverlay(getenv("HOME")+QString("/.glassplayerrc"));
   }

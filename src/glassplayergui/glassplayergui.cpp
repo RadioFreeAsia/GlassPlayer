@@ -18,7 +18,7 @@
 //   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 //
 
-#include <QApplication>
+#include <QGuiApplication>
 #include <QCloseEvent>
 #include <QMessageBox>
 #include <QPixmap>
@@ -35,8 +35,7 @@ MainWidget::MainWidget(QWidget *parent)
   gui_player_process=NULL;
   gui_logo_process=NULL;
 
-  CmdSwitch *cmd=new CmdSwitch(qApp->argc(),qApp->argv(),"glassplayergui",
-			       GLASSPLAYERGUI_USAGE);
+  CmdSwitch *cmd=new CmdSwitch("glassplayergui",GLASSPLAYERGUI_USAGE);
   if(cmd->keys()>0) {
     for(unsigned i=0;i<(cmd->keys()-1);i++) {
       if(!cmd->processed(i)) {
@@ -464,7 +463,7 @@ void MainWidget::GetLogo(const QString &url)
 
 int main(int argc,char *argv[])
 {
-  QApplication a(argc,argv);
+  QGuiApplication a(argc,argv);
   MainWidget *w=new MainWidget();
   w->show();
   return a.exec();

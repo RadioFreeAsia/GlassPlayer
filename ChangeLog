@@ -403,3 +403,5 @@
 	'--metadata-out' in glassplayer(1).
 2019-08-13 Fred Gleason <fredg@paravelsystems.com>
 	* Refactored metadata processing to be strictly synchronous.
+2019-08-29 Fred Gleason <fredg@paravelsystems.com>
+	* Updated Qt4 to Qt5.
