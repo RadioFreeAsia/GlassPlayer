@@ -29,7 +29,7 @@
 
 CmdSwitch::CmdSwitch(const char *modname,const char *usage)
 {
-  unsigned l=0;
+  int l=0;
   bool handled=false;
   QStringList args=qApp->arguments();
 

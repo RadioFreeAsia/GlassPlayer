@@ -420,3 +420,5 @@
 	* Updated the prerequisites list in 'INSTALL'.
 2019-08-29 Fred Gleason <fredg@paravelsystems.com>
 	* Removed superfluous local variables from 'Id3Parser'.
+2019-08-29 Fred Gleason <fredg@paravelsystems.com>
+	* Cleaned up warnings in 'CmdSwitch'.
