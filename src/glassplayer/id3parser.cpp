@@ -43,42 +43,47 @@ void Id3Parser::parse(QByteArray &data)
   //
   // Find ID3 Tags
   //
-  while((offset=data.indexOf("ID3",offset))>=0) {
-    if((data.size()>offset+10)&&
-       ((0xFF&data[offset+3])==0x04)&&   // From ID3v2.4 Section 3.1
-       ((0xFF&data[offset+4])<0xFF)&&
-       ((0xFF&data[offset+6])<0x80)&&
-       ((0xFF&data[offset+7])<0x80)&&
-       ((0xFF&data[offset+8])<0x80)&&
-       ((0xFF&data[offset+9])<0x80)) {
-      int tag_size=((0xFF&data[offset+6])*2048383)+  // Synchsafe integer
-	((0xFF&data[offset+7])*16129)+
-	((0xFF&data[offset+8])*127)+
-	(0xFF&data[offset+9])+
-	10;
-      if((0x08&data[offset+5])!=0) {  // Check for Footer
-	tag_size+=10;
-      }
-      if(first_tag_processed) {
-	tag_size+=3;
-      }
-      first_tag_processed=true;
+  if(parser_first_buffer_processed) {
+    offset=0;
+    while((offset=data.indexOf("ID3",offset))>=0) {
+      if((data.size()>(offset+10))&&
+	 ((0xFF&data[offset+3])==0x04)&&   // From ID3v2.4 Section 3.1
+	 ((0xFF&data[offset+4])<0xFF)&&
+	 ((0xFF&data[offset+6])<0x80)&&
+	 ((0xFF&data[offset+7])<0x80)&&
+	 ((0xFF&data[offset+8])<0x80)&&
+	 ((0xFF&data[offset+9])<0x80)) {
+	int tag_size=((0xFF&data[offset+6])*2048383)+  // Synchsafe integer
+	  ((0xFF&data[offset+7])*16129)+
+	  ((0xFF&data[offset+8])*127)+
+	  (0xFF&data[offset+9])+
+	  10;
+	if((0x08&data[offset+5])!=0) {  // Check for Footer
+	  tag_size+=10;
+	}
+	if(first_tag_processed) {
+	  tag_size+=3;
+	}
+	first_tag_processed=true;
 
-      Id3Tag *tag=new Id3Tag(data.mid(offset,tag_size));
-      emit tagReceived(parser_bytes_processed+offset,tag);
-      delete tag;
+	Id3Tag *tag=new Id3Tag(data.mid(offset,tag_size));
+	emit tagReceived(parser_bytes_processed+offset,tag);
+	delete tag;
 
-      data.remove(offset,tag_size);
+	data.remove(offset,tag_size);
+      }
+      else {
+	offset+=3;
+      }
     }
-    else {
-      offset+=3;
-    }
+    parser_bytes_processed+=data.size();
   }
-  parser_bytes_processed+=data.size();
+  parser_first_buffer_processed=true;
 }
 
 
 void Id3Parser::reset()
 {
+  parser_first_buffer_processed=false;
   parser_bytes_processed=0;
 }

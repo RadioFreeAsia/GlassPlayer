@@ -40,6 +40,7 @@ class Id3Parser : public QObject
   void tagReceived(uint64_t offset,Id3Tag *tag);
 
  private:
+  bool parser_first_buffer_processed;
   int parser_bytes_processed;
 };
 

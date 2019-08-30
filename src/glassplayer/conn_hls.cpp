@@ -160,6 +160,15 @@ void Hls::tagReceivedData(uint64_t bytes,Id3Tag *tag)
   TagLib::ID3v2::FrameList frames=tag->frameList();
   bool initialize=false;
 
+  for(unsigned i=0;i<frames.size();i++) {
+    TagLib::ByteVector raw_bytes=frames[i]->frameID();
+    QString id(QByteArray(raw_bytes.data(),raw_bytes.size()).constData());
+    QString str=QString::fromUtf8(frames[i]->toString().toCString(true));
+    if((id=="PRIV")&&(str=="com.apple.streaming.transportStreamTimestamp")) {
+      return;
+    }
+  }
+
   if(hls_meta_event.isEmpty()) {
     initialize=true;
   }
@@ -172,12 +181,8 @@ void Hls::tagReceivedData(uint64_t bytes,Id3Tag *tag)
     if(initialize) {
       setMetadataField(0,id,str);
     }
-    /*
-    printf("frame[%u]: %s|%s\n",i,
-	   (const char *)id.toUtf8(),
-	   frames[i]->toString().toCString(true));
-    */
   }
+
   emit metadataReceived(bytes,&hls_meta_event);
 }
 
@@ -351,12 +356,13 @@ void Hls::mediaProcessFinishedData(int exit_code,QProcess::ExitStatus status)
   //
   // Forward Data
   //
-  while(hls_media_segment_data.size()>=1024) {
-    emit dataReceived(hls_media_segment_data.left(1024),false);
-    hls_media_segment_data.remove(0,1024);
+  while(hls_media_segment_data.size()>512) {
+    emit dataReceived(hls_media_segment_data.left(512),false);
+    hls_media_segment_data.remove(0,512);
   }
+  emit dataReceived(hls_media_segment_data,false);
+  hls_media_segment_data.clear();
 
-  //  hls_id3_parser->reset();
   if(status==QProcess::NormalExit) {
     if(exit_code!=0) {
       Log(LOG_WARNING,tr("media process returned non-zero exit code")+
