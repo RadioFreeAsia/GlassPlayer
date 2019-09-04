@@ -424,3 +424,5 @@
 	* Cleaned up warnings in 'CmdSwitch'.
 2019-08-30 Fred Gleason <fredg@paravelsystems.com>
 	* Got fully synchronous HLS metadata working.
+2019-09-04 Fred Gleason <fredg@paravelsystems.com>
+	* Added a '--json' switch to glassplayer(1).

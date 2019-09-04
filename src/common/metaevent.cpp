@@ -79,8 +79,6 @@ QString MetaEvent::exportFields() const
   for(QMap<QString,QString>::const_iterator it=meta_fields.begin();
       it!=meta_fields.end();it++) {
     QString value=it.value();
-    value.replace("\r","\\r");
-    value.replace("\n","\\n");
     ret+="Metadata|"+it.key()+":"+value+"\n";
   }
 

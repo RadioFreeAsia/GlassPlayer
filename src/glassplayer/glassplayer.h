@@ -30,6 +30,7 @@
 #include "audiodevice.h"
 #include "codec.h"
 #include "connector.h"
+#include "jsonengine.h"
 #include "ringbuffer.h"
 #include "serverid.h"
 
@@ -64,6 +65,7 @@ class MainObject : public QObject
   unsigned pregap;
   QString post_data;
   bool sir_stats_out;
+  bool sir_json;
   bool sir_metadata_out;
   QString sir_server_script_up;
   QString sir_server_script_down;
@@ -84,6 +86,7 @@ class MainObject : public QObject
   bool sir_first_stats;
   bool sir_meter_data;
   QTimer *sir_meter_timer;
+  JsonEngine *sir_json_engine;
 };
 
 

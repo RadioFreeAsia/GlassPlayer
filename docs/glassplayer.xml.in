@@ -241,6 +241,17 @@
 
     <varlistentry>
       <term>
+	<option>--json</option>
+      </term>
+      <listitem>
+	<para>
+	  Output meter updates, metadata and stats information in JSON format.
+	</para>
+      </listitem>
+    </varlistentry>
+
+    <varlistentry>
+      <term>
 	<option>--list-codecs</option>
       </term>
       <listitem>

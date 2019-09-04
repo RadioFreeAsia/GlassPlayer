@@ -65,6 +65,7 @@ MainObject::MainObject(QObject *parent)
   pregap=0;
   sir_stats_out=false;
   sir_metadata_out=false;
+  sir_json=false;
   server_type=Connector::XCastServer;
 
   CmdSwitch *cmd=new CmdSwitch("glassplayer",GLASSPLAYER_USAGE);
@@ -88,6 +89,10 @@ MainObject::MainObject(QObject *parent)
     }
     if(cmd->key(i)=="--dump-bitstream") {
       dump_bitstream=true;
+      cmd->setProcessed(i,true);
+    }
+    if(cmd->key(i)=="--json") {
+      sir_json=true;
       cmd->setProcessed(i,true);
     }
     if(cmd->key(i)=="--list-codecs") {
@@ -174,6 +179,11 @@ MainObject::MainObject(QObject *parent)
     ListDevices();
     exit(0);
   }
+
+  //
+  // JSON Generator
+  //
+  sir_json_engine=new JsonEngine();
 
   //
   // Starvation Watchdog
@@ -359,7 +369,17 @@ void MainObject::metadataReceivedData(MetaEvent *e)
     }
   }
   if(sir_metadata_out) {
-    printf("%s\n",(const char *)e->exportFields().toUtf8());
+    if(sir_json) {
+      sir_json_engine->addEvents(e->exportFields());
+      printf("%s\n",(const char *)sir_json_engine->generate().toUtf8());
+      sir_json_engine->clear();
+    }
+    else {
+      QString data=e->exportFields();
+      data.replace("\r","\\r");
+      data.replace("\n","\\n");
+      printf("%s\n",(const char *)e->exportFields().toUtf8());
+    }
     fflush(stdout);
   }
 }
@@ -397,11 +417,20 @@ void MainObject::statsData()
   if(sir_audio_device!=NULL) {
     sir_audio_device->getStats(&hdrs,&values,sir_first_stats);
   }
-  for(int i=0;i<hdrs.size();i++) {
-    printf("%s: %s\n",(const char *)hdrs[i].toUtf8(),
-	   (const char *)values[i].toUtf8());
+  if(sir_json) {
+    for(int i=0;i<hdrs.size();i++) {
+      sir_json_engine->addEvents(hdrs.at(i)+": "+values.at(i));
+    }
+    printf("%s\n",(const char *)sir_json_engine->generate().toUtf8());
+    sir_json_engine->clear();
   }
-  printf("\n");
+  else {
+    for(int i=0;i<hdrs.size();i++) {
+      printf("%s: %s\n",(const char *)hdrs[i].toUtf8(),
+	     (const char *)values[i].toUtf8());
+    }
+    printf("\n");
+  }
   fflush(stdout);
   sir_first_stats=false;
 }
@@ -410,16 +439,25 @@ void MainObject::statsData()
 void MainObject::meterData()
 {
   int lvls[MAX_AUDIO_CHANNELS];
+  QString me;
 
   sir_audio_device->meterLevels(lvls);
   switch(sir_codec->channels()) {
   case 1:
-    printf("ME %04X%04X\n",0xFFFF&lvls[0],0xFFFF&lvls[0]);
+    me=QString().sprintf("ME %04X%04X",0xFFFF&lvls[0],0xFFFF&lvls[0]);
     break;
 
   case 2:
-    printf("ME %04X%04X\n",0xFFFF&lvls[0],0xFFFF&lvls[1]);
+    me=QString().sprintf("ME %04X%04X",0xFFFF&lvls[0],0xFFFF&lvls[1]);
     break;
+  }
+  if(sir_json) {
+    sir_json_engine->addEvent("Meter|Update: "+me);
+    printf("%s\n",(const char *)sir_json_engine->generate().toUtf8());
+    sir_json_engine->clear();
+  }
+  else {
+    printf("%s\n",(const char *)me.toUtf8());
   }
   fflush(stdout);
 }

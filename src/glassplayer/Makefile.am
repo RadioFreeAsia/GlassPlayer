@@ -50,6 +50,7 @@ dist_glassplayer_SOURCES = audiodevicefactory.cpp audiodevicefactory.h\
                            glassplayer.cpp glassplayer.h\
                            id3parser.cpp id3parser.h\
                            id3tag.cpp id3tag.h\
+                           jsonengine.cpp jsonengine.h\
                            m3uplaylist.cpp m3uplaylist.h\
                            meteraverage.cpp meteraverage.h\
                            serverid.cpp serverid.h
