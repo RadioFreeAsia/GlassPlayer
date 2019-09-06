@@ -2,7 +2,7 @@
 //
 // Stats viewer section
 //
-//   (C) Copyright 2016 Fred Gleason <fredg@paravelsystems.com>
+//   (C) Copyright 2016-2019 Fred Gleason <fredg@paravelsystems.com>
 //
 //   This program is free software; you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License version 2 as
@@ -24,14 +24,6 @@ StatsPanel::StatsPanel(const QString &category,QWidget *parent)
   : QWidget(parent)
 {
   stats_category=category;
-
-  QFont label_font=font();
-  label_font.setPointSize(font().pointSize()+2);
-  label_font.setWeight(QFont::Bold);
-
-  stats_category_label=new QLabel(category,this);
-  stats_category_label->setFont(label_font);
-  stats_category_label->setAlignment(Qt::AlignBottom|Qt::AlignLeft);
 
   stats_text=new QTextEdit(this);
   stats_text->setReadOnly(true);
@@ -59,6 +51,5 @@ void StatsPanel::update(const QString &param,const QString &value)
 
 void StatsPanel::resizeEvent(QResizeEvent *e)
 {
-  stats_category_label->setGeometry(10,0,size().width()-20,25);
-  stats_text->setGeometry(0,25,size().width(),size().height()-25);
+  stats_text->setGeometry(0,0,size().width(),size().height());
 }

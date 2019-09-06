@@ -1,8 +1,8 @@
-// statspanel.h
+// combobox.h
 //
-// Stats viewer section
+// ComboBox widget
 //
-//   (C) Copyright 2016-2019 Fred Gleason <fredg@paravelsystems.com>
+//   (C) Copyright 2015 Fred Gleason <fredg@paravelsystems.com>
 //
 //   This program is free software; you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License version 2 as
@@ -18,32 +18,30 @@
 //   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 //
 
-#ifndef STATSPANEL_H
-#define STATSPANEL_H
+#ifndef COMBOBOX_H
+#define COMBOBOX_H
 
-#include <map>
+#include <QComboBox>
+#include <QKeyEvent>
+#include <QVariant>
 
-#include <QString>
-#include <QStringList>
-#include <QTextEdit>
-#include <QWidget>
-
-class StatsPanel : public QWidget
+class ComboBox : public QComboBox
 {
  Q_OBJECT;
  public:
-  StatsPanel(const QString &category,QWidget *parent=0);
-  QSize sizeHint() const;
-  void update(const QString &param,const QString &value);
+  ComboBox(QWidget *parent=0);
+  bool contains(const QVariant &item);
+  void setReadOnly(bool state);
+  QVariant currentItemData(int role=Qt::UserRole);
+  bool setCurrentItemData(unsigned val);
 
  protected:
-  void resizeEvent(QResizeEvent *e);
+  void keyPressEvent(QKeyEvent *e);
+  void mousePressEvent(QMouseEvent *e);
 
  private:
-  QTextEdit *stats_text;
-  QString stats_category;
-  std::map<QString,QString> stats_values;
+  bool box_read_only;
 };
 
 
-#endif  // STATSPANEL_H
+#endif  // COMBOBOX_H

@@ -2,7 +2,7 @@
 //
 // glassplayergui(1) Audio Receiver front end
 //
-//   (C) Copyright 2016 Fred Gleason <fredg@paravelsystems.com>
+//   (C) Copyright 2016-2019 Fred Gleason <fredg@paravelsystems.com>
 //
 //   This program is free software; you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License version 2 as
@@ -18,8 +18,9 @@
 //   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 //
 
-#include <QGuiApplication>
+#include <QApplication>
 #include <QCloseEvent>
+#include <QJsonObject>
 #include <QMessageBox>
 #include <QPixmap>
 
@@ -59,50 +60,22 @@ MainWidget::MainWidget(QWidget *parent)
   gui_stats_dialog=new StatsDialog(this);
 
   //
-  // Title
+  // Metadata Title
   //
   gui_title_text=new QLabel(tr("The GlassPlayer"),this);
   gui_title_text->setFont(title_font);
 
   //
-  // Stream Name
+  // Metadata Fields
   //
-  gui_name_label=new QLabel(tr("Stream Name")+":",this);
-  gui_name_label->setAlignment(Qt::AlignRight|Qt::AlignVCenter);
-  gui_name_label->setFont(bold_font);
+  for(int i=0;i<GLASSPLAYERGUI_METADATA_FIELD_QUAN;i++) {
+    gui_metadata_labels[i]=new QLabel(tr("Stream Name")+":",this);
+    gui_metadata_labels[i]->setAlignment(Qt::AlignRight|Qt::AlignVCenter);
+    gui_metadata_labels[i]->setFont(bold_font);
 
-  gui_name_text=new QLabel(this);
-  gui_name_text->setAlignment(Qt::AlignLeft|Qt::AlignVCenter);
-
-  //
-  // Stream Description
-  //
-  gui_description_label=new QLabel(tr("Description")+":",this);
-  gui_description_label->setAlignment(Qt::AlignRight|Qt::AlignVCenter);
-  gui_description_label->setFont(bold_font);
-
-  gui_description_text=new QLabel(this);
-  gui_description_text->setAlignment(Qt::AlignLeft|Qt::AlignVCenter);
-
-  //
-  // Channel URL
-  //
-  gui_channelurl_label=new QLabel(tr("Channel URL")+":",this);
-  gui_channelurl_label->setAlignment(Qt::AlignRight|Qt::AlignVCenter);
-  gui_channelurl_label->setFont(bold_font);
-
-  gui_channelurl_text=new QLabel(this);
-  gui_channelurl_text->setAlignment(Qt::AlignLeft|Qt::AlignVCenter);
-
-  //
-  // Genre
-  //
-  gui_genre_label=new QLabel(tr("Genre")+":",this);
-  gui_genre_label->setAlignment(Qt::AlignRight|Qt::AlignVCenter);
-  gui_genre_label->setFont(bold_font);
-
-  gui_genre_text=new QLabel(this);
-  gui_genre_text->setAlignment(Qt::AlignLeft|Qt::AlignVCenter);
+    gui_metadata_texts[i]=new QLabel(this);
+    gui_metadata_texts[i]->setAlignment(Qt::AlignLeft|Qt::AlignVCenter);
+  }
 
   //
   // Stats Button
@@ -131,6 +104,10 @@ MainWidget::MainWidget(QWidget *parent)
   }
   gui_meters[0]->setLabel(tr("L"));
   gui_meters[1]->setLabel(tr("R"));
+
+  gui_json_parser=new JsonParser(this);
+  connect(gui_json_parser,SIGNAL(newDocument(const QJsonDocument &)),
+	  this,SLOT(newJsonDocumentData(const QJsonDocument &)));
 
   if(!gui_url.isEmpty()) {
     processStart(gui_url);
@@ -164,7 +141,9 @@ void MainWidget::processStart(const QString &url)
 {
   QStringList args;
 
+  args.push_back("--json");
   args.push_back("--meter-data");
+  args.push_back("--metadata-out");
   args.push_back("--stats-out");
   args.push_back(url);
   if(gui_player_process!=NULL) {
@@ -184,27 +163,7 @@ void MainWidget::processStart(const QString &url)
 
 void MainWidget::processReadyReadData()
 {
-  QString line;
-  QStringList f0;
-
-  while(gui_player_process->canReadLine()) {
-    line=gui_player_process->readLine().trimmed();
-    if(line.isEmpty()) {
-      ProcessStats(gui_stats_list);
-      gui_stats_list.clear();
-    }
-    else {
-      f0=line.split(" ");
-      if(f0[0]=="ME") {
-	if(f0.size()==2) {
-	  ProcessMeterUpdates(f0[1]);
-	}
-      }
-      else {
-	gui_stats_list.push_back(line);
-      }
-    }
-  }
+  gui_json_parser->addData(gui_player_process->readAllStandardOutput());
 }
 
 
@@ -236,7 +195,44 @@ void MainWidget::processErrorData(QProcess::ProcessError err)
 }
 
 
-void MainWidget::logoProcessFinishedData(int exit_code,QProcess::ExitStatus status)
+void MainWidget::newJsonDocumentData(const QJsonDocument &doc)
+{
+  if(!doc.isNull()) {
+    if(doc.isObject()) {
+      QJsonObject obj=doc.object();
+      if(obj.keys().at(0)=="Meter") {
+	ProcessMeterUpdates(obj.value("Meter").toObject().value("Update").
+			    toString().split(" ").at(1));
+      }
+      else {
+	if(obj.keys().at(0)=="Metadata") {
+	  ProcessMetadataUpdates(obj.value("Metadata").toObject());
+	}
+
+	//
+	// Stats Dialog
+	//
+	QStringList keys=obj.value(obj.keys().at(0)).toObject().keys();
+	  for(int i=0;i<keys.size();i++) {
+	    QJsonValue v=
+	      obj.value(obj.keys().at(0)).toObject().value(keys.at(i));
+	    if(v.isString()) {
+	      gui_stats_dialog->update(obj.keys().at(0),keys.at(i),
+				       v.toString());
+	    }
+	    else {
+	      gui_stats_dialog->update(obj.keys().at(0),keys.at(i),
+				       QString().sprintf("%d",v.toInt()));
+	    }
+	  }
+      }
+    }
+  }
+}
+
+
+void MainWidget::logoProcessFinishedData(int exit_code,
+					 QProcess::ExitStatus status)
 {
   if(status!=QProcess::NormalExit) {
     fprintf(stderr,"glassplayergui: %s\n",
@@ -297,86 +293,119 @@ void MainWidget::resizeEvent(QResizeEvent *e)
     right-=edge+10;
   }
 
-  if(gui_name_text->text().isEmpty()) {
-    gui_name_label->hide();
-    gui_name_text->hide();
-  }
-  else {
-    gui_name_label->show();
-    gui_name_text->show();
-    gui_name_label->setGeometry(10,ypos,120,20);
-    gui_name_text->setGeometry(135,ypos,size().width()-225,20);
-    ypos+=20;
-  }
-
-  if(gui_description_text->text().isEmpty()) {
-    gui_description_label->hide();
-    gui_description_text->hide();
-  }
-  else {
-    gui_description_label->show();
-    gui_description_text->show();
-    gui_description_label->setGeometry(10,ypos,120,20);
-    gui_description_text->setGeometry(135,ypos,size().width()-225,20);
-    ypos+=20;
-  }
-
-  if(gui_channelurl_text->text().isEmpty()) {
-    gui_channelurl_label->hide();
-    gui_channelurl_text->hide();
-  }
-  else {
-    gui_channelurl_label->show();
-    gui_channelurl_text->show();
-    gui_channelurl_label->setGeometry(10,ypos,120,20);
-    gui_channelurl_text->setGeometry(135,ypos,size().width()-225,20);
-    ypos+=20;
-  }
-
-  if(gui_genre_text->text().isEmpty()) {
-    gui_genre_label->hide();
-    gui_genre_text->hide();
-  }
-  else {
-    gui_genre_label->show();
-    gui_genre_text->show();
-    gui_genre_label->setGeometry(10,ypos,120,20);
-    gui_genre_text->setGeometry(135,ypos,right,20);
-    ypos+=20;
+  for(int i=0;i<GLASSPLAYERGUI_METADATA_FIELD_QUAN;i++) {
+    if(gui_metadata_texts[i]->text().isEmpty()) {
+      gui_metadata_labels[i]->hide();
+      gui_metadata_texts[i]->hide();
+    }
+    else {
+      gui_metadata_labels[i]->show();
+      gui_metadata_texts[i]->show();
+      gui_metadata_labels[i]->setGeometry(10,ypos,120,20);
+      gui_metadata_texts[i]->setGeometry(135,ypos,size().width()-225,20);
+      ypos+=20;
+    }
   }
 
   gui_stats_button->setGeometry(10,size().height()-40,110,35);
 
   gui_logo_label->
-    setGeometry(size().width()-edge-MAX_AUDIO_CHANNELS*10-15,size().height()-edge-10,edge,edge);
+    setGeometry(size().width()-edge-MAX_AUDIO_CHANNELS*10-15,
+		size().height()-edge-10,edge,edge);
 
   for(int i=0;i<MAX_AUDIO_CHANNELS;i++) {
-    gui_meters[i]->setGeometry(size().width()-10*(MAX_AUDIO_CHANNELS-i)-10,
-			       30,10,size().height()-40);
+    gui_meters[i]->setGeometry(size().width()-10*(MAX_AUDIO_CHANNELS-i)-10,30,
+			       10,size().height()-40);
   }
 }
 
 
-void MainWidget::ProcessStats(const QStringList &stats)
+void MainWidget::ProcessMetadataUpdates(const QJsonObject &obj)
 {
-  QString category;
-  QString param;
-  QString value;
+  QStringList keys=obj.keys();
+  int next_field=0;
 
-  for(int i=0;i<stats.size();i++) {
-    if(!stats[i].isEmpty()) {
-      QStringList f0=stats[i].split(":");
-      QStringList f1=f0[0].split("|",QString::KeepEmptyParts);
-      category=f1[0];
-      if(f1.size()==2) {
-	param=f1[1];
-      }
-      f0.erase(f0.begin());
-      value=f0.join(":");
-
-      UpdateStat(category,param,value);
-    }
+  //
+  // HLS-Style Fields
+  //
+  if(obj.value("TRSN")!=QJsonValue::Undefined) {
+    gui_title_text->setText(obj.value("TRSN").toString());
   }
+  if((obj.value("TRSO")!=QJsonValue::Undefined)&&
+     (next_field<GLASSPLAYERGUI_METADATA_FIELD_QUAN)) {
+    QString text=gui_title_text->text();
+    if(!text.isEmpty()) {
+      text+=" - ";
+    }
+    gui_title_text->setText(text+obj.value("TRSO").toString());
+  }
+  if((obj.value("TIT2")!=QJsonValue::Undefined)&&
+     (next_field<GLASSPLAYERGUI_METADATA_FIELD_QUAN)) {
+    gui_metadata_labels[next_field]->setText(tr("Title")+":");
+    gui_metadata_texts[next_field]->setText(obj.value("TIT2").toString());
+    next_field++;
+  }
+  if((obj.value("TPE1")!=QJsonValue::Undefined)&&
+     (next_field<GLASSPLAYERGUI_METADATA_FIELD_QUAN)) {
+    gui_metadata_labels[next_field]->setText(tr("Artist")+":");
+    gui_metadata_texts[next_field]->setText(obj.value("TPE1").toString());
+    next_field++;
+  }
+  if((obj.value("TALB")!=QJsonValue::Undefined)&&
+     (next_field<GLASSPLAYERGUI_METADATA_FIELD_QUAN)) {
+    if(obj.value("TALB")==QJsonValue::String) {
+      gui_metadata_labels[next_field]->setText(tr("Album")+":");
+      gui_metadata_texts[next_field]->setText(obj.value("TALB").toString());
+    }
+    else {
+      gui_metadata_labels[next_field]->setText(tr("Year")+":");
+      gui_metadata_texts[next_field]->
+	setText(QString().sprintf("%d",obj.value("TALB").toInt()));
+    }
+    next_field++;
+  }
+
+  //
+  // X-Cast Style Fields
+  //
+  if(obj.value("icy-name")!=QJsonValue::Undefined) {
+    gui_title_text->setText(obj.value("icy-name").toString());
+  }
+
+  if((obj.value("icy-description")!=QJsonValue::Undefined)&&
+     (next_field<GLASSPLAYERGUI_METADATA_FIELD_QUAN)) {
+    QString text=gui_title_text->text();
+    if(!text.isEmpty()) {
+      text+=" - ";
+    }
+    gui_title_text->setText(text+obj.value("icy-description").toString());
+  }
+
+  if((obj.value("icy-genre")!=QJsonValue::Undefined)&&
+     (next_field<GLASSPLAYERGUI_METADATA_FIELD_QUAN)) {
+    gui_metadata_labels[next_field]->setText(tr("Genre")+":");
+    gui_metadata_texts[next_field]->setText(obj.value("icy-genre").toString());
+    next_field++;
+  }
+
+  if((obj.value("StreamTitle")!=QJsonValue::Undefined)&&
+     (next_field<GLASSPLAYERGUI_METADATA_FIELD_QUAN)) {
+    gui_metadata_labels[next_field]->setText(tr("Now Playing")+":");
+    gui_metadata_texts[next_field]->setText(obj.value("StreamTitle").toString());
+    next_field++;
+  }
+
+  if(obj.value("StreamUrl")!=QJsonValue::Undefined) {
+    GetLogo(obj.value("StreamUrl").toString());
+  }
+
+  resizeEvent(NULL);
+  /*
+  for(int i=0;i<keys.size();i++) {
+    printf("%s: %s\n",(const char *)keys.at(i).toUtf8(),
+	   (const char *)obj.value(keys.at(i)).toString().toUtf8());
+  }
+  */
 }
 
 
@@ -392,47 +421,6 @@ void MainWidget::ProcessMeterUpdates(const QString &values)
   level=values.right(4).toInt(&ok,16);
   if(ok) {
     gui_meters[1]->setPeakBar(-level);
-  }
-}
-
-
-void MainWidget::UpdateStat(const QString &category,const QString &param,
-			    const QString &value)
-{
-  QString misc;
-
-  gui_stats_dialog->update(category,param,value);
-
-  if(category=="Metadata") {
-    if((param=="StreamTitle")||
-       (param=="TIT2")){
-      if(value.isEmpty()) {
-	gui_title_text->setText(tr("The GlassPlayer"));
-      }
-      else {
-	gui_title_text->setText(value);
-      }
-    }
-    if((param=="Name")||
-       (param=="TRSN")){
-      gui_name_text->setText(value);
-      resizeEvent(NULL);
-    }
-    if(param=="Description") {
-      gui_description_text->setText(value);
-      resizeEvent(NULL);
-    }
-    if(param=="ChannelUrl") {
-      gui_channelurl_text->setText(value);
-      resizeEvent(NULL);
-    }
-    if(param=="Genre") {
-      gui_genre_text->setText(value);
-      resizeEvent(NULL);
-    }
-    if(param=="StreamUrl") {
-      GetLogo(value);
-    }
   }
 }
 
@@ -463,7 +451,7 @@ void MainWidget::GetLogo(const QString &url)
 
 int main(int argc,char *argv[])
 {
-  QGuiApplication a(argc,argv);
+  QApplication a(argc,argv);
   MainWidget *w=new MainWidget();
   w->show();
   return a.exec();

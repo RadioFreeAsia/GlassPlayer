@@ -2,7 +2,7 @@
 //
 // Stats viewer dialog
 //
-//   (C) Copyright 2016 Fred Gleason <fredg@paravelsystems.com>
+//   (C) Copyright 2016-2019 Fred Gleason <fredg@paravelsystems.com>
 //
 //   This program is free software; you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License version 2 as
@@ -21,14 +21,15 @@
 #ifndef STATSDIALOG_H
 #define STATSDIALOG_H
 
-#include <map>
-
-#include <QPushButton>
 #include <QDialog>
+#include <QLabel>
+#include <QMap>
+#include <QPushButton>
 #include <QString>
 #include <QStringList>
 #include <QTextEdit>
 
+#include "combobox.h"
 #include "statspanel.h"
 
 class StatsDialog : public QDialog
@@ -43,13 +44,18 @@ class StatsDialog : public QDialog
  signals:
   void closeClicked();
 
+ private slots:
+  void categoryActivatedData(const QString &str);
+
  protected:
   void closeEvent(QCloseEvent *e);
   void resizeEvent(QResizeEvent *e);
 
  private:
+  QLabel *stats_category_label;
+  ComboBox *stats_category_box;
   QTextEdit *stats_text;
-  std::map<QString,StatsPanel *> stats_panels;
+  QMap<QString,StatsPanel *> stats_panels;
 };
 
 

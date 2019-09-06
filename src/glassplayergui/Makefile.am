@@ -30,7 +30,9 @@ moc_%.cpp:	%.h
 
 bin_PROGRAMS = glassplayergui
 
-dist_glassplayergui_SOURCES = glassplayergui.cpp glassplayergui.h\
+dist_glassplayergui_SOURCES = combobox.cpp combobox.h\
+                              glassplayergui.cpp glassplayergui.h\
+                              jsonparser.cpp jsonparser.h\
                               playmeter.cpp playmeter.h\
                               segmeter.cpp segmeter.h\
                               statsdialog.cpp statsdialog.h\
@@ -44,14 +46,16 @@ nodist_glassplayergui_SOURCES = audiodevice.cpp audiodevice.h\
                                 logging.cpp logging.h\
                                 metaevent.cpp metaevent.h\
                                 moc_audiodevice.cpp\
-                                ringbuffer.cpp ringbuffer.h\
                                 moc_codec.cpp\
+                                moc_combobox.cpp\
                                 moc_connector.cpp\
                                 moc_glassplayergui.cpp\
+                                moc_jsonparser.cpp\
                                 moc_playmeter.cpp\
                                 moc_segmeter.cpp\
                                 moc_statsdialog.cpp\
-                                moc_statspanel.cpp
+                                moc_statspanel.cpp\
+                                ringbuffer.cpp ringbuffer.h
 
 glassplayergui_LDADD = @QT5GUI_LIBS@ @SAMPLERATE_LIBS@
 

@@ -439,25 +439,25 @@ void MainObject::statsData()
 void MainObject::meterData()
 {
   int lvls[MAX_AUDIO_CHANNELS];
-  QString me;
+  QString hex;
 
   sir_audio_device->meterLevels(lvls);
   switch(sir_codec->channels()) {
   case 1:
-    me=QString().sprintf("ME %04X%04X",0xFFFF&lvls[0],0xFFFF&lvls[0]);
+    hex=QString().sprintf("ME %04X%04X",0xFFFF&lvls[0],0xFFFF&lvls[0]);
     break;
 
   case 2:
-    me=QString().sprintf("ME %04X%04X",0xFFFF&lvls[0],0xFFFF&lvls[1]);
+    hex=QString().sprintf("ME %04X%04X",0xFFFF&lvls[0],0xFFFF&lvls[1]);
     break;
   }
   if(sir_json) {
-    sir_json_engine->addEvent("Meter|Update: "+me);
+    sir_json_engine->addEvent("Meter|Update: "+hex);
     printf("%s\n",(const char *)sir_json_engine->generate().toUtf8());
     sir_json_engine->clear();
   }
   else {
-    printf("%s\n",(const char *)me.toUtf8());
+    printf("%s\n",(const char *)hex.toUtf8());
   }
   fflush(stdout);
 }

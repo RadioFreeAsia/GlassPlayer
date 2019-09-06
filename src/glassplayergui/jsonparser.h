@@ -1,8 +1,8 @@
-// statspanel.h
+// jsonparser.h
 //
-// Stats viewer section
+// JSON parser
 //
-//   (C) Copyright 2016-2019 Fred Gleason <fredg@paravelsystems.com>
+//   (C) Copyright 2019 Fred Gleason <fredg@paravelsystems.com>
 //
 //   This program is free software; you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License version 2 as
@@ -18,32 +18,27 @@
 //   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 //
 
-#ifndef STATSPANEL_H
-#define STATSPANEL_H
+#ifndef JSONPARSER_H
+#define JSONPARSER_H
 
-#include <map>
+#include <QByteArray>
+#include <QJsonDocument>
+#include <QObject>
 
-#include <QString>
-#include <QStringList>
-#include <QTextEdit>
-#include <QWidget>
-
-class StatsPanel : public QWidget
+class JsonParser : public QObject
 {
- Q_OBJECT;
+  Q_OBJECT;
  public:
-  StatsPanel(const QString &category,QWidget *parent=0);
-  QSize sizeHint() const;
-  void update(const QString &param,const QString &value);
+  JsonParser(QObject *parent=0);
+  void addData(QByteArray data);
 
- protected:
-  void resizeEvent(QResizeEvent *e);
+ signals:
+  void newDocument(const QJsonDocument &doc);
 
  private:
-  QTextEdit *stats_text;
-  QString stats_category;
-  std::map<QString,QString> stats_values;
+  QByteArray json_accum;
+  int json_indent_level;
 };
 
 
-#endif  // STATSPANEL_H
+#endif  // JSONPARSER_H
