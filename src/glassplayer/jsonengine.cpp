@@ -54,38 +54,40 @@ void JsonEngine::addEvents(const QString &str)
 QString JsonEngine::generate() const
 {
   QString key="";
-  QString json;
+  QString json="";
   bool ok=false;
 
-  json="{\r\n";
-  for(QMultiMap<QString,QStringList>::const_iterator it=json_events.begin();
-      it!=json_events.end();it++) {
-    if(key!=it.key()) {
-      if(!key.isEmpty()) {
-	json=json.left(json.length()-3)+"\r\n";
-	json+="    }\r\n";
-	json+="}\r\n";
-	if((it+1)!=json_events.end()) {
-	  json+="{\r\n";
+  if(json_events.size()>0) {
+    json="{\r\n";
+    for(QMultiMap<QString,QStringList>::const_iterator it=json_events.begin();
+	it!=json_events.end();it++) {
+      if(key!=it.key()) {
+	if(!key.isEmpty()) {
+	  json=json.left(json.length()-3)+"\r\n";
+	  json+="    }\r\n";
+	  json+="}\r\n";
+	  if((it+1)!=json_events.end()) {
+	    json+="{\r\n";
+	  }
 	}
+	key=it.key();
+	json+="    \""+JsonEngine::escape(key)+"\": {\r\n";
       }
-      key=it.key();
-      json+="    \""+JsonEngine::escape(key)+"\": {\r\n";
+      int num=it.value().at(1).toInt(&ok);
+      if(ok) {
+	json+="        \""+JsonEngine::escape(it.value().at(0))+"\": "+
+	  QString().sprintf("%d,\r\n",num);
+      }
+      else {
+	json+="        \""+JsonEngine::escape(it.value().at(0))+"\": "+
+	  "\""+JsonEngine::escape(it.value().at(1))+"\",\r\n";
+      }
     }
-    int num=it.value().at(1).toInt(&ok);
-    if(ok) {
-      json+="        \""+JsonEngine::escape(it.value().at(0))+"\": "+
-	QString().sprintf("%d,\r\n",num);
-    }
-    else {
-      json+="        \""+JsonEngine::escape(it.value().at(0))+"\": "+
-	"\""+JsonEngine::escape(it.value().at(1))+"\",\r\n";
-    }
+    // Close the last item
+    json=json.left(json.length()-3)+"\r\n";
+    json+="    }\r\n";
+    json+="}\r\n";
   }
-  // Close the last item
-  json=json.left(json.length()-3)+"\r\n";
-  json+="    }\r\n";
-  json+="}\r\n";
 
   return json;
 }
