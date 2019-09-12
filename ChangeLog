@@ -428,3 +428,6 @@
 	* Added a '--json' switch to glassplayer(1).
 2019-09-06 Fred Gleason <fredg@paravelsystems.com>
 	* Refactored glassplayergui(1) to use JSON-based IPC.
+2019-09-12 Fred Gleason <fredg@paravelsystems.com>
+	* Fixed a regression in glassplayergui(1) that caused meters
+	to be rendered incorrectly.

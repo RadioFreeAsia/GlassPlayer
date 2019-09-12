@@ -238,10 +238,10 @@ void SegMeter::paintEvent(QPaintEvent *paintEvent)
   // Setup
   //
   QPixmap pix(this->size());
-  pix.fill(this,0,0);
-
   int seg_total=seg_size+seg_gap;
   QPainter *p=new QPainter(&pix);
+  p->fillRect(0,0,width(),height(),Qt::black);
+
   low_region=0;
   high_region=0;
   clip_region=0;
