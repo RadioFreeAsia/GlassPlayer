@@ -2,7 +2,7 @@
 //
 // Send audio to a WAV file.
 //
-//   (C) Copyright 2014-2016 Fred Gleason <fredg@paravelsystems.com>
+//   (C) Copyright 2014-2019 Fred Gleason <fredg@paravelsystems.com>
 //
 //   This program is free software; you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License version 2 as
@@ -28,6 +28,7 @@ DevFile::DevFile(unsigned pregap,Codec *codec,QObject *parent)
 {
   file_format=AudioDevice::S16_LE;
   file_file_name="";
+  file_frames_processed=0;
 }
 
 
@@ -83,6 +84,8 @@ bool DevFile::start(QString *err)
 {
   SF_INFO sf;
 
+  file_frames_processed=0;
+
   if(file_file_name.isEmpty()) {
     *err=tr("no --file-name specified");
     return false;
@@ -134,6 +137,8 @@ void DevFile::synchronousWrite(unsigned frames,bool is_last)
     sf_close(file_sndfile);
     exit(0);
   }
+  file_frames_processed+=n;
+  updatePlayPosition(file_frames_processed);
 }
 
 

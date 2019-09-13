@@ -438,3 +438,6 @@
 	* Fixed a bug in glassplayer(1) that caused it to emit invalid
 	JSON when invoked with '--metadata-out --json' on a stream
 	containing no metadata.
+2019-09-13 Fred Gleason <fredg@paravelsystems.com>
+	* Fixed a bug that broke metadata processing when using the
+	'FILE' audio device.

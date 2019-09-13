@@ -2,7 +2,7 @@
 //
 // Send audio to a WAV file.
 //
-//   (C) Copyright 2014-2016 Fred Gleason <fredg@paravelsystems.com>
+//   (C) Copyright 2014-2019 Fred Gleason <fredg@paravelsystems.com>
 //
 //   This program is free software; you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License version 2 as
@@ -46,6 +46,7 @@ class DevFile : public AudioDevice
   AudioDevice::Format file_format;
   QString file_file_name;
   SNDFILE *file_sndfile;
+  uint64_t file_frames_processed;
 };
 
 
