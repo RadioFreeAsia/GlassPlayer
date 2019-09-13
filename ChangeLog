@@ -441,3 +441,6 @@
 2019-09-13 Fred Gleason <fredg@paravelsystems.com>
 	* Fixed a bug that broke metadata processing when using the
 	'FILE' audio device.
+2019-09-13 Fred Gleason <fredg@paravelsystems.com>
+	* Fixed a bug in glassplayergui(1) that processed integer JSON
+	values incorrectly.

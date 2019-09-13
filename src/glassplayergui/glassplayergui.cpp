@@ -353,7 +353,7 @@ void MainWidget::ProcessMetadataUpdates(const QJsonObject &obj)
   }
   if((obj.value("TALB")!=QJsonValue::Undefined)&&
      (next_field<GLASSPLAYERGUI_METADATA_FIELD_QUAN)) {
-    if(obj.value("TALB")==QJsonValue::String) {
+    if(obj.value("TALB").isString()) {
       gui_metadata_labels[next_field]->setText(tr("Album")+":");
       gui_metadata_texts[next_field]->setText(obj.value("TALB").toString());
     }
