@@ -38,12 +38,11 @@ Id3Parser::Id3Parser(QObject *parent)
 void Id3Parser::parse(QByteArray &data)
 {
   int offset=0;
-  bool first_tag_processed=false;
 
-  //
-  // Find ID3 Tags
-  //
   if(parser_first_buffer_processed) {
+    //
+    // Find ID3 Tags
+    //
     offset=0;
     while((offset=data.indexOf("ID3",offset))>=0) {
       if((data.size()>(offset+10))&&
@@ -58,14 +57,9 @@ void Id3Parser::parse(QByteArray &data)
 	  ((0xFF&data[offset+8])*127)+
 	  (0xFF&data[offset+9])+
 	  10;
-	if((0x08&data[offset+5])!=0) {  // Check for Footer
+	if((0x10&data[offset+5])!=0) {  // Check for Footer
 	  tag_size+=10;
 	}
-	if(first_tag_processed) {
-	  tag_size+=3;
-	}
-	first_tag_processed=true;
-
 	Id3Tag *tag=new Id3Tag(data.mid(offset,tag_size));
 	emit tagReceived(parser_bytes_processed+offset,tag);
 	delete tag;
@@ -76,8 +70,20 @@ void Id3Parser::parse(QByteArray &data)
 	offset+=3;
       }
     }
+
+    //
+    // Resync to start of next audio frame
+    //
+    while((data.length()>0)&&(data.indexOf(0xFF)!=0)) {
+      data.remove(0,1);
+    }
+
+    //
+    // Update the bookkeeping
+    //
     parser_bytes_processed+=data.size();
   }
+
   parser_first_buffer_processed=true;
 }
 

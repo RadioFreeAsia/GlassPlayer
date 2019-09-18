@@ -444,3 +444,8 @@
 2019-09-13 Fred Gleason <fredg@paravelsystems.com>
 	* Fixed a bug in glassplayergui(1) that processed integer JSON
 	values incorrectly.
+2019-09-18 Fred Gleason <fredg@paravelsystems.com>
+	* Fixed a bug in glassplayer(1) that caused audio dropouts when
+	playing HLS streams containing timed metadata.
+	* Added an 'AOT' metric to the AAC codec.
+	* Added a 'Transport Sync Errors' the AAC codec.

@@ -2,7 +2,7 @@
 //
 // AAC codec
 //
-//   (C) Copyright 2014-2016 Fred Gleason <fredg@paravelsystems.com>
+//   (C) Copyright 2014-2019 Fred Gleason <fredg@paravelsystems.com>
 //
 //   This program is free software; you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License version 2 as
@@ -30,6 +30,7 @@ CodecFdk::CodecFdk(unsigned bitrate,QObject *parent)
 {
   fdk_fdkaac_handle=NULL;
   fdk_frame_count=0;
+  fdk_sync_errors_count=0;
 
 #ifdef HAVE_FDKAAC
   //
@@ -108,13 +109,14 @@ void CodecFdk::process(const QByteArray &data,bool is_last)
     used=data.length()-remaining;
     if((err=aacDecoder_Fill(fdk_decoder,bitstream+used,bitstream_length-used,
 			    &remaining))==AAC_DEC_OK) {
-      while((err=aacDecoder_DecodeFrame(fdk_decoder,pcm16,2048,0))==
+      while((err=aacDecoder_DecodeFrame(fdk_decoder,pcm16,1024,0))==
 	    AAC_DEC_OK) {
 	fdk_frame_count++;
 	fdk_cinfo=aacDecoder_GetStreamInfo(fdk_decoder);
 	if(!isFramed()) {
 	  if(fdk_frame_count>50) {
 	    setFramed(fdk_cinfo->numChannels,fdk_cinfo->sampleRate,bitrate());
+	    fdk_sync_errors_count=0;
 	  }
 	}
 	else {
@@ -122,6 +124,9 @@ void CodecFdk::process(const QByteArray &data,bool is_last)
 				   fdk_cinfo->frameSize*fdk_cinfo->numChannels);
 	  writePcm(pcm,fdk_cinfo->frameSize,is_last);
 	}
+      }
+      if(err==AAC_DEC_TRANSPORT_SYNC_ERROR) {
+	fdk_sync_errors_count++;
       }
     }
   } while(remaining!=0);
@@ -140,9 +145,15 @@ void CodecFdk::loadStats(QStringList *hdrs,QStringList *values,bool is_first)
     hdrs->push_back("Codec|Algorithm");
     values->push_back(GetAotText(fdk_cinfo->aot));
 
+    hdrs->push_back("Codec|AOT");
+    values->push_back(QString().sprintf("%u",fdk_cinfo->aot));
+
     hdrs->push_back("Codec|Channels");
     values->push_back(QString().sprintf("%u",fdk_cinfo->numChannels));
   }
+
+  hdrs->push_back("Codec|Transport Sync Errors");
+  values->push_back(QString().sprintf("%lu",fdk_sync_errors_count));
 #endif  // HAVE_FDKAAC
 }
 

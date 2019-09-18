@@ -317,6 +317,22 @@ void Hls::mediaReadyReadData()
 {
   QByteArray data;
 
+  data=hls_media_process->readAllStandardOutput();
+#ifdef CONN_HLS_DUMP_SEGMENTS
+  if(hls_segment_fd>=0) {
+    if(write(hls_segment_fd,data.data(),data.size())<0) {
+      fprintf(stderr,"  ERROR writing media segment data: %s\n",strerror(errno));
+    }
+  }
+#endif  // CONN_HLS_DUMP_SEGMENTS
+  hls_media_segment_data+=data;
+}
+
+/*
+void Hls::mediaReadyReadData()
+{
+  QByteArray data;
+
   while(hls_media_process->bytesAvailable()>0) {
     data=hls_media_process->read(1024);
 #ifdef CONN_HLS_DUMP_SEGMENTS
@@ -329,7 +345,7 @@ void Hls::mediaReadyReadData()
     hls_media_segment_data+=data;
   }
 }
-
+*/
 
 void Hls::mediaProcessFinishedData(int exit_code,QProcess::ExitStatus status)
 {
@@ -356,9 +372,9 @@ void Hls::mediaProcessFinishedData(int exit_code,QProcess::ExitStatus status)
   //
   // Forward Data
   //
-  while(hls_media_segment_data.size()>512) {
-    emit dataReceived(hls_media_segment_data.left(512),false);
-    hls_media_segment_data.remove(0,512);
+  while(hls_media_segment_data.size()>4096) {
+    emit dataReceived(hls_media_segment_data.left(4096),false);
+    hls_media_segment_data.remove(0,4096);
   }
   emit dataReceived(hls_media_segment_data,false);
   hls_media_segment_data.clear();

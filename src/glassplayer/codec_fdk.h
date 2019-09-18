@@ -46,6 +46,7 @@ class CodecFdk : public Codec
   QString GetAotText(int aot);
   lt_dlhandle fdk_fdkaac_handle;
   uint64_t fdk_frame_count;
+  uint64_t fdk_sync_errors_count;
 #ifdef HAVE_FDKAAC
   void SetDecoderParam(const AACDEC_PARAM param,const int value);
   AAC_DECODER_ERROR (*aacDecoder_AncDataInit)(HANDLE_AACDECODER,UCHAR *,int);
