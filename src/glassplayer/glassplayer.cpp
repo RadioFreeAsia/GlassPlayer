@@ -118,7 +118,7 @@ MainObject::MainObject(QObject *parent)
     if(cmd->key(i)=="--pregap") {
       pregap=cmd->value(i).toUInt(&ok);
       if(!ok) {
-	fprintf(stderr,"glassplayer: unvalid argument to --pregap\n");
+	fprintf(stderr,"glassplayer: invalid argument to --pregap\n");
 	exit(GLASS_EXIT_ARGUMENT_ERROR);
       }
       cmd->setProcessed(i,true);

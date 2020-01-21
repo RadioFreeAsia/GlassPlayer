@@ -453,3 +453,5 @@
 	* Modified the 'Codec|Algorithm' parameter for the 'fdk-aac' codec
 	to use a static value of 'AAC'.
 	* Updated glassplayer(1) to work properly with FDK-AACv2.
+2020-01-21 Fred Gleason <fredg@paravelsystems.com>
+	* Fixed spelling error in error message in glassplayer(1).
