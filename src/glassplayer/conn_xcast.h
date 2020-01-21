@@ -2,7 +2,7 @@
 //
 // Server connector for Icecast/Shoutcast streams.
 //
-//   (C) Copyright 2014-2016 Fred Gleason <fredg@paravelsystems.com>
+//   (C) Copyright 2014-2020 Fred Gleason <fredg@paravelsystems.com>
 //
 //   This program is free software; you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License version 2 as
@@ -21,6 +21,7 @@
 #ifndef CONN_XCAST_H
 #define CONN_XCAST_H
 
+#include <QByteArray>
 #include <QTcpSocket>
 #include <QTimer>
 
@@ -55,7 +56,7 @@ class XCast : public Connector
   void ProcessHeader(const QString &str);
   void ProcessMetadata(const QByteArray &mdata);
   void InitSocket();
-  QString xcast_header;
+  QByteArray xcast_header;
   bool xcast_header_active;
   QTcpSocket *xcast_socket;
   int xcast_result_code;
