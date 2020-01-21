@@ -455,3 +455,6 @@
 	* Updated glassplayer(1) to work properly with FDK-AACv2.
 2020-01-21 Fred Gleason <fredg@paravelsystems.com>
 	* Fixed spelling error in error message in glassplayer(1).
+2020-01-21 Fred Gleason <fredg@paravelsystems.com>
+	* Added a '--dump-headers' swich to glassplayer(1).
+	* Implemented the '--dump-headers' swich for the XCast server type.

@@ -2,7 +2,7 @@
 //
 // Abstract base class for streaming server connections.
 //
-//   (C) Copyright 2014-2019 Fred Gleason <fredg@paravelsystems.com>
+//   (C) Copyright 2014-2020 Fred Gleason <fredg@paravelsystems.com>
 //
 //   This program is free software; you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License version 2 as
@@ -44,6 +44,7 @@ Connector::Connector(const QString &mimetype,QObject *parent)
   conn_stream_genre="unknown";
   conn_stream_public=true;
   conn_stream_metadata_enabled=true;
+  conn_dump_headers=false;
   conn_stream_metadata="";
   conn_host_hostname="";
   conn_host_port=0;
@@ -197,6 +198,18 @@ bool Connector::streamMetadataEnabled() const
 void Connector::setStreamMetadataEnabled(bool state)
 {
   conn_stream_metadata_enabled=state;
+}
+
+
+bool Connector::dumpHeaders() const
+{
+  return conn_dump_headers;
+}
+
+
+void Connector::setDumpHeaders(bool state)
+{
+  conn_dump_headers=state;
 }
 
 

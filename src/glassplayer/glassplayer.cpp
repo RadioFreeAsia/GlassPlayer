@@ -2,7 +2,7 @@
 //
 // glassplayer(1) Audio Encoder
 //
-//   (C) Copyright 2014-2019 Fred Gleason <fredg@paravelsystems.com>
+//   (C) Copyright 2014-2020 Fred Gleason <fredg@paravelsystems.com>
 //
 //   This program is free software; you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License version 2 as
@@ -67,6 +67,7 @@ MainObject::MainObject(QObject *parent)
   sir_metadata_out=false;
   sir_json=false;
   server_type=Connector::XCastServer;
+  dump_headers=false;
 
   CmdSwitch *cmd=new CmdSwitch("glassplayer",GLASSPLAYER_USAGE);
   if(getenv("HOME")!=NULL) {
@@ -89,6 +90,10 @@ MainObject::MainObject(QObject *parent)
     }
     if(cmd->key(i)=="--dump-bitstream") {
       dump_bitstream=true;
+      cmd->setProcessed(i,true);
+    }
+    if(cmd->key(i)=="--dump-headers") {
+      dump_headers=true;
       cmd->setProcessed(i,true);
     }
     if(cmd->key(i)=="--json") {
@@ -248,6 +253,7 @@ void MainObject::serverTypeFoundData(Connector::ServerType type,
   sir_connector->setServerPassword(sir_password);
   sir_connector->setPublicUrl(server_url);
   sir_connector->setPostData(post_data);
+  sir_connector->setDumpHeaders(dump_headers);
   sir_connector->connectToServer();
 }
 

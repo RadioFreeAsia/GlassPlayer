@@ -2,7 +2,7 @@
 //
 // Abstract base class for streaming server connections.
 //
-//   (C) Copyright 2014-2016 Fred Gleason <fredg@paravelsystems.com>
+//   (C) Copyright 2014-2020 Fred Gleason <fredg@paravelsystems.com>
 //
 //   This program is free software; you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License version 2 as
@@ -64,6 +64,8 @@ class Connector : public QObject
   void setAudioBitrates(std::vector<unsigned> *rates);
   bool streamMetadataEnabled() const;
   void setStreamMetadataEnabled(bool state);
+  bool dumpHeaders() const;
+  void setDumpHeaders(bool state);
   void startMetadata();
   MetaEvent *metadataEvent();
   Codec::Type codecType() const;
@@ -127,6 +129,7 @@ class Connector : public QObject
   QString conn_stream_aim;
   QString conn_stream_genre;
   bool conn_stream_metadata_enabled;
+  bool conn_dump_headers;
   QString conn_stream_metadata;
   bool conn_stream_public;
   Codec::Type conn_codec_type;

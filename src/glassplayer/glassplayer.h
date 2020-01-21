@@ -1,9 +1,8 @@
-
 // glassplayer.h
 //
 // glassplayer(1) Audio Player
 //
-//   (C) Copyright 2014-2016 Fred Gleason <fredg@paravelsystems.com>
+//   (C) Copyright 2014-2020 Fred Gleason <fredg@paravelsystems.com>
 //
 //   This program is free software; you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License version 2 as
@@ -75,6 +74,7 @@ class MainObject : public QObject
   QStringList device_values;
   bool list_codecs;
   bool list_devices;
+  bool dump_headers;
   Ringbuffer *sir_ring;
   Codec *sir_codec;
   Connector *sir_connector;

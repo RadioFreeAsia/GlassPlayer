@@ -2,7 +2,7 @@
 //
 // Server connector for Icecast/Shoutcast streams.
 //
-//   (C) Copyright 2014-2019 Fred Gleason <fredg@paravelsystems.com>
+//   (C) Copyright 2014-2020 Fred Gleason <fredg@paravelsystems.com>
 //
 //   This program is free software; you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License version 2 as
@@ -230,6 +230,9 @@ void XCast::ProcessFrames(QByteArray &data)
 
 void XCast::SendHeader(const QString &str)
 {
+  if(dumpHeaders()) {
+    fprintf(stderr,"<== %s\n",(const char *)str.toUtf8());
+  }
   xcast_socket->write((str+"\r\n").toUtf8(),str.length()+2);
 }
 
@@ -238,6 +241,9 @@ void XCast::ProcessHeader(const QString &str)
 {
   QStringList f0;
 
+  if(dumpHeaders()) {
+    fprintf(stderr,"==> %s\n",(const char *)str.toUtf8());
+  }
   if(xcast_result_code==0) {
     f0=str.split(" ",QString::SkipEmptyParts);
     if(f0.size()<3) {
