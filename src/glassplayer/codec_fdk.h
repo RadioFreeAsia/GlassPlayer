@@ -2,7 +2,7 @@
 //
 // AAC codec
 //
-//   (C) Copyright 2014-2016 Fred Gleason <fredg@paravelsystems.com>
+//   (C) Copyright 2014-2020 Fred Gleason <fredg@paravelsystems.com>
 //
 //   This program is free software; you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License version 2 as
@@ -43,7 +43,6 @@ class CodecFdk : public Codec
   void loadStats(QStringList *hdrs,QStringList *values,bool is_first);
 
  private:
-  QString GetAotText(int aot);
   lt_dlhandle fdk_fdkaac_handle;
   uint64_t fdk_frame_count;
   uint64_t fdk_sync_errors_count;

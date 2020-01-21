@@ -2,7 +2,7 @@
 //
 // AAC codec
 //
-//   (C) Copyright 2014-2019 Fred Gleason <fredg@paravelsystems.com>
+//   (C) Copyright 2014-2020 Fred Gleason <fredg@paravelsystems.com>
 //
 //   This program is free software; you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License version 2 as
@@ -37,7 +37,8 @@ CodecFdk::CodecFdk(unsigned bitrate,QObject *parent)
   // Load Library
   //
   lt_dlinit();
-  if((fdk_fdkaac_handle=lt_dlopen("libfdk-aac.so.1"))!=NULL) {
+  if(((fdk_fdkaac_handle=lt_dlopen("libfdk-aac.so.2"))!=NULL)||
+     ((fdk_fdkaac_handle=lt_dlopen("libfdk-aac.so.1"))!=NULL)) {
     *(void **)(&aacDecoder_AncDataInit)=
       lt_dlsym(fdk_fdkaac_handle,"aacDecoder_AncDataInit");
     *(void **)(&aacDecoder_AncDataGet)=
@@ -97,8 +98,8 @@ void CodecFdk::process(const QByteArray &data,bool is_last)
   unsigned remaining=data.length();
   unsigned used=0;
   QByteArray buffer;
-  int16_t pcm16[4096];
-  float pcm[4096];
+  int16_t pcm16[16384];
+  float pcm[16384];
   unsigned char *bitstream[1];
   unsigned bitstream_length[1];
 
@@ -109,7 +110,7 @@ void CodecFdk::process(const QByteArray &data,bool is_last)
     used=data.length()-remaining;
     if((err=aacDecoder_Fill(fdk_decoder,bitstream+used,bitstream_length-used,
 			    &remaining))==AAC_DEC_OK) {
-      while((err=aacDecoder_DecodeFrame(fdk_decoder,pcm16,1024,0))==
+      while((err=aacDecoder_DecodeFrame(fdk_decoder,pcm16,4096,0))==
 	    AAC_DEC_OK) {
 	fdk_frame_count++;
 	fdk_cinfo=aacDecoder_GetStreamInfo(fdk_decoder);
@@ -143,7 +144,7 @@ void CodecFdk::loadStats(QStringList *hdrs,QStringList *values,bool is_first)
 #ifdef HAVE_FDKAAC
   if(is_first) {
     hdrs->push_back("Codec|Algorithm");
-    values->push_back(GetAotText(fdk_cinfo->aot));
+    values->push_back("AAC");
 
     hdrs->push_back("Codec|AOT");
     values->push_back(QString().sprintf("%u",fdk_cinfo->aot));
@@ -155,238 +156,6 @@ void CodecFdk::loadStats(QStringList *hdrs,QStringList *values,bool is_first)
   hdrs->push_back("Codec|Transport Sync Errors");
   values->push_back(QString().sprintf("%lu",fdk_sync_errors_count));
 #endif  // HAVE_FDKAAC
-}
-
-
-QString CodecFdk::GetAotText(int aot)
-{
-  QString ret=tr("Unknown");
-
-#ifdef HAVE_FDKAAC
-  switch(fdk_cinfo->aot) {
-  case AOT_AAC_MAIN:
-    ret="AAC";
-    break;
-
-  case AOT_AAC_SSR:
-    ret="AAC-SSR";
-    break;
-
-  case AOT_AAC_LC:
-    ret="AAC-LC";
-    break;
-
-  case AOT_AAC_LTP:
-    ret="AAC-LTP";
-    break;
-
-  case AOT_SBR:
-    ret="AAC-SBR";
-    break;
-
-  case AOT_AAC_SCAL:
-    ret="AAC-SCAL";
-    break;
-
-  case AOT_TWIN_VQ:
-    ret="TwinVQ";
-    break;
-
-  case AOT_CELP:
-    ret="CELP";
-    break;
-
-  case AOT_HVXC:
-    ret="HVXC";
-    break;
-
-  case AOT_TTSI:
-    ret="TTSI";
-    break;
-
-  case AOT_MAIN_SYNTH:
-    ret="MainSynth";
-    break;
-
-  case AOT_WAV_TAB_SYNTH:
-    ret="WaveTableSynth";
-    break;
-
-  case AOT_GEN_MIDI:
-    ret="GeneralMIDI";
-    break;
-
-  case AOT_ALG_SYNTH_AUD_FX:
-    ret="AltSynth/FX";
-    break;
-
-  case AOT_ER_AAC_LC:
-    ret="AAC-ER/LC";
-    break;
-
-  case AOT_ER_AAC_LTP:
-    ret="AAC-ER/LTP";
-    break;
-
-  case AOT_ER_AAC_SCAL:
-    ret="AAC-ER/SCALE";
-    break;
-
-  case AOT_ER_TWIN_VQ:
-    ret="TwinVQ-ER";
-    break;
-
-  case AOT_ER_BSAC:
-    ret="BSAC-ER";
-    break;
-
-  case AOT_ER_AAC_LD:
-    ret="AAC-LD/ER";
-    break;
-
-  case AOT_ER_CELP:
-    ret="CELP-ER";
-    break;
-
-  case AOT_ER_HVXC:
-    ret="HVXC-ER";
-    break;
-
-  case AOT_ER_HILN:
-    ret="HILN-ER";
-    break;
-
-  case AOT_ER_PARA:
-    ret="PARA-ER";
-    break;
-
-  case AOT_PS:
-    ret="AAC-PS";
-    break;
-
-  case AOT_MPEGS:
-    ret="MPEG Surround";
-    break;
-
-  case AOT_MP3ONMP4_L1:
-    ret="MPEG Layer 1 in MP4";
-    break;
-
-  case AOT_MP3ONMP4_L2:
-    ret="MPEG Layer 2 in MP4";
-    break;
-
-  case AOT_MP3ONMP4_L3:
-    ret="MPEG Layer 3 in MP4";
-    break;
-
-  case AOT_AAC_SLS:
-    ret="AAC-SLS";
-    break;
-
-  case AOT_SLS:
-    ret="SLS";
-    break;
-
-  case AOT_ER_AAC_ELD:
-    ret="AAC-ELD";
-    break;
-
-  case AOT_USAC:
-    ret="USAC";
-    break;
-
-  case AOT_SAOC:
-    ret="SAOC";
-    break;
-
-  case AOT_LD_MPEGS:
-    ret="LowDelay MPEG Surround";
-    break;
-
-  case AOT_MP2_AAC_MAIN:
-    ret="AAC-MP2-Main";
-    break;
-
-  case AOT_MP2_AAC_LC:
-    ret="AAC-MP2-LC";
-    break;
-
-  case AOT_MP2_AAC_SSR:
-    ret="AAC-MP2-SSR";
-    break;
-
-  case AOT_MP2_SBR:
-    ret="MP2-SBR";
-    break;
-
-  case AOT_DAB:
-    ret="DAB";
-    break;
-
-  case AOT_DABPLUS_AAC_LC:
-    ret="DAB-AAC-LC";
-    break;
-
-  case AOT_DABPLUS_SBR:
-    ret="DAB-SBR";
-    break;
-
-  case AOT_DABPLUS_PS:
-    ret="DAB-PS";
-    break;
-
-  case AOT_PLAIN_MP1:
-    ret="MPEG-1 Layer 1";
-    break;
-
-  case AOT_PLAIN_MP2:
-    ret="MPEG-1 Layer 2";
-    break;
-
-  case AOT_PLAIN_MP3:
-    ret="MPEG-1 Layer 3";
-    break;
-
-  case AOT_DRM_AAC:
-    ret="DRM-AAC";
-    break;
-
-  case AOT_DRM_SBR:
-    ret="DRM-SBR";
-    break;
-
-  case AOT_DRM_MPEG_PS:
-    ret="DRM-MPEG-PS";
-    break;
-
-  case AOT_DRM_SURROUND:
-    ret="DRM-Surround";
-    break;
-
-  case AOT_MP2_PS:
-    ret="MP2-PS";
-    break;
-
-  case AOT_MPEGS_RESIDUALS:
-    ret="MPEG Surround Residuals";
-    break;
-
-  case AOT_RSVD_10:
-  case AOT_RSVD_11:
-  case AOT_RSVD_18:
-  case AOT_RSVD_28:
-  case AOT_RSVD_35:
-  case AOT_RSVD_36:
-  case AOT_RSVD50:
-  case AOT_ESCAPE:
-  case AOT_NONE:
-  case AOT_NULL_OBJECT:
-    break;
-  }
-#endif  // HAVE_FDKAAC
-
-  return ret;
 }
 
 

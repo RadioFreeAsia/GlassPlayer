@@ -449,3 +449,7 @@
 	playing HLS streams containing timed metadata.
 	* Added an 'AOT' metric to the AAC codec.
 	* Added a 'Transport Sync Errors' the AAC codec.
+2020-01-21 Fred Gleason <fredg@paravelsystems.com>
+	* Modified the 'Codec|Algorithem' parameter for the 'fdk-aac' codec
+	to use a static value of 'AAC'.
+	* Updated glassplayer(1) to work properly with FDK-AACv2.
