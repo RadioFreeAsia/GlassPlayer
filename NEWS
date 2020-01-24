@@ -1,44 +1,8 @@
-The NEWS file for the GlassCoder package.
+The NEWS file for the GlassPlayer package.
 
 -------------------------------------------------------------------------------
-v0.9.7 -- 11/17/2015
+v0.9.0 -- 24 January 2020
 
-Changes:
-   Dependency Change.  HeAAC support is now accomplished using the
-   Fraunhofer Android FDK library.  See the 'INSTALL' file for details. 
-
-   GlassGui Layout.  The widget layout in GlassGuui has been extensively
-   refactored to reduce required desktop real estate.
-
-   HLS Rewrite.  Refactored HLS support to be compatible with Akamai's
-   HLS streaming service.
-
-   Command Switch Changes.  Replaced the '--server-hostname',
-   '--server-mountpoint' and '--server-port' options with a single
-   '--server-url' option and the '--server-username' and '--server=password'
-   options with	the '--server-auth' option in glasscoder(1).  See the
-   glasscoder(1) man page for details.
-
-   AudioScience HPI Support.  Added support for HPI mixers in glasscoder(1)
-   and glassgui(1).
-
--------------------------------------------------------------------------------
-v0.9.0 -- 8/26/2015
-
-Changes:
-   New Streaming Server.  Support has been added for generating Apple HTTP
-   Live Streams.  See https://developer.apple.com/streaming/.
-
-   New Audio Sources.  Support has been added for the following audio
-   sources:
-
-      Advance Linux Sound Architecture (ALSA)
-      AudioScience HPI (ASIHPI)
-      File Streaming (FILE)
-
-   Point and Click Interface.  A 'GlassGui' applet has been added that
-   allow glasscoder(1) to be driven from a point and click interface while
-   also providing the ability to generate command-line invocations for
-   glasscoder(1) that can be copy/pasted into other environments.
+Initial Public Beta Release
 
 -------------------------------------------------------------------------------

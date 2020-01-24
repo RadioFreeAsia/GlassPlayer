@@ -467,3 +467,5 @@
 	* Fixed a typo in the 'README' file.
 2020-01-24 Fred Gleason <fredg@paravelsystems.com>
 	* Updated 'INSTALL'.
+2020-01-24 Fred Gleason <fredg@paravelsystems.com>
+	* Incremented the package version to 0.9.0.
