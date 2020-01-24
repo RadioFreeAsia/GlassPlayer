@@ -461,3 +461,5 @@
 2020-01-21 Fred Gleason <fredg@paravelsystems.com>
 	* Fixed a bug in glassplayer(1) that caused corruption when reading
 	multi-byte UTF-8 characters from XCast headers.
+2020-01-24 Fred Gleason <fredg@paravelsystems.com>
+	* Added a 'CODINGSTYLE' file.

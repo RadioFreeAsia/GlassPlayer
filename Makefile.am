@@ -4,7 +4,7 @@
 ##
 ## Use automake to process this into a Makefile.in
 ##
-##   (C) Copyright 2014,2016 Fred Gleason <fredg@paravelsystems.com>
+##   (C) Copyright 2014-2020 Fred Gleason <fredg@paravelsystems.com>
 ##
 ##   This program is free software; you can redistribute it and/or modify
 ##   it under the terms of the GNU General Public License version 2 as
@@ -56,10 +56,11 @@ install-win32-ogg:
 		cp $(MINGW32_SYS_ROOT)/bin/libogg-0.dll .
 		cp $(MINGW32_SYS_ROOT)/bin/libopus-0.dll .
 
-EXTRA_DIST = glassplayer.spec.in\
+EXTRA_DIST = CODINGSTYLE\
              autogen.sh\
              get_distro.sh\
              get_target.sh\
+             glassplayer.spec.in\
              PACKAGE_VERSION
 
 CLEANFILES = *~\
