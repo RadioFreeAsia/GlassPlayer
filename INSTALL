@@ -49,15 +49,14 @@ Advanced Linux Sound Architecture (ALSA), v1.0 or later.  Included in
 virtually all Linux distros.  Further information is available at
 http://www.alsa-project.org/.
 
-AudioScience HPI (ASIHPI), v4.00 or later.  Advanced audio API for using
-the line of professional, high-end audio cards from AudioScience Corporation.
-Available at http://www.audioscience.com/.
+JACK Audio Connection Kit (JACK).  System for interconnecting audio devices
+and applications.  Available at http://jackaudio.org/.
 
 LibSndFile (FILE), v1.0.20 or later.  Library for reading audio files.
 Available at http://mega-nerd.com/libsndfile/.
 
-JACK Audio Connection Kit (JACK).  System for interconnecting audio devices
-and applications.  Available at http://jackaudio.org/.
+Windows Multimedia Extensions. Included in the MinGW build environment
+for building Windows binaries on Linux.
 
 
 DOCUMENTATION
