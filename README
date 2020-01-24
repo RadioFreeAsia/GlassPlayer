@@ -3,7 +3,7 @@ This is the README file for the GlassPlayer package.
 This software comes with ABSOLUTELY NO WARRANTY.  See the file 'COPYING' for
 details.
 
-See the file 'INSTALL' for instructions on building GlassCoder from source.
+See the file 'INSTALL' for instructions on building GlassPlayer from source.
 
 GlassPlayer is a minimalist audio stream player for IceCast and Shoutcast
 streaming servers as well as HLS streams. It supports the following audio

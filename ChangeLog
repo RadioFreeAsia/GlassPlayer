@@ -463,3 +463,5 @@
 	multi-byte UTF-8 characters from XCast headers.
 2020-01-24 Fred Gleason <fredg@paravelsystems.com>
 	* Added a 'CODINGSTYLE' file.
+2020-01-24 Fred Gleason <fredg@paravelsystems.com>
+	* Fixed a typo in the 'README' file.
