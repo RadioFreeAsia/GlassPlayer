@@ -45,7 +45,7 @@ class MainWidget : public QMainWindow
 
  private slots:
   void showStatsData();
-  void processStart(const QString &url);
+  void processStart(const QString &url, const QStringList &jackdArgs);
   void processReadyReadData();
   void processFinishedData(int exit_code,QProcess::ExitStatus status);
   void processErrorData(QProcess::ProcessError err);
@@ -70,6 +70,8 @@ class MainWidget : public QMainWindow
   JsonParser *gui_json_parser;
   QStringList gui_stats_list;
   QString gui_url;
+  QStringList jackdArgs;
+  QString jackdClientName;  
   PlayMeter *gui_meters[MAX_AUDIO_CHANNELS];
   StatsDialog *gui_stats_dialog;
   QPushButton *gui_stats_button;
