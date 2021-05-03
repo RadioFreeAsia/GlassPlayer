@@ -479,3 +479,5 @@
 	host naming requirements in RFC1738.
 2021-05-03 Fred Gleason <fredg@paravelsystems.com>
 	* Debianized the source.
+2021-05-03 Fred Gleason <fredg@paravelsystems.com>
+	* Added a 'make deb' target.

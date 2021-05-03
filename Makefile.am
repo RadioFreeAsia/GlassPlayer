@@ -26,6 +26,9 @@ endif
 
 SUBDIRS = debian $(DOCBOOK_AM_OPT) src
 
+deb:	dist
+	./build_debs.sh
+
 rpm:	dist
 	cp glassplayer-$(VERSION).tar.gz $(HOME)/rpmbuild/SOURCES/
 	$(RPMBUILD) -ba --target $(ARCH)-$(VENDOR)-linux glassplayer.spec
@@ -56,7 +59,8 @@ install-win32-ogg:
 		cp $(MINGW32_SYS_ROOT)/bin/libogg-0.dll .
 		cp $(MINGW32_SYS_ROOT)/bin/libopus-0.dll .
 
-EXTRA_DIST = CODINGSTYLE\
+EXTRA_DIST = build_debs.sh.in\
+             CODINGSTYLE\
              autogen.sh\
              get_distro.sh\
              get_target.sh\
@@ -64,18 +68,24 @@ EXTRA_DIST = CODINGSTYLE\
              PACKAGE_VERSION
 
 CLEANFILES = *~\
+             *.buildinfo\
+             *.changes\
+             *.ddeb\
              *.deb\
              *.dll\
+             *.dsc\
              *.exe\
              *.mo\
              *.rpm\
              *.tar.gz\
+             *.tar.xz\
              *.tgz\
              *.zip
 
-DISTCLEANFILES = glassplayer.spec\
+DISTCLEANFILES = build_debs.sh\
                  config.guess\
                  config.sub\
+                 glassplayer.spec\
                  ltmain.sh
 
 MAINTAINERCLEANFILES = *~\

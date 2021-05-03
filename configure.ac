@@ -243,8 +243,10 @@ AC_CONFIG_FILES([ \
     src/glassplayer/Makefile \
     src/glassplayergui/Makefile \
     glassplayer.spec \
+    build_debs.sh \
     Makefile ])
 AC_OUTPUT()
+chmod 755 build_debs.sh
 
 #
 # Link Common Elements
