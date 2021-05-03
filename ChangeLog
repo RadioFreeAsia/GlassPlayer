@@ -474,3 +474,6 @@
 2021-05-03 Fred Gleason <fredg@paravelsystems.com>
 	* Cleaned up compiler warnings for glassplayer(1).
 	* Cleaned up compiler warnings for glassplayergui(1).
+2021-05-03 Fred Gleason <fredg@paravelsystems.com>
+	* Changed the format of the 'tone:' scheme to be compliant with the
+	host naming requirements in RFC1738.

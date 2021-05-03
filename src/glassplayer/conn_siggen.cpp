@@ -2,7 +2,7 @@
 //
 // Server connector for synthesized waveforms
 //
-//   (C) Copyright 2017 Fred Gleason <fredg@paravelsystems.com>
+//   (C) Copyright 2017-2021 Fred Gleason <fredg@paravelsystems.com>
 //
 //   This program is free software; you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License version 2 as
@@ -79,33 +79,35 @@ void SigGen::passthroughData()
 void SigGen::connectToHostConnector()
 {
   bool ok=false;
-
+  QStringList f0;
+  
   //
   // Get parameters
   //
-  siggen_frequency=serverUrl().host().toUInt(&ok);
-  if(!ok) {
+  f0=serverUrl().path().split("/",QString::SkipEmptyParts);
+  if(f0.size()!=2) {
     fprintf(stderr,"glassplayer: invalid url\n");
+    exit(GLASS_EXIT_ARGUMENT_ERROR);
+  }
+  siggen_frequency=f0.at(0).toUInt(&ok);
+  if(!ok) {
+    fprintf(stderr,"glassplayer: invalid frequency value\n");
     exit(GLASS_EXIT_ARGUMENT_ERROR);
   }
   if((siggen_frequency>0)&&((siggen_frequency%125)!=0)) {
     fprintf(stderr,"glassplayer: unsupported tone frequency\n");
     exit(GLASS_EXIT_ARGUMENT_ERROR);
   }
-  QStringList f0=serverUrl().path().split("/",QString::KeepEmptyParts);
-  if(f0.size()>1) {
-    siggen_level=f0.at(1);
-    siggen_ratio=exp(2.303*siggen_level.toDouble(&ok)/(20.0));
-    if(!ok) {
-      fprintf(stderr,"glassplayer: invalid url\n");
-      exit(GLASS_EXIT_ARGUMENT_ERROR);
-    }
-    if(siggen_ratio>1.0) {
-      fprintf(stderr,"glassplayer: invalid tone gain\n");
-      exit(GLASS_EXIT_ARGUMENT_ERROR);
-    }
+  siggen_level=f0.at(1);
+  siggen_ratio=exp(2.303*siggen_level.toDouble(&ok)/(20.0));
+  if(!ok) {
+    fprintf(stderr,"glassplayer: invalid tone gain\n");
+    exit(GLASS_EXIT_ARGUMENT_ERROR);
   }
-
+  if(siggen_ratio>1.0) {
+    fprintf(stderr,"glassplayer: invalid tone gain\n");
+    exit(GLASS_EXIT_ARGUMENT_ERROR);
+  }
   setAudioChannels(SIGGEN_CHANNELS);
   setAudioSamplerate(SIGGEN_SAMPLERATE);
   connect(siggen_write_timer,SIGNAL(timeout()),this,SLOT(passthroughData()));
