@@ -104,14 +104,14 @@ void *AlsaCallback(void *ptr)
   unsigned pregap=dev->pregap();
   switch(dev->alsa_format) {
   case AudioDevice::S16_LE:
-    memset(pcm16,0,ALSA_MAX_CARD_BUFFER);
+    memset(pcm16,0,ALSA_MAX_CARD_BUFFER*sizeof(int16_t));
     for(i=0;i<pregap;i++) {
       snd_pcm_writei(dev->alsa_pcm,pcm16,dev->alsa_samplerate/1000);
     }
     break;
 
   case AudioDevice::S32_LE:
-    memset(pcm32,0,ALSA_MAX_CARD_BUFFER);
+    memset(pcm32,0,ALSA_MAX_CARD_BUFFER*sizeof(int32_t));
     for(i=0;i<pregap;i++) {
       snd_pcm_writei(dev->alsa_pcm,pcm32,dev->alsa_samplerate/1000);
     }

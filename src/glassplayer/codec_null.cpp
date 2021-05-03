@@ -60,7 +60,9 @@ bool CodecNull::acceptsFormatIdentifier(const QString &str) const
 
 void CodecNull::process(const QByteArray &data,bool is_last)
 {
-  write(1,data.data(),data.length());
+  if(write(1,data.data(),data.length()!=1)) {
+    fprintf(stderr,"xrun: lost %d bytes\n",data.length());
+  }
   if(is_last) {
     exit(0);
   }

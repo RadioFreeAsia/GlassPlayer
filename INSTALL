@@ -85,3 +85,11 @@ done by cd'ing to the top of the source tree and typing './configure
 obtained the source via CVS will need to do './autogen.sh' first.  There
 are a number of options for the 'configure' script; do './configure --help'
 for a detailed list.
+
+DISTRIBUTION NOTES
+------------------
+
+Ubuntu
+------
+
+Required build packages: libopus-devel libvorbis-devel libmad0-dev

@@ -78,29 +78,37 @@ void DevStdout::synchronousWrite(unsigned frames,bool is_last)
   float pcm[frames*codec()->channels()];
   int16_t *pcm16;
   int32_t *pcm32;
-
+  ssize_t blocksize=0;
+  ssize_t n=0;
+  
   codec()->ring()->read(pcm,frames);
   switch(stdout_format) {
   case AudioDevice::FLOAT:
-    write(1,pcm,frames*codec()->channels()*sizeof(float));
+    blocksize=frames*codec()->channels()*sizeof(float);
+    n=write(1,pcm,blocksize);
     break;
 
   case AudioDevice::S16_LE:
     pcm16=new int16_t[frames*codec()->channels()];
     convertFromFloat(pcm16,pcm,frames,codec()->channels());
-    write(1,pcm16,frames*codec()->channels()*sizeof(int16_t));
+    blocksize=frames*codec()->channels()*sizeof(int16_t);
+    n=write(1,pcm16,blocksize);
     delete pcm16;
     break;
 
   case AudioDevice::S32_LE:
     pcm32=new int32_t[frames*codec()->channels()];
     convertFromFloat(pcm32,pcm,frames,codec()->channels());
-    write(1,pcm32,frames*codec()->channels()*sizeof(int32_t));
+    blocksize=frames*codec()->channels()*sizeof(int32_t);
+    n=write(1,pcm32,blocksize);
     delete pcm32;
     break;
 
   case AudioDevice::LastFormat:
     break;
+  }
+  if(n!=blocksize) {
+    fprintf(stderr,"xrun: lost %ld bytes\n",blocksize-n);
   }
   if(is_last) {
     exit(0);

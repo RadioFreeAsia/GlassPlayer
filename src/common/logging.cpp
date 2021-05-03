@@ -30,19 +30,19 @@ void Log(int prio,const QString &msg)
   switch(global_log_to) {
   case LOG_TO_SYSLOG:
 #ifndef WIN32
-    syslog(prio,msg.toUtf8());
+    syslog(prio,"%s",msg.toUtf8().constData());
 #endif  // WIN32
     break;
 
   case LOG_TO_STDOUT:
-    printf("ER %d %s\n",prio,(const char *)msg.toUtf8());
+    printf("ER %d %s\n",prio,msg.toUtf8().constData());
 #ifndef WIN32
-    syslog(prio,msg.toUtf8());
+    syslog(prio,"%s",msg.toUtf8().constData());
 #endif  // WIN32
     break;
 
   default:
-    fprintf(stderr,"glassplayer: %s\n",(const char *)msg.toUtf8());
+    fprintf(stderr,"glassplayer: %s\n",msg.toUtf8().constData());
     break;
   }
 }

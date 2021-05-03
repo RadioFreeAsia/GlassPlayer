@@ -73,7 +73,10 @@ bool DevFile::processOptions(QString *err,const QStringList &keys,
   if(file_file_name.isEmpty()) {
     char filename[256];
 
-    scanf("%255s",filename);
+    if(scanf("%255s",filename)!=1) {
+      *err=tr("error reading input");
+      return false;
+    }
     file_file_name=filename;
   }
   return true;

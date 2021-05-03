@@ -504,8 +504,7 @@ QDateTime Connector::xmlTimestamp(const QString &str)
     }
   }
   if(date.isValid()&&time.isValid()) {
-    ret=QDateTime(date,time);
-    ret.addSecs(Connector::timezoneOffset()-tz_offset);
+    ret=QDateTime(date,time).addSecs(Connector::timezoneOffset()-tz_offset);
   }
 
   return ret;
