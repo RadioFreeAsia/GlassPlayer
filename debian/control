@@ -1,0 +1,19 @@
+Source: glassplayer
+Section: unknown
+Priority: optional
+Maintainer: Fred Gleason <fredg@paravelsystems.com>
+Build-Depends: debhelper-compat (= 12), autotools-dev
+Standards-Version: 4.4.1
+Homepage: <insert the upstream URL, if relevant>
+#Vcs-Browser: https://salsa.debian.org/debian/glassplayer
+#Vcs-Git: https://salsa.debian.org/debian/glassplayer.git
+
+Package: glassplayer
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Minimalist Audio Streaming Player
+ Glassplayer is a streaming audio player intended for use with Shoutcast and
+ Icecast streaming servers.  It can play audio using ALSA audio devices.
+ It is controlled completely from the command-line, with no configuration
+ files or GUI required.
+

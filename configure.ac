@@ -233,6 +233,8 @@ else
 fi 
 
 AC_CONFIG_FILES([ \
+    debian/Makefile \
+    debian/source/Makefile \
     docs/glassplayer.xml \
     docs/Makefile \
     src/Makefile \

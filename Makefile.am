@@ -24,7 +24,7 @@ if DOCBOOK_AM
   DOCBOOK_AM_OPT = docs
 endif
 
-SUBDIRS = $(DOCBOOK_AM_OPT) src
+SUBDIRS = debian $(DOCBOOK_AM_OPT) src
 
 rpm:	dist
 	cp glassplayer-$(VERSION).tar.gz $(HOME)/rpmbuild/SOURCES/
