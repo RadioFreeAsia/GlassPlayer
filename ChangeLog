@@ -481,3 +481,5 @@
 	* Debianized the source.
 2021-05-03 Fred Gleason <fredg@paravelsystems.com>
 	* Added a 'make deb' target.
+2021-05-04 Fred Gleason <fredg@paravelsystems.com>
+	* Updated the 'make deb' target.
