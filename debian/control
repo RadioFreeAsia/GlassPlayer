@@ -2,16 +2,24 @@ Source: glassplayer
 Section: unknown
 Priority: optional
 Maintainer: Fred Gleason <fredg@paravelsystems.com>
-Build-Depends: debhelper-compat (= 12), autotools-dev
+Build-Depends: debhelper-compat (= 12), autotools-dev, libfdk-aac-dev, libmad0-dev
 Standards-Version: 4.4.1
 Homepage: https://github.com/RadioFreeAsia/GlassPlayer
 
 Package: glassplayer
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
+Recommends: libfdk-aac1, libmad0
 Description: Minimalist Audio Streaming Player
  Glassplayer is a streaming audio player intended for use with Shoutcast and
  Icecast streaming servers.  It can play audio using ALSA audio devices.
  It is controlled completely from the command-line, with no configuration
  files or GUI required.
 
+Package: glassplayer-gui
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, glassplayer (= 0.9.0-1)
+Description: GlassPlayerGui control applet for GlassPlayer
+ GlassPlayerGui is a control applet for driving the GlassPlayer audio stream
+ player.  It provides a convenient readout of all GlassPlayer statistics
+ as well as displaying current stream and channel metadata.

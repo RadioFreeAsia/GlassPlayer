@@ -4,7 +4,46 @@ build:
 	dh_update_autotools_config
 	dh_autoreconf
 	./configure --prefix=/usr
-	make
+	make $(DEBUILD_MAKE_ARGS)
+
+binary:	
+	dh_testroot
+	dh_prep
+	dh_auto_install
+	dh_installchangelogs ChangeLog
+
+#
+# glassplayer-gui
+#
+	mkdir -p debian/glassplayer-gui/usr/bin
+	mv debian/tmp/usr/bin/glassplayergui debian/glassplayer-gui/usr/bin
+	mkdir -p debian/glassplayer-gui/usr/share/man/man1
+	mv debian/tmp/usr/share/man/man1/glassplayergui.1 debian/glassplayer-gui/usr/share/man/man1/
+
+#
+# glassplayer
+#
+	mkdir -p debian/glassplayer/usr/bin
+	mv debian/tmp/usr/bin/glassplayer debian/glassplayer/usr/bin
+	mkdir -p debian/glassplayer/usr/share/man/man1
+	mv debian/tmp/usr/share/man/man1/glassplayer.1 debian/glassplayer/usr/share/man/man1/
+	mkdir -p debian/glassplayer/usr/share/doc/glassplayer
+	cp AUTHORS debian/glassplayer/usr/share/doc/glassplayer/
+	cp NEWS debian/glassplayer/usr/share/doc/glassplayer/
+	cp README debian/glassplayer/usr/share/doc/glassplayer/
+
+	dh_strip_nondeterminism
+	dh_compress
+	dh_fixperms
+	dh_missing
+	dh_dwz
+	dh_strip
+	dh_makeshlibs
+	dh_shlibdeps
+	dh_installdeb
+	dh_gencontrol
+	dh_md5sums
+	dh_builddeb
 
 %:
 	dh $@
