@@ -43,6 +43,77 @@
   </para>
   </refsect1>
 
+  <refsect1 id='options'><title>Options</title>
+    <variablelist remap='TP'>
+      <varlistentry>
+        <term>
+	        <option>--audio-device=</option><replaceable>type</replaceable>
+        </term>
+        <listitem>
+	        <para>
+	          Override the default audio type of audio device to use. The only recognized value is
+	          <userinput>JACK</userinput>. Any other audio type override or customization is not
+            supported.
+	          See the <emphasis remap='B'>DEVICE OPTIONS</emphasis> section (below) for
+	          the options appropriate for each audio device type.  Valid values
+	          are:
+	        </para>
+          <blockquote remap='RS'>
+        	  <variablelist remap='TP'>
+        	    <varlistentry>
+        	      <term>
+        		<userinput>JACK</userinput>
+        	      </term>
+        	      <listitem>
+        		<para>
+        		  The Jack Audio Connection Kit.
+        		</para>
+        	      </listitem>
+        	    </varlistentry>
+        	  </variablelist>
+        	</blockquote>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+  </refsect1>
+
+  <refsect1 id='device_options'><title>Device Options</title>
+  <variablelist remap='TP'>
+    <varlistentry>
+      <varlistentry>
+        <term>
+          <emphasis remap='B'>The Jack Audio Connection Kit</emphasis>
+          (<option>--audio-device=</option><userinput>JACK</userinput>)
+        </term>
+        <listitem>
+          <variablelist>
+    	<varlistentry>
+    	  <term>
+    	    <option>--jack-server-name=</option><replaceable>name</replaceable>
+    	  </term>
+    	  <listitem>
+    	    <para>
+    	      The name of the JACK server instance to use.
+    	    </para>
+    	  </listitem>
+    	</varlistentry>
+    	<varlistentry>
+    	  <term>
+    	    <option>--jack-client-name=</option><replaceable>name</replaceable>
+    	  </term>
+    	  <listitem>
+    	    <para>
+    	      The name of the JACK client to use.  Default is
+    	      <userinput>glassplayer</userinput>.
+    	    </para>
+    	  </listitem>
+    	</varlistentry>
+          </variablelist>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+  </refsect1>
+
   <refsect1 id='author'><title>Author</title>
   <para>
     Fred Gleason &lt;fredg@paravelsystems.com&gt;
@@ -57,4 +128,3 @@
   </para>
   </refsect1>
 </refentry>
-
