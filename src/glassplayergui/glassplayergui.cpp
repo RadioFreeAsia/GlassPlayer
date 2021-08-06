@@ -35,20 +35,20 @@ MainWidget::MainWidget(QWidget *parent)
 {
   gui_player_process=NULL;
   gui_logo_process=NULL;
-  jackdArgs=QStringList();
+  jackd_args=QStringList();
 
   CmdSwitch *cmd=new CmdSwitch("glassplayergui",GLASSPLAYERGUI_USAGE);
   if(cmd->keys()>0) {
     for(unsigned i=0;i<(cmd->keys()-1);i++) {
       if(cmd->key(i)=="--audio-device") {
-        jackdArgs.push_back("--audio-device=" + cmd->value(i));
+        jackd_args.push_back("--audio-device=" + cmd->value(i));
         cmd->setProcessed(i,false);
       } else if(cmd->key(i)=="--jack-server-name") {
-        jackdArgs.push_back("--jack-server-name=" + cmd->value(i));
+        jackd_args.push_back("--jack-server-name=" + cmd->value(i));
         cmd->setProcessed(i,false);
       } else if(cmd->key(i)=="--jack-client-name") {
-        jackdArgs.push_back("--jack-client-name=" + cmd->value(i));
-        jackdClientName = cmd->value(i);
+        jackd_args.push_back("--jack-client-name=" + cmd->value(i));
+        jackd_client_name = cmd->value(i);
         cmd->setProcessed(i,false);
       } else if (!cmd->processed(i)) {
 	      QMessageBox::critical(this,"GlassPlayer - "+tr("Error"),
@@ -66,10 +66,10 @@ MainWidget::MainWidget(QWidget *parent)
   QFont bold_font=font();
   bold_font.setWeight(QFont::Bold);
 
-  if (jackdClientName.isNull()) {
+  if (jackd_client_name.isNull()) {
     setWindowTitle(QString("GlassPlayer - v")+VERSION);
   } else {
-    setWindowTitle(jackdClientName+QString(" @ GlassPlayer - v")+VERSION);
+    setWindowTitle(jackd_client_name+QString(" @ GlassPlayer - v")+VERSION);
   }
 
   gui_stats_dialog=new StatsDialog(this);
@@ -125,7 +125,7 @@ MainWidget::MainWidget(QWidget *parent)
 	  this,SLOT(newJsonDocumentData(const QJsonDocument &)));
 
   if(!gui_url.isEmpty()) {
-    processStart(gui_url, jackdArgs);
+    processStart(gui_url, jackd_args);
   }
 
   setMinimumSize(sizeHint());
@@ -151,7 +151,7 @@ void MainWidget::showStatsData()
   }
 }
 
-void MainWidget::processStart(const QString &url, const QStringList &jackdArgs)
+void MainWidget::processStart(const QString &url, const QStringList &jackd_args)
 {
   QStringList args;
 
@@ -159,8 +159,8 @@ void MainWidget::processStart(const QString &url, const QStringList &jackdArgs)
   args.push_back("--meter-data");
   args.push_back("--metadata-out");
   args.push_back("--stats-out");
-  if (!jackdArgs.isEmpty()){
-    for ( const auto& jackdArg : jackdArgs  )
+  if (!jackd_args.isEmpty()){
+    for ( const auto& jackdArg : jackd_args  )
     {
       args.push_back(jackdArg);
     }
