@@ -469,3 +469,17 @@
 	* Updated 'INSTALL'.
 2020-01-24 Fred Gleason <fredg@paravelsystems.com>
 	* Incremented the package version to 0.9.0.
+2021-08-06 Alejandro Olivan <alejandro.olivan.alvarez@gmail.com>
+  * Add capability to glassplayergui to use glassplayer's JACKD capabilities
+	  when passed the required parameters. Otherwise its functionality is kept
+		intact.
+	* Enable glassplayergui to catch and pass '--audio-device' switch to
+	  glassplayer.
+	* Enable glassplayergui to catch and pass '--jack-server-name' switch to
+	  glassplayer.
+	* Enable glassplayergui to catch and pass '--jack-client-name' switch to
+	  glassplayer.
+	* Modify glassplayergui window bar label to show the jackd client name when
+	  using JACKD audio device, to ease recognition of multiple instances.
+	* Modify the Metadata Title window bar label from a generic one, to one that
+	  best matches its coded functionality and comments.
