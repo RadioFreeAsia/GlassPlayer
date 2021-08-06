@@ -78,8 +78,7 @@
   </refsect1>
 
   <refsect1 id='device_options'><title>Device Options</title>
-  <variablelist remap='TP'>
-    <varlistentry>
+    <variablelist remap='TP'>
       <varlistentry>
         <term>
           <emphasis remap='B'>The Jack Audio Connection Kit</emphasis>
@@ -87,27 +86,27 @@
         </term>
         <listitem>
           <variablelist>
-    	<varlistentry>
-    	  <term>
-    	    <option>--jack-server-name=</option><replaceable>name</replaceable>
-    	  </term>
-    	  <listitem>
-    	    <para>
-    	      The name of the JACK server instance to use.
-    	    </para>
-    	  </listitem>
-    	</varlistentry>
-    	<varlistentry>
-    	  <term>
-    	    <option>--jack-client-name=</option><replaceable>name</replaceable>
-    	  </term>
-    	  <listitem>
-    	    <para>
-    	      The name of the JACK client to use.  Default is
-    	      <userinput>glassplayer</userinput>.
-    	    </para>
-    	  </listitem>
-    	</varlistentry>
+          	<varlistentry>
+          	  <term>
+          	    <option>--jack-server-name=</option><replaceable>name</replaceable>
+          	  </term>
+          	  <listitem>
+          	    <para>
+          	      The name of the JACK server instance to use.
+          	    </para>
+          	  </listitem>
+          	</varlistentry>
+          	<varlistentry>
+          	  <term>
+          	    <option>--jack-client-name=</option><replaceable>name</replaceable>
+          	  </term>
+          	  <listitem>
+          	    <para>
+          	      The name of the JACK client to use.  Default is
+          	      <userinput>glassplayer</userinput>.
+          	    </para>
+          	  </listitem>
+          	</varlistentry>
           </variablelist>
         </listitem>
       </varlistentry>
