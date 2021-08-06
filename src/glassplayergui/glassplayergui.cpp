@@ -162,7 +162,7 @@ void MainWidget::processStart(const QString &url, const QStringList &jackd_args)
   if (!jackd_args.isEmpty()){
     for ( const auto& jackd_arg : jackd_args  )
     {
-      args.push_back(jackdArg);
+      args.push_back(jackd_arg);
     }
   }
   args.push_back(url);
