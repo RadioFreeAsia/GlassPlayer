@@ -160,7 +160,7 @@ void MainWidget::processStart(const QString &url, const QStringList &jackd_args)
   args.push_back("--metadata-out");
   args.push_back("--stats-out");
   if (!jackd_args.isEmpty()){
-    for ( const auto& jackdArg : jackd_args  )
+    for ( const auto& jackd_arg : jackd_args  )
     {
       args.push_back(jackdArg);
     }
