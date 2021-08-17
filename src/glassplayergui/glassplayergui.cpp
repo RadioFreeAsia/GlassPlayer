@@ -35,14 +35,25 @@ MainWidget::MainWidget(QWidget *parent)
 {
   gui_player_process=NULL;
   gui_logo_process=NULL;
+  jackd_args=QStringList();
 
   CmdSwitch *cmd=new CmdSwitch("glassplayergui",GLASSPLAYERGUI_USAGE);
   if(cmd->keys()>0) {
     for(unsigned i=0;i<(cmd->keys()-1);i++) {
-      if(!cmd->processed(i)) {
-	QMessageBox::critical(this,"GlassPlayer - "+tr("Error"),
-			      tr("Unknown argument")+" \""+cmd->key(i)+"\".");
-	exit(256);
+      if(cmd->key(i)=="--audio-device") {
+        jackd_args.push_back("--audio-device=" + cmd->value(i));
+        cmd->setProcessed(i,false);
+      } else if(cmd->key(i)=="--jack-server-name") {
+        jackd_args.push_back("--jack-server-name=" + cmd->value(i));
+        cmd->setProcessed(i,false);
+      } else if(cmd->key(i)=="--jack-client-name") {
+        jackd_args.push_back("--jack-client-name=" + cmd->value(i));
+        jackd_client_name = cmd->value(i);
+        cmd->setProcessed(i,false);
+      } else if (!cmd->processed(i)) {
+	      QMessageBox::critical(this,"GlassPlayer - "+tr("Error"),
+			    tr("Unknown argument")+" \""+cmd->key(i)+"\".");
+          exit(256);
       }
     }
     gui_url=cmd->key(cmd->keys()-1);
@@ -55,14 +66,18 @@ MainWidget::MainWidget(QWidget *parent)
   QFont bold_font=font();
   bold_font.setWeight(QFont::Bold);
 
-  setWindowTitle(QString("GlassPlayer - v")+VERSION);
+  if (jackd_client_name.isNull()) {
+    setWindowTitle(QString("GlassPlayer - v")+VERSION);
+  } else {
+    setWindowTitle(jackd_client_name+QString(" @ GlassPlayer - v")+VERSION);
+  }
 
   gui_stats_dialog=new StatsDialog(this);
 
   //
   // Metadata Title
   //
-  gui_title_text=new QLabel(tr("The GlassPlayer"),this);
+  gui_title_text=new QLabel(tr("Stream metadata"),this);
   gui_title_text->setFont(title_font);
 
   //
@@ -110,7 +125,7 @@ MainWidget::MainWidget(QWidget *parent)
 	  this,SLOT(newJsonDocumentData(const QJsonDocument &)));
 
   if(!gui_url.isEmpty()) {
-    processStart(gui_url);
+    processStart(gui_url, jackd_args);
   }
 
   setMinimumSize(sizeHint());
@@ -136,8 +151,7 @@ void MainWidget::showStatsData()
   }
 }
 
-
-void MainWidget::processStart(const QString &url)
+void MainWidget::processStart(const QString &url, const QStringList &jackd_args)
 {
   QStringList args;
 
@@ -145,6 +159,12 @@ void MainWidget::processStart(const QString &url)
   args.push_back("--meter-data");
   args.push_back("--metadata-out");
   args.push_back("--stats-out");
+  if (!jackd_args.isEmpty()){
+    for ( const auto& jackd_arg : jackd_args  )
+    {
+      args.push_back(jackd_arg);
+    }
+  }
   args.push_back(url);
   if(gui_player_process!=NULL) {
     delete gui_player_process;
