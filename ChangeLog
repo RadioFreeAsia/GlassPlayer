@@ -501,3 +501,5 @@
 	instances.
 	* Modify the Metadata Title window bar label from a generic one, to
 	one that best matches its coded functionality and comments.
+2022-01-13 Fred Gleason <fredg@paravelsystems.com>
+	* Modified the 'make rpm' to use parallel build.

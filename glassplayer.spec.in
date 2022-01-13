@@ -57,7 +57,7 @@ as well as displaying current stream and channel metadata.
 
 %build
 %configure
-make
+make -j @CPUS_AVAIL@
 
 
 %install
