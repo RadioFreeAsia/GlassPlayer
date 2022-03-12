@@ -2,7 +2,7 @@
 //
 // glassplayergui(1) Audio Receiver front end
 //
-//   (C) Copyright 2016-2019 Fred Gleason <fredg@paravelsystems.com>
+//   (C) Copyright 2016-2022 Fred Gleason <fredg@paravelsystems.com>
 //
 //   This program is free software; you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License version 2 as
@@ -35,25 +35,43 @@ MainWidget::MainWidget(QWidget *parent)
 {
   gui_player_process=NULL;
   gui_logo_process=NULL;
-  jackd_args=QStringList();
+  QStringList valid_pt_args;
+  QStringList pt_args;
+  QString jack_client_name;
+
+  //
+  // Valid "pass-through" switches for glassplayer(1)
+  //
+  valid_pt_args.push_back("--audio-device");
+  valid_pt_args.push_back("--alsa-device");
+  valid_pt_args.push_back("--file-format");
+  valid_pt_args.push_back("--file-name");
+  valid_pt_args.push_back("--jack-client-name");
+  valid_pt_args.push_back("--jack-server-name");
+  valid_pt_args.push_back("--mme-device-id");
+  valid_pt_args.push_back("--server-script-down");
+  valid_pt_args.push_back("--server-script-up");
+  valid_pt_args.push_back("--user");
 
   CmdSwitch *cmd=new CmdSwitch("glassplayergui",GLASSPLAYERGUI_USAGE);
   if(cmd->keys()>0) {
     for(unsigned i=0;i<(cmd->keys()-1);i++) {
-      if(cmd->key(i)=="--audio-device") {
-        jackd_args.push_back("--audio-device=" + cmd->value(i));
-        cmd->setProcessed(i,false);
-      } else if(cmd->key(i)=="--jack-server-name") {
-        jackd_args.push_back("--jack-server-name=" + cmd->value(i));
-        cmd->setProcessed(i,false);
-      } else if(cmd->key(i)=="--jack-client-name") {
-        jackd_args.push_back("--jack-client-name=" + cmd->value(i));
-        jackd_client_name = cmd->value(i);
-        cmd->setProcessed(i,false);
-      } else if (!cmd->processed(i)) {
-	      QMessageBox::critical(this,"GlassPlayer - "+tr("Error"),
-			    tr("Unknown argument")+" \""+cmd->key(i)+"\".");
-          exit(256);
+      if(valid_pt_args.contains(cmd->key(i))) {
+	if(cmd->value(i).isEmpty()) {
+	  pt_args.push_back(cmd->key(i));
+	}
+	else {
+	  pt_args.push_back(cmd->key(i)+"="+cmd->value(i));
+	}
+	if(cmd->key(i)=="--jack_client_name") {
+	  jack_client_name=cmd->value(i);
+	}
+	cmd->setProcessed(i,true);
+      }
+      if(!cmd->processed(i)) {
+	QMessageBox::critical(this,"GlassPlayer - "+tr("Error"),
+			      tr("Unknown argument")+" \""+cmd->key(i)+"\".");
+	exit(256);
       }
     }
     gui_url=cmd->key(cmd->keys()-1);
@@ -66,10 +84,11 @@ MainWidget::MainWidget(QWidget *parent)
   QFont bold_font=font();
   bold_font.setWeight(QFont::Bold);
 
-  if (jackd_client_name.isNull()) {
+  if (jack_client_name.isEmpty()) {
     setWindowTitle(QString("GlassPlayer - v")+VERSION);
-  } else {
-    setWindowTitle(jackd_client_name+QString(" @ GlassPlayer - v")+VERSION);
+  }
+  else {
+    setWindowTitle(jack_client_name+" @ GlassPlayer - v"+VERSION);
   }
 
   gui_stats_dialog=new StatsDialog(this);
@@ -125,7 +144,7 @@ MainWidget::MainWidget(QWidget *parent)
 	  this,SLOT(newJsonDocumentData(const QJsonDocument &)));
 
   if(!gui_url.isEmpty()) {
-    processStart(gui_url, jackd_args);
+    processStart(gui_url, pt_args);
   }
 
   setMinimumSize(sizeHint());
@@ -151,21 +170,29 @@ void MainWidget::showStatsData()
   }
 }
 
-void MainWidget::processStart(const QString &url, const QStringList &jackd_args)
+void MainWidget::processStart(const QString &url, const QStringList &pt_args)
 {
   QStringList args;
 
+  //
+  // Pass-Through Arguments
+  //
+  for(int i=0;i<pt_args.size();i++) {
+    args.push_back(pt_args.at(i));
+  }
+
+  //
+  // Static Arguments
+  //
   args.push_back("--json");
   args.push_back("--meter-data");
   args.push_back("--metadata-out");
   args.push_back("--stats-out");
-  if (!jackd_args.isEmpty()){
-    for ( const auto& jackd_arg : jackd_args  )
-    {
-      args.push_back(jackd_arg);
-    }
-  }
   args.push_back(url);
+
+  //
+  // Start It Up
+  //
   if(gui_player_process!=NULL) {
     delete gui_player_process;
   }

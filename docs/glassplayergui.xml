@@ -6,7 +6,7 @@
   <refmeta>
     <refentrytitle>glassplayergui</refentrytitle>
     <manvolnum>1</manvolnum>
-    <refmiscinfo class='source'>February 2016</refmiscinfo>
+    <refmiscinfo class='source'>March 2022</refmiscinfo>
     <refmiscinfo class='manual'>Linux Audio Manual</refmiscinfo>
   </refmeta>
   <refnamediv>
@@ -43,74 +43,26 @@
   </para>
   </refsect1>
 
-  <refsect1 id='options'><title>Options</title>
-    <variablelist remap='TP'>
-      <varlistentry>
-        <term>
-	        <option>--audio-device=</option><replaceable>type</replaceable>
-        </term>
-        <listitem>
-	        <para>
-	          Override the default audio type of audio device to use. The only recognized value is
-	          <userinput>JACK</userinput>. Any other audio type override or customization is not
-            supported.
-	          See the <emphasis remap='B'>DEVICE OPTIONS</emphasis> section (below) for
-	          the options appropriate for each audio device type.  Valid values
-	          are:
-	        </para>
-          <blockquote remap='RS'>
-        	  <variablelist remap='TP'>
-        	    <varlistentry>
-        	      <term>
-        		<userinput>JACK</userinput>
-        	      </term>
-        	      <listitem>
-        		<para>
-        		  The Jack Audio Connection Kit.
-        		</para>
-        	      </listitem>
-        	    </varlistentry>
-        	  </variablelist>
-        	</blockquote>
-        </listitem>
-      </varlistentry>
-    </variablelist>
-  </refsect1>
+  <refsect1 id='pass_through_options'><title>Pass Through Options</title>
+  <para>
+    The following options are simply passed through to the underlying
+    <command>glassplayer</command><manvolnum>1</manvolnum> instance.
+    See the <command>glassplayer</command><manvolnum>1</manvolnum> man page
+    for a description of their function.
+  </para>
+  <simplelist type="vert">
+  <member><userinput>--audio-device</userinput></member>
+  <member><userinput>--alsa-device</userinput></member>
+  <member><userinput>--file-format</userinput></member>
+  <member><userinput>--file-name</userinput></member>
+  <member><userinput>--jack-client-name</userinput></member>
+  <member><userinput>--jack-server-name</userinput></member>
+  <member><userinput>--mme-device-id</userinput></member>
+  <member><userinput>--server-script-down</userinput></member>
+  <member><userinput>--server-script-up</userinput></member>
+  <member><userinput>--user</userinput></member>
+  </simplelist>
 
-  <refsect1 id='device_options'><title>Device Options</title>
-    <variablelist remap='TP'>
-      <varlistentry>
-        <term>
-          <emphasis remap='B'>The Jack Audio Connection Kit</emphasis>
-          (<option>--audio-device=</option><userinput>JACK</userinput>)
-        </term>
-        <listitem>
-          <variablelist>
-          	<varlistentry>
-          	  <term>
-          	    <option>--jack-server-name=</option><replaceable>name</replaceable>
-          	  </term>
-          	  <listitem>
-          	    <para>
-          	      The name of the JACK server instance to use.
-          	    </para>
-          	  </listitem>
-          	</varlistentry>
-          	<varlistentry>
-          	  <term>
-          	    <option>--jack-client-name=</option><replaceable>name</replaceable>
-          	  </term>
-          	  <listitem>
-          	    <para>
-          	      The name of the JACK client to use.  Default is
-          	      <userinput>glassplayer</userinput>.
-          	    </para>
-          	  </listitem>
-          	</varlistentry>
-          </variablelist>
-        </listitem>
-      </varlistentry>
-    </variablelist>
   </refsect1>
 
   <refsect1 id='author'><title>Author</title>

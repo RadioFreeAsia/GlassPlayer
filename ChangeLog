@@ -505,3 +505,8 @@
 	* Modified the 'make rpm' to use parallel build.
 2022-01-13 Fred Gleason <fredg@paravelsystems.com>
 	* Incremented the package version to 0.9.1.
+2022-03-12 Fred Gleason <fredg@paravelsystems.com>
+	* Added support to glassplayergui(1) for passing through the
+	'--alsa-device', '--file-format', '--file-name', '--mme-device-id',
+	'--server-script-down', '--server-script-up' and '--user'
+	command-line options.

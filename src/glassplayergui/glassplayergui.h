@@ -2,7 +2,7 @@
 //
 // glassplayergui(1) Audio Receiver front end
 //
-//   (C) Copyright 2016-2019 Fred Gleason <fredg@paravelsystems.com>
+//   (C) Copyright 2016-2022 Fred Gleason <fredg@paravelsystems.com>
 //
 //   This program is free software; you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License version 2 as
@@ -45,7 +45,7 @@ class MainWidget : public QMainWindow
 
  private slots:
   void showStatsData();
-  void processStart(const QString &url, const QStringList &jackd_args);
+  void processStart(const QString &url, const QStringList &pt_args);
   void processReadyReadData();
   void processFinishedData(int exit_code,QProcess::ExitStatus status);
   void processErrorData(QProcess::ProcessError err);
@@ -70,8 +70,6 @@ class MainWidget : public QMainWindow
   JsonParser *gui_json_parser;
   QStringList gui_stats_list;
   QString gui_url;
-  QStringList jackd_args;
-  QString jackd_client_name;
   PlayMeter *gui_meters[MAX_AUDIO_CHANNELS];
   StatsDialog *gui_stats_dialog;
   QPushButton *gui_stats_button;
