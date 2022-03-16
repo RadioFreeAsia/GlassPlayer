@@ -42,7 +42,9 @@ void Log(int prio,const QString &msg)
     break;
 
   default:
-    fprintf(stderr,"glassplayer: %s\n",msg.toUtf8().constData());
+    if(global_log_verbose||(prio<LOG_DEBUG)) {
+      fprintf(stderr,"%s\n",msg.toUtf8().constData());
+    }
     break;
   }
 }

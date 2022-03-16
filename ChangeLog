@@ -512,3 +512,8 @@
 	command-line options.
 2022-03-16 Fred Gleason <fredg@paravelsystems.com>
 	* Refactored the HLS connector to eliminate shell-outs to curl(1).
+2022-03-16 Fred Gleason <fredg@paravelsystems.com>
+	* Modified glassplayer(1) so as to print to STDERR only those
+	messages with a priority greater than LOG_DEBUG.
+	* Modified glassplayer(1) so as to print all to STDERR if the
+	'--verbose' flag was given.
