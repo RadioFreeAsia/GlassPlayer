@@ -2,7 +2,7 @@
 //
 // Server connector for HTTP live streams (HLS).
 //
-//   (C) Copyright 2014-2019 Fred Gleason <fredg@paravelsystems.com>
+//   (C) Copyright 2014-2022 Fred Gleason <fredg@paravelsystems.com>
 //
 //   This program is free software; you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License version 2 as
@@ -20,6 +20,8 @@
 
 #ifndef CONN_HLS_H
 #define CONN_HLS_H
+
+#include <curl/curl.h>
 
 #include <QProcess>
 #include <QTcpSocket>
@@ -49,21 +51,15 @@ class Hls : public Connector
  private slots:
   void tagReceivedData(uint64_t bytes,Id3Tag *tag);
   void indexProcessStartData();
-  void indexProcessFinishedData(int exit_code,QProcess::ExitStatus status);
   void mediaProcessStartData();
-  void mediaReadyReadData();
-  void mediaProcessFinishedData(int exit_code,QProcess::ExitStatus status);
 
  private:
   QByteArray ReadHeaders(QByteArray &data);
   void ProcessHeader(const QString &str);
   void StopProcess(QProcess *proc);
-  QProcess *hls_index_process;
   M3uPlaylist *hls_index_playlist;
   Id3Parser *hls_id3_parser;
-  QByteArray hls_media_segment_data;
   QTimer *hls_index_timer;
-  QProcess *hls_media_process;
   QDateTime hls_download_start_datetime;
   MeterAverage *hls_download_average;
   QUrl hls_index_url;
@@ -73,6 +69,7 @@ class Hls : public Connector
   QString hls_server;
   QString hls_content_type;
   MetaEvent hls_meta_event;
+  CURL *hls_curl_handle;
 #ifdef CONN_HLS_DUMP_SEGMENTS
   int hls_segment_fd;
 #endif  // CONN_HLS_DUMP_SEGMENTS

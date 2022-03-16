@@ -2,7 +2,7 @@
 ##
 ## Makefile for the glassplayer(1) Audio Encoder.
 ##
-## (C) Copyright 2014-2019 Fred Gleason <fredg@paravelsystems.com>
+## (C) Copyright 2014-2022 Fred Gleason <fredg@paravelsystems.com>
 ##
 ##   This program is free software; you can redistribute it and/or modify
 ##   it under the terms of the GNU General Public License version 2 as
@@ -20,7 +20,7 @@
 ##
 ## Use automake to process this into a Makefile.in
 
-AM_CPPFLAGS = -Wall -DPREFIX=\"$(prefix)\" -Wno-strict-aliasing @QT5CLI_CFLAGS@ @SNDFILE_CFLAGS@ @SAMPLERATE_CFLAGS@ @TAGLIB_CFLAGS@ @ALSA_CFLAGS@ @JACK_CFLAGS@ @OGG_CFLAGS@ -std=c++11 -fPIC
+AM_CPPFLAGS = -Wall -DPREFIX=\"$(prefix)\" -Wno-strict-aliasing @QT5CLI_CFLAGS@ @LIBCURL_CFLAGS@ @SNDFILE_CFLAGS@ @SAMPLERATE_CFLAGS@ @TAGLIB_CFLAGS@ @ALSA_CFLAGS@ @JACK_CFLAGS@ @OGG_CFLAGS@ -std=c++11 -fPIC
 MOC = @QT5_MOC@
 
 # The dependency for qt's Meta Object Compiler (moc)
@@ -84,7 +84,7 @@ nodist_glassplayer_SOURCES = audiodevice.cpp audiodevice.h\
                              moc_serverid.cpp\
                              ringbuffer.cpp ringbuffer.h
 
-glassplayer_LDADD = @QT5CLI_LIBS@ @SNDFILE_LIBS@ @SAMPLERATE_LIBS@ @TAGLIB_LIBS@ @ALSA_LIBS@ @JACK_LIBS@ @ASIHPI_LIBS@ @PLATFORM_LIBS@ @MME_LIBS@ -lltdl
+glassplayer_LDADD = @QT5CLI_LIBS@ @LIBCURL_LIBS@ @SNDFILE_LIBS@ @SAMPLERATE_LIBS@ @TAGLIB_LIBS@ @ALSA_LIBS@ @JACK_LIBS@ @ASIHPI_LIBS@ @PLATFORM_LIBS@ @MME_LIBS@ -lltdl
 
 
 CLEANFILES = *~\

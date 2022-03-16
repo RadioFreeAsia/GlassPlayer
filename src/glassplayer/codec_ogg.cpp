@@ -2,7 +2,7 @@
 //
 // OggVorbis and OggOpus Codecs
 //
-//   (C) Copyright 2016 Fred Gleason <fredg@paravelsystems.com>
+//   (C) Copyright 2016-2022 Fred Gleason <fredg@paravelsystems.com>
 //
 //   This program is free software; you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License version 2 as
@@ -23,6 +23,7 @@
 #include <QStringList>
 
 #include "codec_ogg.h"
+#include "glasslimits.h"
 #include "logging.h"
 
 CodecOgg::CodecOgg(unsigned bitrate,QObject *parent)
@@ -340,7 +341,7 @@ bool CodecOgg::ParseOpusHeader(unsigned *samprate,unsigned *chans,
     (0xFF&op->packet[12]);
   if((0xFF&op->packet[18])!=0) {
     Log(LOG_ERR,"Unsupported channel count");
-    exit(14);
+    exit(GLASS_EXIT_CHANNEL_COUNT_ERROR);
   }
   return true;
 }

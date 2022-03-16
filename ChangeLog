@@ -510,3 +510,5 @@
 	'--alsa-device', '--file-format', '--file-name', '--mme-device-id',
 	'--server-script-down', '--server-script-up' and '--user'
 	command-line options.
+2022-03-16 Fred Gleason <fredg@paravelsystems.com>
+	* Refactored the HLS connector to eliminate shell-outs to curl(1).

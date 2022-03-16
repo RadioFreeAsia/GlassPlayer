@@ -2,7 +2,7 @@
 //
 // Server connector for HTTP live streams (HLS).
 //
-//   (C) Copyright 2014-2019 Fred Gleason <fredg@paravelsystems.com>
+//   (C) Copyright 2014-2022 Fred Gleason <fredg@paravelsystems.com>
 //
 //   This program is free software; you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License version 2 as
@@ -35,14 +35,27 @@
 #include <sys/types.h>
 #endif  // CONN_HLS_DUMP_SEGMENTS
 
+size_t __Hls_WriteCallback(char *ptr, size_t size, size_t nmemb, void *userdata)
+{
+  QByteArray *data=(QByteArray *)userdata;
+
+  *data+=QByteArray(ptr,size*nmemb);
+
+  return size*nmemb;
+}
+
+
 Hls::Hls(const QString &mimetype,QObject *parent)
   : Connector(mimetype,parent)
 {
 #ifdef CONN_HLS_DUMP_SEGMENTS
   hls_segment_fd=-1;
 #endif  // CONN_HLS_DUMP_SEGMENTS
-  hls_index_process=NULL;
-  hls_media_process=NULL;
+
+  if((hls_curl_handle=curl_easy_init())==NULL) {
+    Log(LOG_ERR,"curl initialization failed");
+    exit(GLASS_EXIT_GENERAL_ERROR);
+  }
 
   //
   // Index Processor
@@ -71,9 +84,6 @@ Hls::~Hls()
   delete hls_media_timer;
   delete hls_index_timer;
   delete hls_index_playlist;
-  if(hls_index_process!=NULL) {
-    delete hls_index_process;
-  }
 }
 
 
@@ -97,8 +107,6 @@ void Hls::connectToHostConnector()
 
 void Hls::disconnectFromHostConnector()
 {
-  StopProcess(hls_media_process);
-  StopProcess(hls_index_process);
 }
 
 
@@ -189,78 +197,90 @@ void Hls::tagReceivedData(uint64_t bytes,Id3Tag *tag)
 
 void Hls::indexProcessStartData()
 {
-  QStringList args;
+  Log(LOG_DEBUG,QString::asprintf("downloading \"%s\"",
+				  hls_index_url.toDisplayString().
+				  toUtf8().constData()));
 
-  args.push_back("--user-agent");
-  args.push_back(GLASSPLAYER_USER_AGENT);
-  args.push_back("-D");
-  args.push_back("-");
+  long resp_code=0;
+  QByteArray data;
+  char curl_errs[CURL_ERROR_SIZE];
+
+  curl_easy_reset(hls_curl_handle);
+
+  //
+  // Authentication
+  //
   if((!serverUsername().isEmpty())||(!serverPassword().isEmpty())) {
-    args.push_back("--user");
-    args.push_back(serverUsername()+":"+serverPassword());
+    curl_easy_setopt(hls_curl_handle,CURLOPT_USERPWD,
+		     (serverUsername()+":"+serverPassword()).
+		     toUtf8().constData());
   }
-  args.push_back(hls_index_url.toString());
-  if(hls_index_process!=NULL) {
-    delete hls_index_process;
+
+  //
+  // Transaction
+  //
+  curl_easy_setopt(hls_curl_handle,CURLOPT_ERRORBUFFER,curl_errs);
+  curl_easy_setopt(hls_curl_handle,CURLOPT_WRITEFUNCTION,__Hls_WriteCallback);
+  curl_easy_setopt(hls_curl_handle,CURLOPT_HEADER,1);
+  curl_easy_setopt(hls_curl_handle,CURLOPT_WRITEDATA,&data);
+  curl_easy_setopt(hls_curl_handle,CURLOPT_URL,
+		   hls_index_url.toEncoded().constData());
+  curl_easy_setopt(hls_curl_handle,CURLOPT_FOLLOWLOCATION,1);
+  curl_easy_setopt(hls_curl_handle,CURLOPT_USERAGENT,GLASSPLAYER_USER_AGENT);
+  CURLcode code=curl_easy_perform(hls_curl_handle);
+  if(code==CURLE_OK) {
+    curl_easy_getinfo(hls_curl_handle,CURLINFO_RESPONSE_CODE,&resp_code);
+    if(((resp_code<200)||(resp_code>=300))&&(resp_code!=0)) {
+      Log(LOG_WARNING,
+	  QString::asprintf("download of \"%s\" returned code %lu",
+	  hls_index_url.toDisplayString().toUtf8().constData(),resp_code));
+      return;
+    }
   }
-  hls_index_process=new QProcess(this);
-  connect(hls_index_process,SIGNAL(finished(int,QProcess::ExitStatus)),
-	  this,SLOT(indexProcessFinishedData(int,QProcess::ExitStatus)));
-  hls_index_process->start("curl",args);
-}
+  else {
+    Log(LOG_WARNING,
+	QString::asprintf("download of \"%s\" failed: %s",
+			  hls_index_url.toDisplayString().toUtf8().constData(),
+			  curl_errs));
+    return;
+  }
 
-
-void Hls::indexProcessFinishedData(int exit_code,QProcess::ExitStatus status)
-{
-  if(status==QProcess::NormalExit) {
-    if(exit_code!=0) {
-      Log(LOG_WARNING,tr("index process returned non-zero exit code")+
-	  QString().sprintf(" [%d]",exit_code));
+  data=ReadHeaders(data);
+  M3uPlaylist *playlist=new M3uPlaylist();
+  if(playlist->parse(data,hls_index_url)) {
+    if(playlist->isMaster()) {  // Recurse to target playlist
+      hls_index_url=playlist->target();
+      hls_index_timer->start(0);
     }
     else {
-      QByteArray data=hls_index_process->readAllStandardOutput();
-      data=ReadHeaders(data);
-      M3uPlaylist *playlist=new M3uPlaylist();
-      if(playlist->parse(data,hls_index_url)) {
-	if(playlist->isMaster()) {  // Recurse to target playlist
-	  hls_index_url=playlist->target();
-	  hls_index_timer->start(0);
+      if(*playlist!=*hls_index_playlist) {
+	*hls_index_playlist=*playlist;
+	if(isConnected()||hls_index_playlist->segmentQuantity()>=3) {
+	  hls_media_timer->start(0);
 	}
 	else {
-	  if(*playlist!=*hls_index_playlist) {
-	    *hls_index_playlist=*playlist;
-	    if(isConnected()||hls_index_playlist->segmentQuantity()>=3) {
-	      hls_media_timer->start(0);
-	    }
-	    else {
-	      if(global_log_verbose) {
-		Log(LOG_INFO,"waiting from stream to fill");
-	      }
-	    }
-	    hls_index_timer->start(1000*hls_index_playlist->targetDuration());
-	  }
-	  else {
-	    hls_index_timer->start(1000);
+	  if(global_log_verbose) {
+	    Log(LOG_INFO,"waiting from stream to fill");
 	  }
 	}
+	hls_index_timer->start(1000*hls_index_playlist->targetDuration());
       }
       else {
-	Log(LOG_WARNING,"error parsing playlist");
+	hls_index_timer->start(1000);
       }
-      delete playlist;
     }
   }
+  else {
+    Log(LOG_WARNING,"error parsing playlist");
+  }
+  delete playlist;
 }
 
 
 void Hls::mediaProcessStartData()
 {
-  if(hls_media_process!=NULL) {
-    if(hls_media_process->state()!=QProcess::NotRunning) {
-      hls_media_timer->start(500);
-      return;
-    }
-  }
+  QByteArray data;
+  char curl_errs[CURL_ERROR_SIZE];
 
   //
   // Find next media segment
@@ -281,127 +301,111 @@ void Hls::mediaProcessStartData()
     hls_segment_fd=open(filename.toUtf8(),O_CREAT|O_TRUNC|O_WRONLY,S_IRUSR|S_IWUSR);
     if(hls_segment_fd>=0) {
       fprintf(stderr,
-	      "creating media segment: %s\n",(const char *)filename.toUtf8()); 
+	      "creating media segment: %s\n",filename.toUtf8().constData()); 
     }
     else {
-      fprintf(stderr,
-        "unable to open media segment: %s [%s]\n",
-        (const char *)filename.toUtf8(),strerror(errno)); 
+      fprintf(stderr,"unable to open media segment: %s [%s]\n",
+	      filename.toUtf8().constData(),strerror(errno)); 
     }
  #endif  // CONN_HLS_DUMP_SEGMENTS
 
-    QStringList args;
-    args.push_back("--user-agent");
-    args.push_back(GLASSPLAYER_USER_AGENT);
+    Log(LOG_DEBUG,QString::asprintf("downloading \"%s\"",
+				    hls_current_media_segment.toDisplayString().
+				    toUtf8().constData()));
+    long resp_code=0;
+    curl_easy_reset(hls_curl_handle);
+    data.clear();
+
+    //
+    // Authentication
+    //
     if((!serverUsername().isEmpty())||(!serverPassword().isEmpty())) {
-      args.push_back("--user");
-      args.push_back(serverUsername()+":"+serverPassword());
+      curl_easy_setopt(hls_curl_handle,CURLOPT_USERPWD,
+		       (serverUsername()+":"+serverPassword()).
+		       toUtf8().constData());
     }
-    args.push_back(hls_current_media_segment.toString());
-    if(hls_media_process!=NULL) {
-      delete hls_media_process;
-    }
-    hls_media_process=new QProcess(this);
-    hls_media_process->setReadChannel(QProcess::StandardOutput);
-    connect(hls_media_process,SIGNAL(readyReadStandardOutput()),
-	    this,SLOT(mediaReadyReadData()));
-    connect(hls_media_process,SIGNAL(finished(int,QProcess::ExitStatus)),
-	    this,SLOT(mediaProcessFinishedData(int,QProcess::ExitStatus)));
-    hls_media_process->start("curl",args);
+
+    //
+    // Transaction
+    //
+    curl_easy_setopt(hls_curl_handle,CURLOPT_ERRORBUFFER,curl_errs);
+    curl_easy_setopt(hls_curl_handle,CURLOPT_WRITEFUNCTION,__Hls_WriteCallback);
+    curl_easy_setopt(hls_curl_handle,CURLOPT_WRITEDATA,&data);
+    curl_easy_setopt(hls_curl_handle,CURLOPT_URL,
+		     hls_current_media_segment.toEncoded().constData());
+    curl_easy_setopt(hls_curl_handle,CURLOPT_FOLLOWLOCATION,1);
+    curl_easy_setopt(hls_curl_handle,CURLOPT_USERAGENT,GLASSPLAYER_USER_AGENT);
     hls_download_start_datetime=QDateTime::currentDateTime();
-  }
-}
-
-
-void Hls::mediaReadyReadData()
-{
-  QByteArray data;
-
-  data=hls_media_process->readAllStandardOutput();
-#ifdef CONN_HLS_DUMP_SEGMENTS
-  if(hls_segment_fd>=0) {
-    if(write(hls_segment_fd,data.data(),data.size())<0) {
-      fprintf(stderr,"  ERROR writing media segment data: %s\n",strerror(errno));
-    }
-  }
-#endif  // CONN_HLS_DUMP_SEGMENTS
-  hls_media_segment_data+=data;
-}
-
-/*
-void Hls::mediaReadyReadData()
-{
-  QByteArray data;
-
-  while(hls_media_process->bytesAvailable()>0) {
-    data=hls_media_process->read(1024);
-#ifdef CONN_HLS_DUMP_SEGMENTS
-    if(hls_segment_fd>=0) {
-      if(write(hls_segment_fd,data.data(),data.size())<0) {
-	fprintf(stderr,"  ERROR writing media segment data: %s\n",strerror(errno));
+    CURLcode code=curl_easy_perform(hls_curl_handle);
+    if(code==CURLE_OK) {
+      curl_easy_getinfo(hls_curl_handle,CURLINFO_RESPONSE_CODE,&resp_code);
+      if(((resp_code<200)||(resp_code>=300))&&(resp_code!=0)) {
+	Log(LOG_WARNING,
+	    QString::asprintf("download of \"%s\" returned code %lu",
+			      hls_current_media_segment.toDisplayString().toUtf8().constData(),
+			      resp_code));
+	return;
       }
-    }
-#endif  // CONN_HLS_DUMP_SEGMENTS
-    hls_media_segment_data+=data;
-  }
-}
-*/
-
-void Hls::mediaProcessFinishedData(int exit_code,QProcess::ExitStatus status)
-{
-#ifdef CONN_HLS_DUMP_SEGMENTS
-  if(hls_segment_fd>=0) {
-    close(hls_segment_fd);
-    hls_segment_fd=-1;
-  }
-#endif  // CONN_HLS_DUMP_SEGMENTS
-
-  //
-  // Calculate Download Speed
-  //
-  float msecs=hls_download_start_datetime.msecsTo(QDateTime::currentDateTime());
-  float bytes_per_sec=
-    (float)hls_media_segment_data.size()/(msecs/1000.0);
-  hls_download_average->addValue(bytes_per_sec);
-
-  //
-  // Extract Timed Metadata
-  //
-  hls_id3_parser->parse(hls_media_segment_data);
-
-  //
-  // Forward Data
-  //
-  while(hls_media_segment_data.size()>4096) {
-    emit dataReceived(hls_media_segment_data.left(4096),false);
-    hls_media_segment_data.remove(0,4096);
-  }
-  emit dataReceived(hls_media_segment_data,false);
-  hls_media_segment_data.clear();
-
-  if(status==QProcess::NormalExit) {
-    if(exit_code!=0) {
-      Log(LOG_WARNING,tr("media process returned non-zero exit code")+
-	  QString().sprintf(" [%d]",exit_code));
     }
     else {
-      if(!isConnected()) {
-	QStringList f0=hls_current_media_segment.toString().split(".");
-	for(int i=1;i<Codec::TypeLast;i++) {
-	  if(Codec::acceptsExtension((Codec::Type)i,f0[f0.size()-1])) {
-	    setCodecType((Codec::Type)i);
-	    setConnected(true);
-	  }
-	}
-	if(!isConnected()) {
-	  Log(LOG_ERR,tr("unsupported codec")+" ["+f0[f0.size()-1]+"]");
-	  exit(GLASS_EXIT_UNSUPPORTED_CODEC_ERROR);
+      Log(LOG_WARNING,
+      	  QString::asprintf("download of \"%s\" failed: %s",
+      	      hls_current_media_segment.toDisplayString().toUtf8().constData(),
+	      curl_errs));
+    }
+#ifdef CONN_HLS_DUMP_SEGMENTS
+    if(hls_segment_fd>=0) {
+      if(write(hls_segment_fd,hls_media_segment_data.data(),
+	       hls_media_segment_data.size())<0) {
+	fprintf(stderr,
+		"  ERROR writing media segment data: %s\n",strerror(errno));
+      }
+      close(hls_segment_fd);
+      hls_segment_fd=-1;
+    }
+#endif  // CONN_HLS_DUMP_SEGMENTS
+
+    // *******************************************************************
+
+
+    //
+    // Calculate Download Speed
+    //
+    float msecs=
+      hls_download_start_datetime.msecsTo(QDateTime::currentDateTime());
+    float bytes_per_sec=(float)data.size()/(msecs/1000.0);
+    hls_download_average->addValue(bytes_per_sec);
+
+    //
+    // Extract Timed Metadata
+    //
+    hls_id3_parser->parse(data);
+
+    //
+    // Forward Data
+    //
+    while(data.size()>4096) {
+      emit dataReceived(data.left(4096),false);
+      data.remove(0,4096);
+    }
+    emit dataReceived(data,false);
+
+    if(!isConnected()) {
+      QStringList f0=hls_current_media_segment.toString().split(".");
+      for(int i=1;i<Codec::TypeLast;i++) {
+	if(Codec::acceptsExtension((Codec::Type)i,f0[f0.size()-1])) {
+	  setCodecType((Codec::Type)i);
+	  setConnected(true);
 	}
       }
-      hls_last_media_segment=hls_current_media_segment;
-      hls_current_media_segment="";
-      hls_media_timer->start(0);
+      if(!isConnected()) {
+	Log(LOG_ERR,tr("unsupported codec")+" ["+f0[f0.size()-1]+"]");
+	exit(GLASS_EXIT_UNSUPPORTED_CODEC_ERROR);
+      }
     }
+    hls_last_media_segment=hls_current_media_segment;
+    hls_current_media_segment="";
+    hls_media_timer->start(0);
   }
 }
 

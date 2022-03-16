@@ -73,6 +73,11 @@ AC_CHECK_PROG(MOC_NAME,moc-qt5,[moc-qt5],[moc])
 AC_SUBST(MOC,$MOC_NAME)
 
 #
+# Check for LibCurl
+#
+PKG_CHECK_MODULES(LIBCURL,libcurl,[],[AC_MSG_ERROR([*** LibCURL not found ***])])
+
+#
 # Check for libsndfile (needed for FILE support)
 #
 PKG_CHECK_MODULES(SNDFILE,sndfile,[SNDFILE_FOUND=y],[])

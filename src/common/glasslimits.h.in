@@ -2,7 +2,7 @@
 //
 // System-wide limits and settings for GlassCoder
 //
-//   (C) Copyright 2015 Fred Gleason <fredg@paravelsystems.com>
+//   (C) Copyright 2015-2022 Fred Gleason <fredg@paravelsystems.com>
 //
 //   This program is free software; you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License version 2 as
@@ -44,7 +44,9 @@
 #define GLASS_EXIT_GENERAL_DEVICE_ERROR 10    // audio device error
 #define GLASS_EXIT_UNSUPPORTED_PLAYLIST_ERROR 11 // unsupported playlist format
 #define GLASS_EXIT_INVALID_PLAYLIST_ERROR 12  // invalid playlist format
-#define GLASS_EXIT_NETWORK_ERROR 13           // general network error
+#define GLASS_EXIT_NETWORK_ERROR 13           // network error
+#define GLASS_EXIT_CHANNEL_COUNT_ERROR 14     // unsupported channel count error
+#define GLASS_EXIT_GENERAL_ERROR 15           // general error
 
 //
 // User Agent Strings

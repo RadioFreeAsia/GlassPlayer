@@ -2,7 +2,7 @@
 //
 // glassplayer(1) Audio Encoder
 //
-//   (C) Copyright 2014-2021 Fred Gleason <fredg@paravelsystems.com>
+//   (C) Copyright 2014-2022 Fred Gleason <fredg@paravelsystems.com>
 //
 //   This program is free software; you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License version 2 as
@@ -19,6 +19,8 @@
 //
 
 #include <signal.h>
+
+#include <curl/curl.h>
 
 #include <QCoreApplication>
 
@@ -172,6 +174,11 @@ MainObject::MainObject(QObject *parent)
       }
     }
   }
+
+  //
+  // Initialize CURL
+  //
+  curl_global_init(CURL_GLOBAL_ALL);
 
   //
   // Resource Enumerations
