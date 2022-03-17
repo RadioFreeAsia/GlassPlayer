@@ -7,6 +7,9 @@ system before building GlassCoder:
 
 Qt5 Toolkit, v5.9 or better (http://www.qt.io/).
 
+Curl, v7.29.0 or better (https://curl.se/)
+Command line tool and library for transferring data with URLs
+
 Secret Rabbit Code (http://www.mega-nerd.com/SRC/)
 A sample-rate converter library, written by Erik de Castro Lopo.
 
@@ -17,6 +20,7 @@ https://www.gnu.org/software/libtool/manual/html_node/Using-libltdl.html#Using-l
 TagLib Audio Meta-Data Library, v1.8.0 or better (https://taglib.org/)
 A library for reading and editing the meta-data of several popular audio
 formats. 
+
 
 OPTIONAL PREREQUISITES
 ---------------------------------------------------------------------------
@@ -43,8 +47,8 @@ The following libraries are required:
 Available at http://www.xiph.org.
 
 
-AUDIO SOURCES
--------------
+AUDIO DESTINATIONS
+------------------
 Advanced Linux Sound Architecture (ALSA), v1.0 or later.  Included in
 virtually all Linux distros.  Further information is available at
 http://www.alsa-project.org/.

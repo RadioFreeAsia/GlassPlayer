@@ -517,3 +517,5 @@
 	messages with a priority greater than LOG_DEBUG.
 	* Modified glassplayer(1) so as to print all to STDERR if the
 	'--verbose' flag was given.
+2022-03-17 Fred Gleason <fredg@paravelsystems.com>
+	* Updated 'INSTALL'.
