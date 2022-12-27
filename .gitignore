@@ -28,6 +28,8 @@ Makefile
 Makefile.in
 missing
 moc_*
+debian/changelog
+debian/control
 docs/glassplayer.xml
 src/common/glasslimits.h
 src/glassplayer/audiodevice.cpp
