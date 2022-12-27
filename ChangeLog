@@ -519,3 +519,5 @@
 	'--verbose' flag was given.
 2022-03-17 Fred Gleason <fredg@paravelsystems.com>
 	* Updated 'INSTALL'.
+2022-12-27 Fred Gleason <fredg@paravelsystems.com>
+	* Fixed a regression that broke the 'make deb' target.

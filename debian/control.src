@@ -18,7 +18,7 @@ Description: Minimalist Audio Streaming Player
 
 Package: glassplayer-gui
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, glassplayer (= 0.9.0-1)
+Depends: ${shlibs:Depends}, ${misc:Depends}, glassplayer (= @VERSION@-1)
 Description: GlassPlayerGui control applet for GlassPlayer
  GlassPlayerGui is a control applet for driving the GlassPlayer audio stream
  player.  It provides a convenient readout of all GlassPlayer statistics

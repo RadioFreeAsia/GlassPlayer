@@ -20,6 +20,13 @@
 ##    Boston, MA  02111-1307  USA
 ##
 
+#
+# Generate Debian packaging metadata
+#
+DATESTAMP=`date +%a,\ %d\ %b\ %Y\ %T\ %z`
+sed s/@VERSION@/`cat PACKAGE_VERSION`/ < debian/control.src > debian/control
+sed s/@VERSION@/`cat PACKAGE_VERSION`/ < debian/changelog.src | sed "s/@DATESTAMP@/$DATESTAMP/" > debian/changelog
+
 aclocal $ACLOCAL_FLAGS || {
     echo "aclocal \$ACLOCAL_FLAGS where \$ACLOCAL_FLAGS= failed, exiting..."
     exit 1
